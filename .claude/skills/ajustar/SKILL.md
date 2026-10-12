@@ -1,6 +1,8 @@
 ---
+name: ajustar
 description: Convierte una observación de uso en la marcha blanca en un ajuste trazado
 argument-hint: "<lo que pasó al usar la app>"
+disable-model-invocation: true
 ---
 Rodrigo reporta desde el uso real: $ARGUMENTS
 

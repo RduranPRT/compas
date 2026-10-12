@@ -51,7 +51,7 @@ Octubre y noviembre de 2026 son **línea base**: se cargan desde cartolas y se c
 .specify/
   memory/constitution.md       principios del método y de ingeniería (manda sobre todo)
   templates/                   plantillas de spec, plan y tareas
-.claude/commands/              comandos SDD para Claude Code
+.claude/skills/                comandos SDD para Claude Code (/especificar, /implementar…)
 CLAUDE.md                      instrucciones permanentes para Claude Code
 docs/
   metodo/metodo-compas-v2.md   fuente única del negocio: glosario, procesos, reglas R01–R45, eventos

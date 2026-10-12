@@ -1,6 +1,8 @@
 ---
+name: tareas
 description: Divide el plan de una spec en tareas pequeñas y verificables
 argument-hint: "<número de spec>"
+disable-model-invocation: true
 ---
 Crea `specs/$ARGUMENTS-*/tasks.md` desde su `plan.md` con `.specify/templates/tasks-template.md`.
 

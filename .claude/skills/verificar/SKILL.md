@@ -1,6 +1,8 @@
 ---
+name: verificar
 description: Verifica que una spec esté completa y trazada antes de darla por implementada
 argument-hint: "<número de spec>"
+disable-model-invocation: true
 ---
 Verifica la spec $ARGUMENTS:
 

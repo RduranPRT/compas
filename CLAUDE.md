@@ -12,7 +12,7 @@ Compás es una app móvil de finanzas para el hogar Durán Damann (pareja con hi
 
 ## Flujo de trabajo
 
-Comandos en `.claude/commands/`:
+Comandos (skills en `.claude/skills/`, funcionan en terminal, escritorio y web):
 
 | Comando | Para qué |
 | --- | --- |

@@ -1,6 +1,8 @@
 ---
+name: planificar
 description: Genera el plan técnico de una spec aprobada
 argument-hint: "<número de spec, p. ej. 003>"
+disable-model-invocation: true
 ---
 Genera `specs/$ARGUMENTS-*/plan.md` para la spec indicada.
 

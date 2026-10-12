@@ -1,6 +1,8 @@
 ---
+name: implementar
 description: Implementa las tareas pendientes de una spec, una a una, con pruebas
 argument-hint: "<número de spec> [ID de tarea]"
+disable-model-invocation: true
 ---
 Implementa la spec $ARGUMENTS siguiendo su `tasks.md`.
 

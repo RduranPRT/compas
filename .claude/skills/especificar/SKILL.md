@@ -1,6 +1,8 @@
 ---
+name: especificar
 description: Crea o actualiza la spec de una funcionalidad a partir de una descripción
 argument-hint: "<número o descripción de la funcionalidad>"
+disable-model-invocation: true
 ---
 Vas a escribir o actualizar una especificación del kit Compás. Entrada: $ARGUMENTS
 
