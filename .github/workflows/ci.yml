@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  base-de-datos:
+    name: Invariantes de la base de datos
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar cliente psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Ejecutar pruebas
+        run: ./db/run_tests.sh
+
+  monorepo:
+    name: Pruebas y tipos del monorepo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: existe
+        run: test -f pnpm-workspace.yaml && echo "si=true" >> "$GITHUB_OUTPUT" || echo "si=false" >> "$GITHUB_OUTPUT"
+      - if: steps.existe.outputs.si == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.existe.outputs.si == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - if: steps.existe.outputs.si == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.existe.outputs.si == 'true'
+        run: pnpm -r typecheck
+      - if: steps.existe.outputs.si == 'true'
+        run: pnpm -r test

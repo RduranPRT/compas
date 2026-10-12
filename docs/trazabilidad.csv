@@ -1,0 +1,46 @@
+regla,enunciado_corto,nivel,procesos,spec,implementacion,capa,prueba,estado
+R01,Asignar solo dinero recibido,2,P2;P3,006;007,db/migrations/0001_esquema_v2.sql:plan.chk_por_asignar,db,db/tests/0001_test_invariantes.sql:T3,implementada-db
+R02,Por asignar > 0 no propone gastos,5,P3;P5,007,packages/dominio/src/reglas/r02_porAsignar.ts,dominio,,pendiente
+R03,Aporte prorrateado,5,S3;P2,006,packages/dominio/src/reglas/r03_aporteProrrateado.ts,dominio,,pendiente
+R04,Orden de destinos por etapa,5,P3,006;007,packages/dominio/src/reglas/r04_ordenFlujo.ts,dominio,,pendiente
+R05,Cuatro Paredes primero en E0,3,P2;P3,006;007,packages/dominio/src/reglas/r05_cuatroParedes.ts,dominio,,pendiente
+R06,Esenciales > 50% rojo,5,P2;P7,004;006,db/migrations/0001_esquema_v2.sql:plan.v_bloques_periodo + dominio,dominio,,pendiente
+R07,Futuro < 20% amarillo,5,P2;P7,004;006,packages/dominio/src/reglas/r07_semaforoFuturo.ts,dominio,,pendiente
+R08,Holgura 15% fijos nuevos o UF,5,P2,006,packages/dominio/src/reglas/r08_holgura.ts,dominio,,pendiente
+R09,"Ritmo > 1,1 alerta",6,P5,009,db:plan.v_ritmo_sobre + packages/dominio/src/reglas/r09_ritmo.ts,dominio,,pendiente
+R10,Sobre negativo abre N1,4,P6,009,packages/dominio/src/reglas/r10_n1.ts,dominio,,pendiente
+R11,Gasto en sobre cerrado abre N1,2,P4,005,db (pendiente migración),db,,pendiente
+R12,Balance proyectado < 0 abre N2,5,P5;P6,009,packages/dominio/src/reglas/r12_balance.ts,dominio,,pendiente
+R13,Reponer emergencia primero,3,P3,007,packages/dominio/src/reglas/r13_reponerEmergencia.ts,dominio,,pendiente
+R14,Criterios N3,5,P6,009,manual en MVP,ui,,fuera-mvp
+R15,Reinicio N4,5,P6,—,manual en MVP,ui,,fuera-mvp
+R16,Mensajes sin culpa,6,Todos,todas,packages/contratos/src/mensajes.ts + contrato IA,ia;ui,,pendiente
+R17,Intención inferida editable,6,P4,005,apps/movil + ia-chat,ia;ui,,pendiente
+R18,Horas de vida,6,P4;P7,005,packages/dominio/src/reglas/r18_horasVida.ts,dominio,,pendiente
+R19,Valoración y Kakeibo en cierre,5,P7,010,apps/movil cierre,ui,,pendiente
+R20,Arrastre de saldos,5,P7,006;010,db (pendiente migración app.abrir_periodo),db,,pendiente
+R21,Bola de nieve vs avalancha,4,S2,EP11,V2,dominio,,fuera-mvp
+R22,Parte del reajuste a Futuro,4,P3,007,packages/dominio/src/reglas/r22_reajuste.ts,dominio,,pendiente
+R23,IA propone etapa; personas confirman,4,P1;P7,004;010,db:gob.historial_etapa + ia-perfil,db;ia,,pendiente
+R24,UF del día o último valor,2,S4,ADR-07,supabase/functions/indicadores,db,,pendiente
+R25,Datos de menores solo administradores,1,S5,001;011,db/migrations/0001_esquema_v2.sql:RLS r_menor_* r_datos_menor,db,db/tests/0001_test_invariantes.sql:T9;0003:S5,implementada-db
+R26,Cuotas preasignadas,2,P4;S2,005;008,db/migrations/0002_piloto.sql:tratamiento_cuotas + imputación por mes,db,db/tests/0002_test_piloto.sql:P10;P15,implementada-db
+R27,Pago de tarjeta no es gasto,2,P4;S1,003;008,db/migrations/0002_piloto.sql:fin.contabilizar_pago_tarjeta,db,db/tests/0002_test_piloto.sql:P7;P8,implementada-db
+R28,Transferencia interna no es ingreso ni gasto,2,P4;S1,003,db:fin.transferencia + lector,db;dominio,,pendiente
+R29,Reembolso vuelve al sobre,2,P4,005,db/migrations/0001_esquema_v2.sql:plan.contabilizar,db,,pendiente
+R30,Gasto compartido a Por cobrar,2,P4,—,V2,db,,fuera-mvp
+R31,Efectivo como billetera,2,S1,002,fin.cuenta tipo billetera,db,,pendiente
+R32,Moneda extranjera,2,P4,—,V2,db,,fuera-mvp
+R33,Ingreso base ±5% abre P2-A,5,P3,006;007,packages/dominio/src/reglas/r33_ajusteIngreso.ts,dominio,,pendiente
+R34,Conciliación semanal y mensual,2,P7;S1,008;010,db/migrations/0001_esquema_v2.sql:fin.conciliacion + plan.chk_periodo_abierto,db,db/tests/0001_test_invariantes.sql:T12,parcial
+R35,Duplicado candidato,2,P4,003;005,packages/dominio/src/reglas/r35_duplicados.ts + fin.duplicado_candidato,dominio;db,,pendiente
+R36,"IA < 0,8 por confirmar; nunca a Futuro",2,P4,003;005,db/migrations/0001_esquema_v2.sql:fin.chk_imputacion_ia + grants compas_ia,db,db/tests/0001_test_invariantes.sql:T11,implementada-db
+R37,Doble firma para Futuro y emergencia,3,P6,009,db/migrations/0001_esquema_v2.sql:plan.chk_retiro_futuro,db,db/tests/0001_test_invariantes.sql:T5;T6,implementada-db
+R38,N1 bajo umbral se autoaprueba,4,P6,009,packages/dominio/src/reglas/r38_autoaprobacion.ts,dominio,,pendiente
+R39,Suplente a 48 h,4,Todos,001;006,db:gob.solicitud_aprobacion + job,db,,pendiente
+R40,Máximo 3 alertas al día,6,P5,009,db:med.alerta + app.control_diario,db,,pendiente
+R41,Histórico solo alimenta perfil,2,P1;P4,003,db/migrations/0002_piloto.sql:fin.chk_corte_historico;fin.chk_corte_movimiento,db,db/tests/0002_test_piloto.sql:P2;P3,implementada-db
+R42,Cartola entra por confirmar,2,P4,003,db/migrations/0002_piloto.sql:fin.chk_corte_movimiento,db,db/tests/0002_test_piloto.sql:P3,implementada-db
+R43,Retención 30 días y minimización,1,P1;S5,003;011,db:fin.importacion.expira_en + packages/dominio/src/minimizar.ts + functions/retencion,db;dominio,db/tests/0002_test_piloto.sql:P1,parcial
+R44,Reserva de tarjeta,2,P4;S1,008,db/migrations/0002_piloto.sql:plan.contabilizar;plan.sobre_pago_tarjeta,db,db/tests/0002_test_piloto.sql:P6;P7;P9;P15,implementada-db
+R45,Plan con ingreso base,4,P2;P3,006;007,db:plan.ingreso_esperado.es_base + packages/dominio/src/reglas/r45_variable.ts,db;dominio,,pendiente

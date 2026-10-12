@@ -1,0 +1,17 @@
+node_modules/
+.expo/
+dist/
+build/
+*.log
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+# Nunca subir cartolas reales ni exportaciones
+cartolas/
+**/fixtures/reales/
+*.pdf
+!packages/lectores/fixtures/**/*.pdf
+exportaciones/
+.DS_Store

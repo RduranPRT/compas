@@ -1,0 +1,56 @@
+== S1 membresía sincronizada por trigger (esperado 3)
+ membresias 
+------------
+          3
+(1 row)
+
+== S2 usuario A ve su hogar y su cuenta (esperado Hogar A, 1 cuenta, rol ORG)
+ nombre  
+---------
+ Hogar A
+(1 row)
+
+ cuentas 
+---------
+       1
+(1 row)
+
+ rol 
+-----
+ ORG
+(1 row)
+
+== S3 usuario A no puede fijar app.hogar_id para saltar al hogar B (esperado 0 cuentas de B)
+ cuentas_b 
+-----------
+         0
+(1 row)
+
+== S4 usuario A pide el hogar B por encabezado (esperado 0 cuentas)
+ cuentas 
+---------
+       0
+(1 row)
+
+== S5 menor de A: rol MEN y no ve cuentas (esperado MEN, 0)
+ rol 
+-----
+ MEN
+(1 row)
+
+ cuentas 
+---------
+       0
+(1 row)
+
+== S6 usuario sin membresía no ve nada (esperado 0)
+ hogares 
+---------
+       0
+(1 row)
+
+== S7 desactivar al usuario A le quita acceso (esperado 0)
+ cuentas 
+---------
+       0
+(1 row)

@@ -1,0 +1,86 @@
+== P1 importación registrada (debe pasar) y mismo archivo dos veces (debe FALLAR)
+ estado  | dias_retencion 
+---------+----------------
+ cargada |             30
+(1 row)
+
+ERROR:  duplicate key value violates unique constraint "importacion_hogar_id_sha256_key"
+== P2 R41: histórico de septiembre (debe pasar); histórico de octubre (debe FALLAR)
+ERROR:  R41: 2026-10-03 es posterior al inicio del piloto (2026-10-01); debe importarse como movimiento
+== P3 R41/R42: movimiento de cartola de septiembre (debe FALLAR); de octubre confirmado directo (debe FALLAR); por confirmar (debe pasar)
+ERROR:  R41: 2026-09-28 es anterior al inicio del piloto (2026-10-01); va a movimiento_historico
+ERROR:  R42: un movimiento de cartola entra por confirmar
+    estado     | origen  
+---------------+---------
+ por_confirmar | cartola
+(1 row)
+
+== P4 re-importar la misma línea de cartola (debe FALLAR)
+ERROR:  duplicate key value violates unique constraint "ux_mov_hash_linea"
+== P5 ingreso de 1.000.000 y asignación de 300.000 a Alimentación
+== P6 R44: gasto 100.000 con tarjeta → Alimentación 200.000 y Pago Visa 100.000
+     tipo     | disponible | gastado | saldo  
+--------------+------------+---------+--------
+ por_asignar  |     700000 |       0 | 700000
+ variable     |     300000 |  100000 | 200000
+ pago_tarjeta |     100000 |       0 | 100000
+(3 rows)
+
+== P7 R27/R44: pago de 100.000 a la Visa → Pago Visa queda en 0
+     tipo     | saldo 
+--------------+-------
+ pago_tarjeta |     0
+(1 row)
+
+== P8 pago de tarjeta hacia cuenta que no es tarjeta (debe FALLAR)
+ERROR:  R27: el destino de un pago de tarjeta debe ser una cuenta tarjeta_credito
+== P9 descartar el gasto con tarjeta revierte categoría y reserva (Alimentación 300.000, Pago Visa -100.000)
+     tipo     |  saldo  
+--------------+---------
+ variable     |  300000
+ pago_tarjeta | -100000
+(2 rows)
+
+== P10 cuotas: 3 cuotas sin tratamiento (debe FALLAR); con tratamiento por_cuota (debe pasar)
+ERROR:  new row for relation "movimiento" violates check constraint "chk_mov_cuotas"
+ compras_en_cuotas 
+-------------------
+                 1
+(1 row)
+
+== P11 perfil inicial (debe pasar) y aceptar sin revisor (debe FALLAR)
+ERROR:  new row for relation "perfil_inicial" violates check constraint "perfil_inicial_check1"
+== P12 RLS menor: no ve importaciones ni perfil (esperado 0 y 0)
+ importaciones_visibles 
+------------------------
+                      0
+(1 row)
+
+ perfiles_visibles 
+-------------------
+                 0
+(1 row)
+
+== P13 IA: clasifica el histórico (debe pasar) pero no puede cambiar su monto (debe FALLAR)
+ clase | bloque_codigo | confianza_ia 
+-------+---------------+--------------
+ gasto | ESENCIALES    |         0.93
+(1 row)
+
+ERROR:  permission denied for table movimiento_historico
+== P14 libro cuadra: suma de todos los sobres = ingresos − gastos imputados − pagos de tarjeta (esperado 0)
+ diferencia_libro 
+------------------
+                0
+(1 row)
+
+== P15 compra de 300.000 en 3 cuotas por_cuota: 100.000 a Alimentación de oct, nov y dic, y reserva de 100.000 en el pago de Visa de cada mes (D08, R44)
+    mes     |     tipo     |  saldo  
+------------+--------------+---------
+ 2026-10-01 | variable     |  200000
+ 2026-10-01 | pago_tarjeta |       0
+ 2026-11-01 | variable     | -100000
+ 2026-11-01 | pago_tarjeta |  100000
+ 2026-12-01 | variable     | -100000
+ 2026-12-01 | pago_tarjeta |  100000
+(6 rows)

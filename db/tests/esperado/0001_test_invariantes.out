@@ -1,0 +1,76 @@
+== T1 ingreso confirmado entra a Por asignar
+    tipo     |  saldo  
+-------------+---------
+ por_asignar | 2000000
+(1 row)
+
+== T2 asignar 1.800.000 + 200.000 (debe pasar)
+    tipo     |  saldo  
+-------------+---------
+ por_asignar |       0
+ variable    | 1800000
+ futuro      |  200000
+ mesada      |       0
+(4 rows)
+
+== T3 R01: asignar 1 peso más debe FALLAR
+ERROR:  R01: asignación supera el dinero recibido (Por asignar = -1)
+== T4 gasto 50.000 con imputación (debe pasar) y sin imputación (debe FALLAR)
+   tipo   | disponible | gastado |  saldo  
+----------+------------+---------+---------
+ variable |    1800000 |   50000 | 1750000
+(1 row)
+
+ERROR:  Movimiento <uuid> confirmado con imputaciones 0 ≠ monto 30000
+== T5 R37: reasignar desde Futuro sin doble firma debe FALLAR
+ERROR:  R37: retirar de futuro requiere doble firma aprobada
+== T6 R37: con doble firma (ORG + CAD) debe pasar
+  estado  
+----------
+ aprobada
+(1 row)
+
+   tipo   |  saldo  
+----------+---------
+ variable | 1760000
+ futuro   |  190000
+(2 rows)
+
+== T7 RLS: el otro hogar es invisible (esperado 0)
+ movimientos_otro_hogar 
+------------------------
+                      0
+(1 row)
+
+== T8 RLS: insertar en otro hogar debe FALLAR
+ERROR:  new row violates row-level security policy for table "cuenta"
+== T9 RLS menor: solo ve su sobre (esperado 1) y ninguna cuenta (esperado 0)
+ sobres_visibles 
+-----------------
+               1
+(1 row)
+
+ cuentas_visibles 
+------------------
+                0
+(1 row)
+
+== T10 libro inmutable: el app no puede escribir el libro
+ERROR:  permission denied for table libro_sobre
+== T11 IA: imputar a Futuro debe FALLAR; firmar debe FALLAR
+ERROR:  R36: la IA no puede imputar a sobres futuro sin confirmación humana
+ERROR:  permission denied for table firma
+== T12 período cerrado: modificar movimiento debe FALLAR
+ERROR:  Período cerrado: reabrir con motivo (D20) antes de modificar
+== T13 auditoría registrada (esperado > 0)
+ filas_auditoria 
+-----------------
+              13
+(1 row)
+
+== T14 base cero: aprobar con líneas ≠ ingreso proyectado debe FALLAR; cuadrado debe pasar
+ERROR:  Base cero: líneas 1900000 ≠ ingreso proyectado 2000000
+  estado  
+----------
+ aprobado
+(1 row)
