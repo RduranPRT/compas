@@ -1,0 +1,24 @@
+name: Spec
+description: Una funcionalidad del MVP que sigue el ciclo SDD (planificar → tareas → implementar → verificar)
+title: "Spec NNN · "
+labels: ["spec"]
+body:
+  - type: input
+    id: spec
+    attributes:
+      label: Carpeta de la spec
+      placeholder: specs/003-importacion-cartolas/spec.md
+    validations:
+      required: true
+  - type: dropdown
+    id: estado
+    attributes:
+      label: Estado
+      options: [borrador, aprobada, implementada]
+    validations:
+      required: true
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas o decisiones
+      description: "Para trabajar con Claude comenta en este issue: @claude /planificar NNN, @claude /tareas NNN, @claude /implementar NNN, @claude /verificar NNN"

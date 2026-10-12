@@ -1,0 +1,20 @@
+name: Error
+description: Algo no funciona como dice la spec
+title: "Error: "
+labels: ["error"]
+body:
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducir
+    validations:
+      required: true
+  - type: input
+    id: spec
+    attributes:
+      label: Spec o regla relacionada
+      placeholder: "spec 005 · R35"
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Mensaje de error o captura (sin datos sensibles)

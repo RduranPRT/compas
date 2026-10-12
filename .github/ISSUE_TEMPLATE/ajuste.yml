@@ -1,0 +1,22 @@
+name: Ajuste de marcha blanca
+description: Algo que viste al usar la app en el hogar
+title: "Ajuste: "
+labels: ["marcha-blanca"]
+body:
+  - type: textarea
+    id: que_paso
+    attributes:
+      label: ¿Qué pasó?
+      description: Cuéntalo como lo viste. Sin montos reales ni datos de cuentas.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: ¿Qué esperabas?
+  - type: checkboxes
+    id: claude
+    attributes:
+      label: Claude
+      options:
+        - label: "Al crear el issue, comentaré @claude /ajustar para que lo analice"

@@ -64,7 +64,7 @@ db/
   tests/                       pruebas de invariantes y salidas esperadas
   run_tests.sh                 aplica migraciones en una base nueva y compara salidas
 specs/NNN-*/spec.md            especificaciones del MVP
-.github/workflows/ci.yml       integración continua
+.github/                       CI, @claude, revisión automática y plantillas de issues (ver docs/github-integracion.md)
 ```
 
 ## Pruebas de la base de datos
