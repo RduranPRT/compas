@@ -1,5 +1,4 @@
 import {
-  detectarEncabezado,
   minimizar,
   prepararLineas,
   tablaComoTexto,

@@ -17,10 +17,27 @@ export const colores = {
   rojo: "#a33a2b",
 };
 
-export function Pantalla({ titulo, children, accion }: { titulo: string; children: ReactNode; accion?: ReactNode }) {
+export function Pantalla({
+  titulo,
+  children,
+  accion,
+  volver,
+  flotante,
+}: {
+  titulo: string;
+  children: ReactNode;
+  accion?: ReactNode;
+  volver?: () => void;
+  flotante?: ReactNode;
+}) {
   return (
     <View style={{ flex: 1, backgroundColor: colores.fondoApp }}>
-      <ScrollView contentContainerStyle={estilos.pantalla}>
+      <ScrollView contentContainerStyle={estilos.pantalla} keyboardShouldPersistTaps="handled">
+        {volver ? (
+          <Pressable accessibilityRole="link" accessibilityLabel="Volver" onPress={volver} style={{ alignSelf: "flex-start" }}>
+            <Text style={estilos.enlace}>‹ Volver</Text>
+          </Pressable>
+        ) : null}
         <View style={estilos.cabecera}>
           <Text accessibilityRole="header" style={estilos.titulo}>
             {titulo}
@@ -29,6 +46,7 @@ export function Pantalla({ titulo, children, accion }: { titulo: string; childre
         </View>
         {children}
       </ScrollView>
+      {flotante}
     </View>
   );
 }
