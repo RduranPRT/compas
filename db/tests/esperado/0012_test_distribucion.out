@@ -1,0 +1,66 @@
+== D1 sueldo del 30 de noviembre para diciembre: entra a Por asignar de diciembre (D01, D02)
+   estado   
+------------
+ confirmado
+(1 row)
+
+    mes     | monto_clp | por_repartir 
+------------+-----------+--------------
+ 2026-12-01 |   2400000 |      2400000
+(1 row)
+
+  saldo  
+---------
+ 2400000
+(1 row)
+
+== D2 reparto confirmado: asignaciones reales, Por asignar en 0 y transferencias pendientes (R01, R02, D05)
+                   confirmar_distribucion                   
+------------------------------------------------------------
+ {"asignado": 2400000, "pendiente": 0, "transferencias": 2}
+(1 row)
+
+        nombre        | saldo  
+----------------------+--------
+ Ahorro e inversión   | 900000
+ Alimentación         | 600000
+ Arriendo o dividendo | 800000
+ Por asignar          |      0
+ Sin culpa Rodrigo    | 100000
+(5 rows)
+
+     tipo     | monto_clp |  cuenta_origen   | cuenta_destino |       sobre        
+--------------+-----------+------------------+----------------+--------------------
+ a_personal   |    100000 | Cuenta corriente |                | Sin culpa Rodrigo
+ aporte_fondo |    900000 | Cuenta corriente | Ahorro         | Ahorro e inversión
+(2 rows)
+
+== D3 asignar $1 más de lo recibido (R01; debe FALLAR)
+ERROR:  Estás repartiendo $1 y de este ingreso quedan $0 (R01)
+== D4 bono variable: se reparte en partes y queda lo pendiente (R45, D04)
+                     confirmar_distribucion                     
+----------------------------------------------------------------
+ {"asignado": 300000, "pendiente": 300000, "transferencias": 1}
+(1 row)
+
+ es_variable | por_repartir 
+-------------+--------------
+ f           |            0
+ t           |       300000
+(2 rows)
+
+== T1 marcar transferencia hecha
+ marcar_transferencia 
+----------------------
+ 
+(1 row)
+
+     tipo     |  estado   
+--------------+-----------
+ a_personal   | hecha
+ aporte_fondo | pendiente
+ aporte_fondo | pendiente
+(3 rows)
+
+== T2 un ingreso descartado tras repartirlo no se acepta (debe FALLAR)
+ERROR:  Ese ingreso ya se repartió; no se puede descartar

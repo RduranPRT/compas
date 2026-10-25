@@ -1,0 +1,118 @@
+== B1 borrador de diciembre: líneas con regla y explicación (P8)
+ borrador 
+----------
+ t
+(1 row)
+
+ version |  estado  | ingreso_proyectado | generado_por 
+---------+----------+--------------------+--------------
+       1 | borrador |            2400000 | sistema
+(1 row)
+
+        nombre        | monto_proyectado | regla_codigo | holgura_pct 
+----------------------+------------------+--------------+-------------
+ Ahorro e inversión   |           995000 | R07          |        0.00
+ Alimentación         |           600000 | R04          |        0.00
+ Arriendo o dividendo |           805000 | R08          |       15.00
+(3 rows)
+
+== B2 guardar otra vez reemplaza las líneas del mismo borrador (no crea versiones)
+ presupuestos | lineas 
+--------------+--------
+            1 |      3
+(1 row)
+
+== D1 descuadrado: no se envía e indica lo que falta en Por asignar (R01; debe FALLAR)
+ actualizar_linea_plan 
+-----------------------
+ 
+(1 row)
+
+ERROR:  El plan no cuadra: quedan $50.000 en Por asignar. Asígnalos a algún sobre (R01)
+SQL statement "SELECT app.exigir_base_cero(p.id)"
+PL/pgSQL function enviar_plan(uuid) line 9 at PERFORM
+ actualizar_linea_plan 
+-----------------------
+ 
+(1 row)
+
+== S1 la CAD envía; aprueba el ORG; la CAD no puede antes de 48 h (R39; debe FALLAR)
+ enviada 
+---------
+ t
+(1 row)
+
+    tipo     |  estado   | aprobador 
+-------------+-----------+-----------
+ presupuesto | pendiente | Rodrigo
+(1 row)
+
+ERROR:  Esta aprobación le corresponde a Rodrigo; si no responde en el plazo, podrás decidir como suplente (R39)
+== S2 pasado el plazo, la CAD aprueba como suplente (R39)
+  estado  
+----------
+ aprobada
+(1 row)
+
+  estado  | aprobado_por | como_suplente 
+----------+--------------+---------------
+ aprobado | Ana          | t
+(1 row)
+
+  monto  | pct_ingreso 
+---------+-------------
+ 1355000 |        56.5
+(1 row)
+
+== S3 un plan aprobado no se edita (debe FALLAR)
+ERROR:  Un plan aprobado no se edita; crea la versión siguiente
+== V1 ajuste por ingreso distinto: la versión 2 reemplaza a la 1 al aprobarse (P2-A, R33)
+ actualizar_linea_plan 
+-----------------------
+ 
+(1 row)
+
+  estado  
+----------
+ aprobada
+(1 row)
+
+ version |   estado    | ingreso_proyectado |   motivo_version    
+---------+-------------+--------------------+---------------------
+       1 | reemplazado |            2400000 | 
+       2 | aprobado    |            2200000 | P2-A ingreso -8,3 %
+(2 rows)
+
+== R1 arrastre al nuevo mes: positivo al mismo sobre, negativo descuenta Por asignar (R20)
+     nombre     | saldo  
+----------------+--------
+ Alimentación   |  30000
+ Ocio y salidas | -10000
+ Por asignar    |  40000
+(3 rows)
+
+ actualizar_linea_plan 
+-----------------------
+ 
+(1 row)
+
+  estado  
+----------
+ aprobada
+(1 row)
+
+    nombre    | saldo 
+--------------+-------
+ Alimentación | 30000
+ Por asignar  | 30000
+(2 rows)
+
+ nombre | saldo 
+--------+-------
+(0 rows)
+
+== R2 la línea base (noviembre, sin plan) no arrastra a diciembre
+ arrastres_desde_noviembre 
+---------------------------
+                         0
+(1 row)
