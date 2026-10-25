@@ -41,7 +41,9 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 `db/migrations/0004_alta_hogar.sql`:
 - Tabla `gob.invitacion` con RLS (administradores del hogar).
 - Agregar `modalidad_sin_culpa` (`igual` | `proporcional_ingreso` | `manual_por_adulto`) al CHECK de `gob.regla_hogar` (ADR-10). Con `manual_por_adulto`, `monto_sin_culpa_clp` guarda un objeto `{integrante_id: monto}` en pesos enteros; en las otras modalidades es opcional y, si existe, es un monto único.
-- RPC `app.crear_hogar`, `app.invitar_integrante` (adultos), `app.registrar_menor` (hijos sin cuenta, D26), `app.aceptar_invitacion`, `app.crear_periodo`, `app.activar_acuerdo`.
+- RPC `app.crear_hogar`, `app.invitar_integrante` (adultos), `app.registrar_menor` (hijos sin cuenta, D26), `app.aceptar_invitacion`, `app.crear_periodo`, `app.proponer_acuerdo(p_parametros jsonb, p_urgente boolean)`, `app.activar_acuerdo`.
+- `app.proponer_acuerdo` crea en una transacción el `acuerdo_hogar`, sus `regla_hogar` y la `solicitud_aprobacion` tipo `acuerdo` dirigida al CAD; con `p_urgente` lo deja vigente de inmediato y la solicitud sigue pendiente (24-10-2026, al implementar T014).
+- `app.invitar_integrante` crea el `gob.integrante` (sin `usuario_auth_id`) junto con la invitación, para que el CAD pueda recibir solicitudes de firma antes de ingresar; `aceptar_invitacion` completa `usuario_auth_id`. `gob.invitacion` guarda `integrante_id` y no necesita `es_menor` (los hijos no se invitan, D26).
 - Cada RPC: `SECURITY DEFINER`, `SET search_path`, valida `app.jwt_sub()` y el rol; emite evento en `sys.evento_dominio`.
 
 `db/tests/0004_alta_hogar.sql`: escenarios de la spec simulando JWT como en `0003_test_supabase_auth.sql`.
