@@ -1,0 +1,101 @@
+== A1 la CAD firma el Acuerdo por la bandeja única y queda vigente (E1)
+  estado  
+----------
+ aprobada
+(1 row)
+
+ version | estado  
+---------+---------
+       1 | vigente
+(1 row)
+
+== A2 quien propuso el Acuerdo no lo firma (debe FALLAR)
+ERROR:  El Acuerdo lo firma el otro administrador, no quien lo propuso
+== P1 generar el perfil: versión 1 presentada, hallazgos con regla como recomendaciones (P8)
+ guardado 
+----------
+ t
+(1 row)
+
+ version |   estado   | etapa_sugerida |  base   
+---------+------------+----------------+---------
+       1 | presentado | E1             | 2400000
+(1 row)
+
+  tipo  |          titulo          | regla_codigo | fuente_codigo |  estado   
+--------+--------------------------+--------------+---------------+-----------
+ perfil | Esenciales sobre el 50 % | R06          | WARREN        | propuesta
+(1 row)
+
+== P2 otra versión deja la anterior descartada
+ version |   estado   
+---------+------------
+       1 | descartado
+       2 | presentado
+(2 rows)
+
+== E1 etapa sugerida E1: requiere a ambos administradores (R23)
+ propuesta 
+-----------
+ t
+(1 row)
+
+ etapa_codigo | direccion |  estado   | firmas_requeridas 
+--------------+-----------+-----------+-------------------
+ E1           | inicial   | propuesta |                 2
+(1 row)
+
+ tras_rodrigo 
+--------------
+ pendiente
+(1 row)
+
+ etapa_hogar 
+-------------
+ E0
+(1 row)
+
+ tras_ana 
+----------
+ aprobada
+(1 row)
+
+ etapa_codigo |   estado   | etapa_hogar 
+--------------+------------+-------------
+ E1           | confirmada | E1
+(1 row)
+
+      tipo       
+-----------------
+ EtapaPropuesta
+ EtapaConfirmada
+(2 rows)
+
+== E2 una propuesta rechazada no cambia la etapa
+  estado   
+-----------
+ rechazada
+(1 row)
+
+ etapa_codigo |   estado   
+--------------+------------
+ E1           | confirmada
+ E2           | rechazada
+(2 rows)
+
+ etapa_hogar 
+-------------
+ E1
+(1 row)
+
+== S1 aprobación de una sola firma: otro administrador solo firma como suplente pasado el plazo (R39)
+ERROR:  Esta aprobación le corresponde a Rodrigo; si no responde en el plazo, podrás decidir como suplente (R39)
+  estado  
+----------
+ aprobada
+(1 row)
+
+ como_suplente 
+---------------
+ t
+(1 row)
