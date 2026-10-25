@@ -1,6 +1,8 @@
 # ADR-05 · Regla de aporte por defecto
 
-Estado: Propuesta · 12-10-2026 · Brechas: G42
+Estado: Aceptada · 24-10-2026 (propuesta 12-10-2026) · Brechas: G42
+
+> **Nota 24-10-2026:** en la sesión de esta fecha se aprobó como "ADR-05" el aporte de los adultos al fondo común (pozo común total, D23) y la modalidad del sin culpa, que quedó registrada en [ADR-10](ADR-10-modalidad-sin-culpa.md). El aporte lineal R03 de esta ADR se aprobó después en la misma sesión.
 
 ## Contexto
 

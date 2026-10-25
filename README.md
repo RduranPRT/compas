@@ -10,7 +10,7 @@ Proyecto en cuatro fases: (1) investigación, (2) análisis y diseño con Spec-D
 | --- | --- |
 | Método v2 consolidado | Listo · `docs/metodo/metodo-compas-v2.md` |
 | Decisiones del hogar piloto | Listas · `docs/decisiones-hogar.md` |
-| ADR 01–09 | Propuestas, por aprobar · `docs/adr/` |
+| ADR 01–10 | Revisadas 24-10-2026: 01–05, 07, 09 y 10 aceptadas; 06 y 08 postergadas · `docs/adr/` |
 | Base de datos (migraciones 0001–0003) | Probada en PostgreSQL 16 · `db/` |
 | Specs 001–011 | Borrador, por aprobar · `specs/` |
 | Plan y tareas | Spec 001 · `specs/001-base-plataforma/` |

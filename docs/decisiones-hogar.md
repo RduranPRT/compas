@@ -37,8 +37,36 @@ Pedido de Rodrigo: el sistema debe permitir cargar cartolas bancarias para que l
 | 21–30 nov | Specs 009, 010 y 011 | Alertas, N1, cierres y privacidad; app lista para el primer plan |
 | 1 dic | Primer presupuesto real | Operación con plan; entra en vigencia la Ley 21.719 |
 
+## Decisiones de arquitectura — 24-10-2026
+
+| ADR | Decisión | Estado |
+| --- | --- | --- |
+| 01 | Chat dentro de la app; motor Claude por API (clave la entrega Rodrigo, como secreto de Supabase) | Aceptada |
+| 02 | Reglas en tres capas: triggers en PostgreSQL, paquete TypeScript y parámetros del Acuerdo | Aceptada |
+| 03 | Expo con **MVP primero en web**; iOS y Android después desde el mismo código | Aceptada |
+| 04 | Claude por API con datos minimizados: Haiku para chat y clasificación, Sonnet para perfil y resúmenes | Aceptada |
+| 05 | Aporte lineal R03 a fondos y metas | Aceptada |
+| 06 | Estrategia de deuda | Postergada a V2 |
+| 07 | Indicadores: CMF principal, mindicador.cl respaldo | Aceptada |
+| 08 | Lectura de correos de compra | Postergada a V2 |
+| 09 | Supabase, plan gratuito en marcha blanca con respaldo propio; Pro al ser producto | Aceptada |
+| 10 | Modalidad del sin culpa parametrizable (D25) | Aceptada |
+
+Respuestas a las preguntas de las specs (24-10-2026):
+
+| Spec | Pregunta | Decisión |
+| --- | --- | --- |
+| 001 | Acceso de los hijos | Sin cuenta propia en el MVP; toda la información la ingresan los padres (D26). |
+| 001 | Cantidad y nombres de los hijos | Parametrizable; se ingresa en el levantamiento de información del alta. |
+| 002/003 | Bancos y tarjetas | Santander e Itaú, cartolas en Excel. |
+| 003 | Lectores por banco | No se construyen: la IA transforma cualquier formato a LineaCartola (D27). |
+| 004 | Ahorros fuera de las cuentas | No en el MVP. |
+
+Calendario: la spec 001 aún no se implementa (estaba planificada para el 13 al 18 de octubre); el calendario se ajusta al retomar la Fase 3.
+
 ## Pendiente del hogar
 
-- Descargar cartolas y estados de cuenta de julio a octubre de todas las cuentas y tarjetas.
+- Descargar en Excel las cartolas y estados de cuenta de julio a octubre de Santander e Itaú.
 - Anotar gastos en efectivo desde el 1 de octubre.
-- Informar bancos y tarjetas usados para priorizar lectores (spec 003).
+- Registrarse en la API de la CMF para obtener la clave de indicadores (ADR-07).
+- Entregar la clave de la API de Claude cuando se implemente la primera función de IA (ADR-04).

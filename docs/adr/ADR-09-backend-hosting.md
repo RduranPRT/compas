@@ -1,6 +1,6 @@
 # ADR-09 · Backend y hosting
 
-Estado: Propuesta · 12-10-2026 · Brechas: G40, G46, G47 · Decisión del hogar: tope USD 25 al mes
+Estado: Aceptada · 24-10-2026 (propuesta 12-10-2026) · Brechas: G40, G46, G47 · Decisión del hogar: tope USD 25 al mes
 
 ## Contexto
 
@@ -33,6 +33,7 @@ Roles de base de datos:
 | --- | --- |
 | Servidor propio (Fly.io, Railway) + Postgres | Más piezas que mantener (auth, archivos, cron) para un desarrollador. |
 | Firebase | No es PostgreSQL; perdería el modelo y las invariantes ya probadas. |
+| Nhost, Appwrite o PocketBase | Nhost usa GraphQL (Hasura); Appwrite y PocketBase son menos maduros y PocketBase usa SQLite. Supabase es el más maduro sobre PostgreSQL. |
 | Neon + Clerk + Vercel | Tres proveedores y tres cuentas para lo que Supabase da junto. |
 
 ## Consecuencias

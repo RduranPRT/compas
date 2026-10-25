@@ -9,7 +9,7 @@ Cargar en minutos los movimientos reales del hogar desde los documentos del banc
 
 ## Historias de usuario
 
-- **HU-003-1** Como organizador, quiero subir la cartola de mi cuenta o el estado de cuenta de la tarjeta en PDF, CSV o Excel y que el sistema lea sus movimientos.
+- **HU-003-1** Como organizador, quiero subir la cartola de mi cuenta o el estado de cuenta de la tarjeta en cualquier formato (Excel, CSV o PDF, de cualquier banco) y que la IA la transforme a los movimientos de la app, sin lectores hechos a mano por banco.
 - **HU-003-2** Como organizador, quiero revisar y confirmar en lote lo que la IA clasificó, agrupado por comercio.
 - **HU-003-3** Como organizador, quiero que si subo dos veces el mismo documento o documentos que se traslapan, no se dupliquen movimientos.
 - **HU-003-4** Como administradores, queremos que lo que ya registramos a mano se calce con la cartola en vez de duplicarse.
@@ -76,6 +76,13 @@ Característica: Importación de cartolas (R41, R42, R43, R35)
     Y la importación queda con purgada_en y sin storage_uri
     Y los movimientos importados se conservan
 
+  Escenario: Ingesta universal con IA (D27)
+    Dado una cartola de Itaú en Excel con columnas propias del banco
+    Cuando el ORG la sube
+    Entonces la función ia-extraer-cartola convierte el archivo a texto, lo minimiza y pide a Claude que lo transforme al formato LineaCartola
+    Y la respuesta se valida con zod; las filas inválidas se informan y no se importan
+    Y si el documento trae totales, la suma de cargos y abonos debe cuadrar; si no cuadra, la importación queda en revisión con advertencia
+
   Escenario: PDF escaneado sin texto
     Dado un PDF que es solo imagen
     Cuando se intenta extraer
@@ -97,14 +104,18 @@ Característica: Importación de cartolas (R41, R42, R43, R35)
 
 ## Lectores
 
-Paquete `packages/lectores` con una interfaz común `leer(archivo) → LineaCartola[]` y pruebas con archivos de ejemplo anonimizados en `packages/lectores/fixtures/`:
+**Decisión 24-10-2026 (D27): ingesta universal con IA.** No se construyen lectores por banco. Cualquier cartola pasa por un solo flujo:
 
-| Prioridad | Lector | Formato |
-| --- | --- | --- |
-| 1 | Bancos del hogar [POR ACLARAR] | CSV o XLSX descargado del banco |
-| 2 | Estado de cuenta de tarjeta del hogar [POR ACLARAR] | PDF con texto |
-| 3 | Genérico CSV/XLSX con mapeo de columnas elegido por el usuario | CSV o XLSX |
-| 4 | PDF con texto vía IA (`ia-extraer-cartola`) | PDF |
+1. **Convertir a texto** (`packages/lectores/convertir.ts`): XLSX y CSV → tabla en texto (CSV normalizado, todas las hojas con datos); PDF con texto → texto extraído.
+2. **Minimizar** (R43, `packages/dominio/src/minimizar.ts`) antes de cualquier envío.
+3. **Transformar con Claude** (`ia-extraer-cartola`): el mensaje a la API incluye la instrucción de transformar el documento al formato `LineaCartola[]` (ver prompt abajo), con salida estructurada.
+4. **Validar** con zod, cuadre de totales y huella de línea antes de guardar.
+
+Bancos del hogar piloto: Santander e Itaú, descarga en Excel. Se prueban con cartolas reales del hogar en la marcha blanca; no se guardan archivos reales en el repositorio.
+
+Prompt base de `ia-extraer-cartola` (en `packages/contratos/ia/prompts/extraer-cartola.md`):
+
+> Recibes el contenido de una cartola bancaria o estado de cuenta de tarjeta chileno, en cualquier formato y de cualquier banco. Transfórmalo en una lista de movimientos con el esquema LineaCartola: fecha de operación (AAAA-MM-DD), monto en pesos enteros con signo (cargo negativo, abono positivo), glosa tal como aparece, moneda original y monto original si la línea no es en pesos, y número de cuota si aparece. Ignora encabezados, saldos, subtotales y publicidad. Si el documento informa totales de cargos y abonos, devuélvelos aparte. No inventes líneas; si una fila es ilegible, inclúyela en `filas_no_leidas`.
 
 ## Interfaz
 
@@ -114,7 +125,7 @@ Paquete `packages/lectores` con una interfaz común `leer(archivo) → LineaCart
 ## IA
 
 - `ia-clasificar` (modelo liviano): entrada minimizada `{fecha, monto, sentido, glosa, comercio}` + categorías del hogar + reglas de comercio; salida `{clase, categoria_id, intencion, confianza, razon_corta}` validada con zod.
-- `ia-extraer-cartola` (modelo liviano): texto del PDF minimizado → `LineaCartola[]`. Se valida que la suma de cargos y abonos cuadre con los totales del documento cuando existan; si no cuadra, la importación queda en revisión con advertencia.
+- `ia-extraer-cartola` (modelo liviano): texto minimizado de cualquier formato (Excel, CSV o PDF) → `LineaCartola[]`, con el prompt de la sección Lectores. Se valida que la suma de cargos y abonos cuadre con los totales del documento cuando existan; si no cuadra, la importación queda en revisión con advertencia.
 
 ## Eventos
 
@@ -126,5 +137,5 @@ Conexión directa a bancos (Finanzas Abiertas, desde julio de 2027), OCR de imá
 
 ## Preguntas abiertas
 
-- [POR ACLARAR] Bancos de las cuentas y emisores de las tarjetas, y en qué formato descarga cada uno su cartola.
-- [POR ACLARAR] Una cartola real de muestra por banco para construir el lector (se anonimiza antes de entrar al repositorio).
+- Resuelta 24-10-2026: Santander e Itaú, en Excel.
+- Resuelta 24-10-2026: no se necesitan cartolas de muestra para construir lectores; la IA transforma cualquier formato (D27). Para las pruebas automatizadas se usan archivos sintéticos.

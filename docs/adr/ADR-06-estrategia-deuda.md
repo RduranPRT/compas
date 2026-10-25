@@ -1,6 +1,6 @@
 # ADR-06 · Estrategia de deuda por defecto
 
-Estado: Propuesta · 12-10-2026 · Brechas: G43
+Estado: Postergada a V2 · 24-10-2026 (propuesta 12-10-2026) · Brechas: G43
 
 ## Contexto
 

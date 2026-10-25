@@ -114,4 +114,4 @@ Recomendaciones de inversión, comparación con otros hogares.
 
 ## Preguntas abiertas
 
-- [POR ACLARAR] ¿Hay ahorros o inversiones fuera de las cuentas registradas que deban contar para K2 (fondo de emergencia)?
+- Resuelta 24-10-2026: ahorros e inversiones fuera de las cuentas registradas no se consideran en el MVP; K2 se calcula solo con las cuentas registradas.

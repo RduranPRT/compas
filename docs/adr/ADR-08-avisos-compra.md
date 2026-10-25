@@ -1,6 +1,6 @@
 # ADR-08 · Lectura de avisos de compra por correo
 
-Estado: Propuesta · 12-10-2026 · Brechas: G45
+Estado: Postergada a V2 · 24-10-2026 (propuesta 12-10-2026) · Brechas: G45
 
 ## Contexto
 

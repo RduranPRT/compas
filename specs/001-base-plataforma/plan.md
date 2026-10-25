@@ -40,7 +40,8 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 
 `db/migrations/0004_alta_hogar.sql`:
 - Tabla `gob.invitacion` con RLS (administradores del hogar).
-- RPC `app.crear_hogar`, `app.invitar_integrante`, `app.aceptar_invitacion`, `app.crear_periodo`, `app.activar_acuerdo`.
+- Agregar `modalidad_sin_culpa` (`igual` | `proporcional_ingreso` | `manual_por_adulto`) al CHECK de `gob.regla_hogar` (ADR-10) y definir cómo se guarda el monto por adulto en la modalidad manual.
+- RPC `app.crear_hogar`, `app.invitar_integrante` (adultos), `app.registrar_menor` (hijos sin cuenta, D26), `app.aceptar_invitacion`, `app.crear_periodo`, `app.activar_acuerdo`.
 - Cada RPC: `SECURITY DEFINER`, `SET search_path`, valida `app.jwt_sub()` y el rol; emite evento en `sys.evento_dominio`.
 
 `db/tests/0004_alta_hogar.sql`: escenarios de la spec simulando JWT como en `0003_test_supabase_auth.sql`.
@@ -56,9 +57,8 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 | --- | --- | --- |
 | Crear el hogar | SQL | db/tests/0004_alta_hogar.sql |
 | Invitar a la co-administradora (R39) | SQL | db/tests/0004_alta_hogar.sql |
-| Menor con consentimiento parental (R25) | SQL | db/tests/0004_alta_hogar.sql |
+| Registrar a los hijos sin cuenta propia (R25, D26) | SQL | db/tests/0004_alta_hogar.sql |
 | Aislamiento entre hogares | SQL (ya cubierto en 0003) + integración PostgREST | db/tests/0003…, apps/movil/test/aislamiento.test.ts |
-| Menor ve solo lo suyo | SQL | db/tests/0001…, 0003… |
 | Firmar el Acuerdo v1 | SQL + unitaria de parámetros | db/tests/0004…, packages/dominio/src/parametros.test.ts |
 | Consentimientos | Componente | apps/movil/test/consentimientos.test.tsx |
 

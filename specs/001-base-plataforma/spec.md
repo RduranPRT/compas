@@ -10,7 +10,7 @@ Que la familia pueda instalar la app, iniciar sesión, crear el hogar con sus in
 ## Historias de usuario
 
 - **HU-001-1** Como organizador, quiero crear el hogar e invitar a mi pareja como co-administradora para que ambos administremos las finanzas.
-- **HU-001-2** Como organizador, quiero crear la cuenta de cada hijo y dar el consentimiento parental para que use su mesada en la app.
+- **HU-001-2** Como organizador, quiero indicar cuántos hijos tenemos y registrarlos (nombre o apodo y mesada) con el consentimiento parental, sin que ellos necesiten cuenta propia en el MVP.
 - **HU-001-3** Como integrante, quiero iniciar sesión con mi correo sin recordar contraseñas.
 - **HU-001-4** Como administradores, queremos firmar el Acuerdo v1 con los parámetros por defecto para empezar el piloto el 1 de octubre.
 - **HU-001-5** Como integrante, quiero aceptar el uso de la app y, si quiero, el análisis con IA, sabiendo qué datos salen de Chile.
@@ -34,12 +34,14 @@ Característica: Hogar, integrantes y acceso (S5, R25, R39)
     Entonces al iniciar sesión con ese correo el usuario queda como CAD del mismo hogar
     Y el CAD queda registrado como suplente del ORG (R39)
 
-  Escenario: Crear la cuenta de un menor con consentimiento parental (R25)
+  Escenario: Registrar a los hijos sin cuenta propia (R25, D26)
     Dado un hogar con ORG
-    Cuando el ORG crea al integrante "Hijo 1" con rol MEN y otorga el consentimiento datos_menor
-    Entonces el menor puede iniciar sesión con el correo indicado
+    Cuando en el levantamiento de información el ORG indica que el hogar tiene 2 hijos
+    Y registra a cada uno con nombre o apodo, rol MEN y otorga el consentimiento datos_menor
+    Entonces existen 2 integrantes MEN sin usuario_auth_id
     Y el consentimiento queda con titular el menor y otorgado por el ORG
-    Y sin ese consentimiento no se puede crear la cuenta del menor
+    Y sin ese consentimiento no se puede registrar al menor
+    Y la cantidad de hijos se puede cambiar después agregando o desactivando integrantes MEN
 
   Escenario: Aislamiento entre hogares
     Dado dos hogares con usuarios distintos
@@ -47,11 +49,6 @@ Característica: Hogar, integrantes y acceso (S5, R25, R39)
     Entonces no obtiene ninguna fila del hogar B
     Y no puede insertar filas con el hogar B
 
-  Escenario: Menor ve solo lo suyo (R25, D17)
-    Dado un menor autenticado
-    Cuando consulta sobres, cuentas o presupuestos
-    Entonces solo ve su sobre de mesada y su meta
-    Y no ve cuentas ni presupuestos del hogar
 
   Escenario: Firmar el Acuerdo v1
     Dado un hogar con ORG y CAD
@@ -91,6 +88,7 @@ Parámetros por defecto del Acuerdo v1 (`gob.regla_hogar`):
 | pct_reajuste_a_futuro | 50 | R22 |
 | pct_variable_a_futuro | 50 | R45 |
 | pct_sin_culpa | 5 | E1 |
+| modalidad_sin_culpa | "igual" | D25, ADR-10 |
 | estrategia_deuda | "avalancha" | R21, ADR-06 |
 | dias_abandono | 14 | D14 |
 | tratamiento_cuotas_default | "por_cuota" | D08 |
@@ -101,7 +99,8 @@ Parámetros por defecto del Acuerdo v1 (`gob.regla_hogar`):
 - Migraciones 0001, 0002 y 0003 aplicadas en Supabase.
 - RPC nuevas (migración 0004, `SECURITY DEFINER`, validan el JWT):
   - `app.crear_hogar(p_nombre_hogar text, p_nombre text) returns uuid`
-  - `app.invitar_integrante(p_correo text, p_nombre text, p_rol gob.rol_integrante, p_es_menor boolean) returns uuid`
+  - `app.invitar_integrante(p_correo text, p_nombre text, p_rol gob.rol_integrante) returns uuid` (solo adultos en el MVP)
+  - `app.registrar_menor(p_nombre text) returns uuid` (integrante MEN sin `usuario_auth_id`; exige consentimiento `datos_menor` en la misma transacción)
   - `app.aceptar_invitacion() returns uuid` (vincula `usuario_auth_id` del JWT con la invitación por correo)
   - `app.crear_periodo(p_mes date) returns uuid` (crea período y sobre Por asignar; idempotente)
 - Tabla nueva `gob.invitacion` (hogar, correo, rol, es_menor, estado, vence_en) con RLS para administradores.
@@ -110,7 +109,8 @@ Parámetros por defecto del Acuerdo v1 (`gob.regla_hogar`):
 ## Interfaz
 
 - Inicio de sesión con correo y código de 6 dígitos.
-- Asistente de alta en 4 pasos: hogar → integrantes → consentimientos → Acuerdo v1 (lista legible de parámetros con su explicación y regla).
+- Asistente de alta en 4 pasos: hogar → integrantes (adultos; luego "¿Cuántos hijos tienen?" y nombre o apodo de cada uno, sin correo) → consentimientos (incluye datos_menor por cada hijo) → Acuerdo v1 (lista legible de parámetros con su explicación y regla).
+- En el MVP toda la información la ingresan los padres (D26).
 - Portada vacía con el texto "Siguiente paso: cargar tus cuentas" (spec 002).
 - Referencia visual: wireframes v2, pantalla P1.
 
@@ -124,9 +124,9 @@ Emite HogarCreado y AcuerdoVersionado en `sys.evento_dominio`.
 
 ## Fuera de alcance
 
-Registro público de otros hogares, recuperación de cuenta por soporte, asesor externo, cambio de etapa (spec 004).
+Registro público de otros hogares, recuperación de cuenta por soporte, asesor externo, cambio de etapa (spec 004), cuentas e inicio de sesión de los hijos (V2; la vista "menor ve solo lo suyo" ya está protegida por RLS en 0001 y 0003).
 
 ## Preguntas abiertas
 
-- [POR ACLARAR] ¿Los hijos tienen correo propio para iniciar sesión o se usa un correo de los padres con alias (por ejemplo `rodrigo+hijo1@`)?
-- [POR ACLARAR] Nombres y número de hijos con mesada para crear sus cuentas.
+- Resuelta 24-10-2026: los hijos no inician sesión en el MVP; toda la información la ingresan los padres (D26).
+- Resuelta 24-10-2026: la cantidad de hijos es parametrizable y se ingresa en el levantamiento de información del alta, con nombre o apodo de cada uno.

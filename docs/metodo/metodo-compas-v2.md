@@ -161,6 +161,9 @@ Ritmo por sobre variable (R09, umbral 1,1), pronóstico de fin de mes, balance p
 | D22 | Ingreso variable | **Nueva 12-10:** el plan se proyecta con el ingreso base; el variable entra como extra (R45). |
 | D23 | Fondo común | **Nueva 12-10:** pozo común total. Todas las cuentas registradas son del fondo común; cada adulto recibe su sin culpa. |
 | D24 | Tarjeta de crédito | **Nueva 12-10:** medio de pago principal. Cada gasto con tarjeta se reserva en su sobre de pago de tarjeta (R44). |
+| D25 | Modalidad del sin culpa | **Nueva 24-10:** se elige al definir el Acuerdo: igual para todos, proporcional al ingreso o monto manual por adulto (parámetro `modalidad_sin_culpa`, ADR-10). |
+| D26 | Hijos en el MVP | **Nueva 24-10:** no inician sesión; los padres ingresan toda la información. La cantidad de hijos es parametrizable y se define en el levantamiento de información. |
+| D27 | Ingesta de cartolas | **Nueva 24-10:** sin lectores por banco; la IA transforma cualquier formato a LineaCartola, tras minimizar (R43) y con validación de totales. |
 
 ## 5. Etapas y flujo del día de pago
 

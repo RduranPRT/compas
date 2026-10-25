@@ -93,4 +93,4 @@ Fondos y metas con aportes (spec 006), deudas con plan de pago (EP11), cuentas e
 
 ## Preguntas abiertas
 
-- [POR ACLARAR] Bancos y tarjetas exactos del hogar (también para spec 003).
+- Resuelta 24-10-2026: bancos Santander e Itaú (cuentas y tarjetas de crédito); cartolas descargables en Excel.

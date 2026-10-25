@@ -1,6 +1,6 @@
 # ADR-01 · Canal de chat
 
-Estado: Propuesta · 12-10-2026 · Brechas: G37
+Estado: Aceptada · 24-10-2026 (propuesta 12-10-2026) · Brechas: G37
 
 ## Contexto
 
@@ -22,6 +22,7 @@ El chat vive **dentro de la app Compás** como pantalla de captura y consulta. E
 
 - La conversación queda bajo la misma autenticación y RLS que el resto de la app.
 - El contrato de la IA para chat (spec 005) define intents: registrar gasto, registrar ingreso, consultar saldo de sobre y preguntar "¿cómo vamos?".
+- El motor de IA es Claude por API (ADR-04). Rodrigo entrega la clave de la API más adelante; se guarda como secreto de Supabase, nunca en la app ni en el repositorio.
 - Revisar en V2 si un canal externo sube la cobertura de captura (KP1).
 
 ## Cómo verificar

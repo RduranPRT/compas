@@ -1,6 +1,6 @@
 # ADR-02 · Representación de reglas
 
-Estado: Propuesta · 12-10-2026 · Brechas: G38
+Estado: Aceptada · 24-10-2026 (propuesta 12-10-2026) · Brechas: G38
 
 ## Contexto
 

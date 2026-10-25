@@ -28,6 +28,7 @@ No implementes nada que no esté en una spec aprobada. Si la spec es ambigua, pr
 
 ## Stack (ADR-03, ADR-04, ADR-09)
 
+- MVP primero en web (ADR-03): la app Expo se publica como web; iOS y Android después desde el mismo código.
 - Monorepo pnpm: `apps/movil` (Expo + Expo Router + TypeScript), `packages/dominio` (reglas puras), `packages/contratos` (tipos y esquemas zod), `supabase/` (config, funciones, migraciones).
 - Base de datos: PostgreSQL (Supabase). Fuente de verdad del esquema: `db/migrations/` en orden numérico; `supabase/migrations/` se genera copiándolas.
 - Servidor: Supabase Edge Functions (Deno/TypeScript). IA: Claude API solo desde Edge Functions.
