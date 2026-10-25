@@ -4,7 +4,7 @@ Reglas: una tarea = un cambio que se puede probar y commitear. Las pruebas van a
 
 | ID | Tarea | Archivos | Prueba que la cierra | Estado |
 | --- | --- | --- | --- | --- |
-| T001 | Crear el monorepo pnpm con `apps/movil`, `packages/dominio`, `packages/contratos`; TypeScript estricto, Vitest y ESLint | package.json, pnpm-workspace.yaml, tsconfig.base.json | `pnpm -r test` corre (0 pruebas) | pendiente |
+| T001 | Crear el monorepo pnpm con `apps/movil`, `packages/dominio`, `packages/contratos`; TypeScript estricto, Vitest y ESLint | package.json, pnpm-workspace.yaml, tsconfig.base.json | `pnpm -r test` corre (0 pruebas) | hecha |
 | T002 | Inicializar Supabase local (`supabase init`) y script `scripts/sync-migraciones.sh` que copia `db/migrations/*.sql` a `supabase/migrations/` con prefijo de fecha | supabase/config.toml, scripts/sync-migraciones.sh | `supabase db reset` aplica 0001–0003 sin errores | pendiente |
 | T003 | Aplicar el seed de catálogos en `supabase/seed.sql` desde `db/seed/0001_catalogos.sql` | supabase/seed.sql | `select count(*) from ref.regla_metodo` = 45 | pendiente |
 | T004 | Ajustar `db/run_tests.sh` para aceptar `DATABASE_URL` y correrlo contra la base de `supabase start` | db/run_tests.sh | 3 pruebas OK contra Supabase local | pendiente |
