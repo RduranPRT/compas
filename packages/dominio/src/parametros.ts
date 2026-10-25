@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { formatoFecha, formatoPesos } from "./formato";
 
 // Parámetros del Acuerdo del Hogar (gob.regla_hogar). Valores por defecto: tabla de la spec 001.
 
@@ -123,4 +124,149 @@ export function parametrosAFilas(p: ParametrosAcuerdo): FilaReglaHogar[] {
       const regla = REGLA_DE_PARAMETRO[codigo];
       return { codigo, valor: p[codigo], regla_codigo: /^R\d{2}$/.test(regla) ? regla : null };
     });
+}
+
+export interface DescripcionParametro {
+  nombre: string;
+  explicacion: string;
+  valor: string;
+  regla: string;
+}
+
+const decimal = (n: number) => n.toString().replace(".", ",");
+const porcentaje = (n: number) => `${n} %`;
+
+const TEXTOS: Record<
+  CodigoParametro,
+  { nombre: string; explicacion: string; formato: (v: never) => string }
+> = {
+  inicio_piloto: {
+    nombre: "Inicio del piloto",
+    explicacion: "Lo anterior a esta fecha solo sirve para conocer al hogar; no toca sobres.",
+    formato: formatoFecha,
+  },
+  mes_primer_plan: {
+    nombre: "Primer presupuesto",
+    explicacion: "Mes del primer presupuesto real; antes de eso los meses son línea base.",
+    formato: formatoFecha,
+  },
+  dia_plan: {
+    nombre: "Día del plan",
+    explicacion: "Día del mes en que se prepara el presupuesto del mes siguiente.",
+    formato: (v: number) => `Día ${v}`,
+  },
+  dia_ingreso_mes_siguiente: {
+    nombre: "Ingreso para el mes siguiente",
+    explicacion: "Lo que llega desde este día puede guardarse para el mes que viene.",
+    formato: (v: number) => `Desde el día ${v}`,
+  },
+  umbral_ritmo: {
+    nombre: "Aviso de ritmo",
+    explicacion: "Avisa cuando un sobre variable se gasta más rápido que el mes.",
+    formato: decimal,
+  },
+  umbral_ajuste_ingreso_pct: {
+    nombre: "Ajuste por ingreso",
+    explicacion: "Si el ingreso real se aleja más que esto de lo proyectado, se propone ajustar el plan.",
+    formato: porcentaje,
+  },
+  autoaprobacion_n1_pct: {
+    nombre: "Cambios pequeños sin firma",
+    explicacion: "Movimientos entre sobres bajo este porcentaje se aprueban solos y quedan registrados.",
+    formato: porcentaje,
+  },
+  plazo_suplencia_h: {
+    nombre: "Plazo para responder",
+    explicacion: "Si quien aprueba no responde en este plazo, decide el suplente.",
+    formato: (v: number) => `${v} h`,
+  },
+  max_alertas_dia: {
+    nombre: "Alertas al día",
+    explicacion: "Máximo de alertas por persona; el resto va al resumen diario.",
+    formato: (v: number) => `${v}`,
+  },
+  hora_resumen_diario: {
+    nombre: "Resumen diario",
+    explicacion: "Hora del resumen con lo que no se avisó durante el día.",
+    formato: (v: string) => v,
+  },
+  confianza_ia_min: {
+    nombre: "Confianza mínima de la IA",
+    explicacion: "Bajo este nivel, lo que clasifica la IA queda por confirmar.",
+    formato: decimal,
+  },
+  umbral_conciliacion_clp: {
+    nombre: "Diferencia aceptada al conciliar",
+    explicacion: "Una diferencia mayor con el banco al cierre del mes pide un ajuste explicado.",
+    formato: formatoPesos,
+  },
+  holgura_fijos_pct: {
+    nombre: "Holgura de gastos fijos nuevos",
+    explicacion: "Margen extra el primer mes para fijos nuevos o en UF.",
+    formato: porcentaje,
+  },
+  pct_reajuste_a_futuro: {
+    nombre: "Reajustes a Futuro",
+    explicacion: "Parte de cada aumento de sueldo que se sugiere ahorrar.",
+    formato: porcentaje,
+  },
+  pct_variable_a_futuro: {
+    nombre: "Ingreso variable a Futuro",
+    explicacion: "Parte del ingreso extra (bonos, variables) que se sugiere ahorrar.",
+    formato: porcentaje,
+  },
+  pct_sin_culpa: {
+    nombre: "Dinero sin culpa",
+    explicacion: "Parte del ingreso que cada adulto usa libremente, sin dar explicaciones.",
+    formato: porcentaje,
+  },
+  modalidad_sin_culpa: {
+    nombre: "Reparto del dinero sin culpa",
+    explicacion: "Cómo se reparte entre los adultos.",
+    formato: (v: ModalidadSinCulpa) =>
+      ({
+        igual: "Igual para cada adulto",
+        proporcional_ingreso: "Proporcional al ingreso",
+        manual_por_adulto: "Monto fijo por adulto",
+      })[v],
+  },
+  monto_sin_culpa_clp: {
+    nombre: "Monto sin culpa",
+    explicacion: "Monto fijo en vez del porcentaje.",
+    formato: (v: number | Record<string, number>) =>
+      typeof v === "number" ? formatoPesos(v) : Object.values(v).map(formatoPesos).join(" / "),
+  },
+  estrategia_deuda: {
+    nombre: "Orden para pagar deudas",
+    explicacion: "Avalancha paga primero la deuda más cara; se muestra también el costo de la otra opción.",
+    formato: (v: string) => (v === "avalancha" ? "Avalancha" : "Bola de nieve"),
+  },
+  dias_abandono: {
+    nombre: "Días sin actividad",
+    explicacion: "Tras estos días sin registrar nada, Compás propone retomar con calma.",
+    formato: (v: number) => `${v} días`,
+  },
+  tratamiento_cuotas_default: {
+    nombre: "Compras en cuotas",
+    explicacion: "Cómo se registran por defecto; se puede cambiar en cada compra.",
+    formato: (v: string) => (v === "por_cuota" ? "Cada cuota en su mes" : "Total al comprar"),
+  },
+  dias_retencion_cartola: {
+    nombre: "Borrado de cartolas",
+    explicacion: "Los archivos de cartola se borran después de este plazo.",
+    formato: (v: number) => `${v} días`,
+  },
+};
+
+export function describirParametro<C extends CodigoParametro>(
+  codigo: C,
+  valor: ParametrosAcuerdo[C],
+): DescripcionParametro {
+  const t = TEXTOS[codigo];
+  return {
+    nombre: t.nombre,
+    explicacion: t.explicacion,
+    valor: (t.formato as (v: ParametrosAcuerdo[C]) => string)(valor),
+    regla: REGLA_DE_PARAMETRO[codigo],
+  };
 }

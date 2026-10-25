@@ -17,7 +17,7 @@ Reglas: una tarea = un cambio que se puede probar y commitear. Las pruebas van a
 | T011 | Pantalla de ingreso con OTP por correo | apps/movil/app/(auth)/ingresar.tsx | prueba de componente + prueba manual | hecha (prueba manual con correo real pendiente: requiere Supabase) |
 | T012 | Asistente de alta: hogar e integrantes (RPC) | apps/movil/app/(alta)/* | prueba de integración contra Supabase local | pendiente |
 | T013 | Consentimientos con texto versionado (`docs/legal/consentimiento-v1.md`) | apps/movil/app/(alta)/consentimientos.tsx, docs/legal/consentimiento-v1.md | prueba de componente | hecha (texto v1 para revisión de Rodrigo) |
-| T014 | Acuerdo v1: vista de parámetros, solicitud de firma al CAD, activación | apps/movil/app/(alta)/acuerdo.tsx | prueba de integración | pendiente |
+| T014 | Acuerdo v1: vista de parámetros, solicitud de firma al CAD, activación | apps/movil/app/(alta)/acuerdo.tsx | prueba de integración | en curso (pantalla y prueba de componente hechas; integración espera T007) |
 | T015 | Portada vacía con siguiente paso | apps/movil/app/(tabs)/index.tsx | prueba de componente | pendiente |
 | T016 | CI: workflow que corre pruebas de base y del monorepo | .github/workflows/ci.yml | CI en verde en el PR | pendiente |
 | T017 | Desplegar: proyecto Supabase en sa-east-1, `supabase db push`, publicar la versión web en hosting estático (ADR-03) | docs/despliegue.md | Rodrigo inicia sesión en su teléfono | pendiente |

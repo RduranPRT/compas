@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   PARAMETROS_POR_DEFECTO,
+  describirParametro,
   REGLA_DE_PARAMETRO,
   parametrosAcuerdo,
   parametrosAFilas,
@@ -107,5 +108,30 @@ describe("parametrosAFilas", () => {
     expect(filas).toHaveLength(Object.keys(PARAMETROS_POR_DEFECTO).length);
     expect(filas).toContainEqual({ codigo: "plazo_suplencia_h", valor: 48, regla_codigo: "R39" });
     expect(filas).toContainEqual({ codigo: "modalidad_sin_culpa", valor: "igual", regla_codigo: null });
+  });
+});
+
+describe("describirParametro (Acuerdo legible, spec 001)", () => {
+  it("todos los parámetros por defecto tienen nombre y explicación", () => {
+    for (const [codigo, valor] of Object.entries(PARAMETROS_POR_DEFECTO)) {
+      const d = describirParametro(codigo as keyof typeof PARAMETROS_POR_DEFECTO, valor);
+      expect(d.nombre.length).toBeGreaterThan(0);
+      expect(d.explicacion.length).toBeGreaterThan(0);
+      expect(d.regla).toBe(REGLA_DE_PARAMETRO[codigo as keyof typeof REGLA_DE_PARAMETRO]);
+    }
+  });
+
+  it.each([
+    ["umbral_conciliacion_clp", 1000, "$1.000"],
+    ["plazo_suplencia_h", 48, "48 h"],
+    ["pct_sin_culpa", 5, "5 %"],
+    ["umbral_ritmo", 1.1, "1,1"],
+    ["inicio_piloto", "2026-10-01", "01-10-2026"],
+    ["modalidad_sin_culpa", "igual", "Igual para cada adulto"],
+    ["estrategia_deuda", "avalancha", "Avalancha"],
+    ["tratamiento_cuotas_default", "por_cuota", "Cada cuota en su mes"],
+    ["hora_resumen_diario", "20:00", "20:00"],
+  ] as const)("%s = %s se muestra como %s", (codigo, valor, texto) => {
+    expect(describirParametro(codigo, valor).valor).toBe(texto);
   });
 });
