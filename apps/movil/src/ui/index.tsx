@@ -94,3 +94,43 @@ const estilos = StyleSheet.create({
   aviso: { fontSize: 14, color: colores.suave },
   parrafo: { fontSize: 16, color: colores.texto, lineHeight: 22 },
 });
+
+export function Casilla({
+  etiqueta,
+  marcada,
+  onCambio,
+}: {
+  etiqueta: string;
+  marcada: boolean;
+  onCambio: (marcada: boolean) => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityLabel={etiqueta}
+      accessibilityState={{ checked: marcada }}
+      onPress={() => onCambio(!marcada)}
+      style={estilosCasilla.fila}
+    >
+      <View style={[estilosCasilla.caja, marcada && estilosCasilla.marcada]}>
+        {marcada && <Text style={estilosCasilla.check}>✓</Text>}
+      </View>
+      <Text style={estilos.parrafo}>{etiqueta}</Text>
+    </Pressable>
+  );
+}
+
+const estilosCasilla = StyleSheet.create({
+  fila: { flexDirection: "row", alignItems: "center", gap: 10 },
+  caja: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: colores.primario,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  marcada: { backgroundColor: colores.primario },
+  check: { color: colores.fondo, fontSize: 14, fontWeight: "700" },
+});
