@@ -92,7 +92,7 @@ export async function calcularBorrador(db: Cliente, mes: string, etapa: Etapa, p
     const previo = fijoPorCategoria.get(f.categoriaId);
     // UF: se proyecta con un valor de referencia; R08 agrega holgura (D09). Nuevo = vigente desde este mes o el anterior.
     const monto = f.moneda === "UF" ? Math.round(f.monto * 40000) : f.monto;
-    const nuevo = diferenciaDias(f.vigenteDesde, mesDe(mes)) < 31;
+    const nuevo = diferenciaDias(f.vigenteDesde, mesDe(mes)) <= 31;
     fijoPorCategoria.set(f.categoriaId, { monto: (previo?.monto ?? 0) + monto, conHolgura: (previo?.conHolgura ?? false) || f.moneda === "UF" || nuevo });
   }
   // Cuotas preasignadas del mes (R26)
