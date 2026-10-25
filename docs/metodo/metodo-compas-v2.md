@@ -166,6 +166,13 @@ Ritmo por sobre variable (R09, umbral 1,1), pronóstico de fin de mes, balance p
 | D27 | Ingesta de cartolas | **Nueva 24-10:** sin lectores por banco; la IA transforma cualquier formato a LineaCartola, tras minimizar (R43) y con validación de totales. |
 | D28 | Ingreso en el MVP | **Nueva 25-10:** correo y contraseña. El ORG crea las cuentas de los adultos en el panel de Supabase y les cambia la contraseña si la olvidan; no hay registro público. **Pendiente para la etapa comercial:** definir el modelo de autenticación definitivo (registro abierto con verificación de correo, recuperación autoservicio, código o passkeys, SMTP propio). |
 
+| D29 | Beta delegada | **Nueva 25-10:** Rodrigo delega en Claude Code la aprobación de las specs 002–011 para construir la Beta completa del MVP, resolviendo las ambigüedades con buenas prácticas y esta fuente. Cada spec deja sus decisiones en "Decisiones de la Beta". Lo que no sirva en la marcha blanca se corrige con `/ajustar`. |
+| D30 | Cartolas en la Beta | **Nueva 25-10:** Excel (xlsx, xls) y CSV. El archivo se procesa en el teléfono o navegador y **no se sube**: solo se guardan las líneas minimizadas (R43 se cumple con retención cero). Extracción con IA (D27) cuando hay clave de Claude y consentimiento `analitica_ia`; si no, mapeo de columnas asistido (genérico, no por banco). PDF queda para una versión siguiente. |
+| D31 | IA con respaldo por reglas | **Nueva 25-10:** toda función de IA tiene un respaldo determinista (reglas de comercio, intérprete de frases, hallazgos por reglas). Sin clave de la API o sin `analitica_ia`, la app funciona completa en modo manual. |
+| D32 | Mes de cada cuota | **Nueva 25-10:** en una compra "por cuota", la cuota 1 se imputa en el mes de compra (D07) y la cuota k en el mes k − 1 siguiente. |
+| D33 | Avisos en la Beta | **Nueva 25-10:** las alertas se muestran dentro de la app (portada y "Avisos"); las notificaciones push quedan para la app nativa. El control diario corre a las 20:00 de Santiago con `pg_cron`. |
+| D34 | Transferencias de cartola | **Nueva 25-10:** las líneas de transferencia entre cuentas del hogar se guardan como movimiento tipo `transferencia`, que no toca el libro ni los KPI (R28). El pago de tarjeta crea `fin.transferencia` tipo `pago_tarjeta` (R27). |
+
 ## 5. Etapas y flujo del día de pago
 
 | Etapa | Entrada | 1º | 2º | 3º | 4º | 5º | Futuro mínimo |

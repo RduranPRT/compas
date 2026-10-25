@@ -68,6 +68,10 @@ Calendario: la spec 001 aún no se implementa (estaba planificada para el 13 al 
 
 MVP con correo y contraseña; Rodrigo crea las cuentas en el panel de Supabase y el registro público queda cerrado (D28). **Pendiente para la etapa comercial:** definir el modelo de autenticación e ingreso definitivo.
 
+## Beta delegada — 25-10-2026
+
+Rodrigo pide avanzar más rápido: Claude Code define y aprueba las specs 002–011 con buenas prácticas de programación y UX, sobre la documentación existente, e implementa el MVP completo como Beta (D29). Decisiones tomadas para la Beta: D30 (cartolas en Excel o CSV procesadas en el dispositivo, sin subir el archivo), D31 (IA con respaldo por reglas), D32 (mes de cada cuota), D33 (avisos dentro de la app) y D34 (transferencias de cartola). Rodrigo revisa en la marcha blanca y corrige con `/ajustar`.
+
 ## Pendiente del hogar
 
 - Descargar en Excel las cartolas y estados de cuenta de julio a octubre de Santander e Itaú.

@@ -1,6 +1,6 @@
 # Spec 010 · Cierres semanal y mensual, KPI y línea base
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP10, EP12
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP10, EP12
 Procesos: P7, S1 · Reglas: R19, R20, R23, R34, P5 · Decisiones: D14, D15, D16, D20, D21, ADR-08 · Depende de: 003, 005 (línea base); 006–009 (cierre con plan)
 
 ## Objetivo
@@ -69,3 +69,10 @@ SemanaCerrada, MesCerrado, EtapaPropuesta.
 ## Fuera de alcance
 
 Reunión mensual con agenda guiada en la app (se registra el acta simple).
+
+## Decisiones de la Beta (D29, D31; 25-10-2026)
+
+- Cierre semanal: `app.cerrar_semana(p_fecha_corte, p_saldos jsonb)` registra la conciliación de cada cuenta (diferencia con motivo, R34), pasa a conciliados los movimientos confirmados hasta el corte y emite SemanaCerrada.
+- Cierre mensual: los KPI se calculan en el dominio y se guardan con `app.cerrar_mes(...)` con su `version_cierre`. Si una tarjeta no tiene estado de cuenta importado en el mes, se pide justificar la omisión.
+- El saldo registrado de cada cuenta sale de la vista `fin.v_saldo_cuenta`: saldo inicial más movimientos no descartados y transferencias.
+- Sin IA, el resumen mensual se arma con plantillas por reglas (D31).

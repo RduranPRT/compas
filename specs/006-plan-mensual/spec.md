@@ -1,6 +1,6 @@
 # Spec 006 · Plan mensual base cero
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP04
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP04
 Procesos: P2, P2-A, S3 · Reglas: R01, R03, R04, R05, R06, R07, R08, R20, R26, R33, R39, R44, R45 · Decisiones: D03, D09, D21, D22, ADR-02, ADR-05 · Depende de: 004, 005
 
 ## Objetivo
@@ -89,3 +89,11 @@ Plan de deudas (EP11), metas de largo plazo con inversión.
 ## Preguntas abiertas
 
 Ninguna.
+
+## Decisiones de la Beta (D29; 25-10-2026)
+
+- `generarBorrador` corre en el dispositivo (dominio puro) y se guarda con `app.guardar_borrador_plan`. Si sobra ingreso tras cubrir el orden de la etapa, el resto va al primer destino de ahorro de la etapa (E0–E2: emergencia; E3 en adelante: Futuro). Si falta, se recorta en orden inverso: sin culpa, Vida y fondos; nunca Cuatro Paredes (R05).
+- El gasto variable sugerido es el promedio de los últimos 3 meses de la categoría (movimientos e históricos), redondeado a $1.000.
+- Aprobación: lo envía cualquier administrador; aprueba el ORG o, pasado el plazo de suplencia (R39), el CAD como suplente.
+- El arrastre (R20) lo hace `app.abrir_periodo` al aprobar el primer plan del mes, y solo desde meses con plan aprobado: la línea base no arrastra saldos.
+- El borrador se puede generar a mano desde "Plan" en cualquier momento; el aviso del día 25 aparece en la portada.

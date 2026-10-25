@@ -1,6 +1,6 @@
 # Spec 008 · Ciclo de la tarjeta de crédito
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP02, EP07
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP02, EP07
 Procesos: S1, P4, P2 · Reglas: R26, R27, R34, R44 · Decisiones: D07, D08, D24 · Depende de: 005
 
 ## Objetivo
@@ -83,3 +83,9 @@ PagoTarjetaRegistrado, PagoPorVencer.
 ## Fuera de alcance
 
 Avances en efectivo, compras en moneda extranjera (R32), intereses por pago mínimo (se registran como gasto en categoría "Comisiones e intereses").
+
+## Decisiones de la Beta (D29; 25-10-2026)
+
+- La tarjeta muestra: deuda total (saldo inicial más compras, menos devoluciones y pagos), apartado (suma de sus sobres de pago de tarjeta), compras del ciclo en curso y fecha del próximo pago.
+- `app.registrar_pago_tarjeta` crea la transferencia hecha; la base consume la reserva (R27, R44).
+- La conciliación con el estado de cuenta usa `app.conciliar_cuenta`, compartida con el cierre semanal (spec 010).

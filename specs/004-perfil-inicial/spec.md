@@ -1,6 +1,6 @@
 # Spec 004 · Perfil inicial y retroalimentación
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP16 (nueva)
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP16 (nueva)
 Procesos: P1 (pasos 4–6) · Reglas: R06, R07, R16, R23, R41, R43, R45, P8 · Decisiones: D21, D22, ADR-04 · Depende de: 003
 
 ## Objetivo
@@ -115,3 +115,10 @@ Recomendaciones de inversión, comparación con otros hogares.
 ## Preguntas abiertas
 
 - Resuelta 24-10-2026: ahorros e inversiones fuera de las cuentas registradas no se consideran en el MVP; K2 se calcula solo con las cuentas registradas.
+
+## Decisiones de la Beta (D29, D31; 25-10-2026)
+
+- Las cifras se calculan en `packages/dominio/src/perfil/` en el dispositivo y se guardan con `app.guardar_perfil(...)` como versión nueva en estado `presentado`.
+- Sin IA (sin clave o sin `analitica_ia`), los hallazgos se arman con plantillas por reglas, rotulados "Hallazgos calculados con las reglas del método"; cumplen el mismo formato (título, explicación, cifra, regla, fuente y acción) y R16.
+- Confirmar la etapa usa una solicitud tipo `etapa` con la firma de cada administrador activo (ORG y CAD); al completarse, `gob.hogar.etapa_codigo` cambia y se emite EtapaConfirmada.
+- La precarga crea ingresos esperados, pagos fijos y fondos uno por uno, desde la misma pantalla.

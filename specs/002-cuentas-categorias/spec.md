@@ -1,6 +1,6 @@
 # Spec 002 · Cuentas, tarjetas, categorías y sobres del período
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP02, EP03
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP02, EP03
 Procesos: P1 (paso 2 y 5), S1, S3 · Reglas: R05, R28, R31, R44 · Decisiones: D05, D06, D17, D23, D24 · Depende de: 001
 
 ## Objetivo
@@ -94,3 +94,10 @@ Fondos y metas con aportes (spec 006), deudas con plan de pago (EP11), cuentas e
 ## Preguntas abiertas
 
 - Resuelta 24-10-2026: bancos Santander e Itaú (cuentas y tarjetas de crédito); cartolas descargables en Excel.
+
+## Decisiones de la Beta (D29, 25-10-2026)
+
+- La plantilla suma **Vestuario** (Vida, variable, deseo) y **Comisiones e intereses** (Esenciales, variable, imprevisto), que usan las specs 005 y 008: quedan 15 categorías.
+- Los sobres del período los crea `app.asegurar_periodo(p_mes date)`, idempotente; también la llaman las RPC de captura cuando el mes aún no existe. Las categorías `sin_culpa` y `mesada` generan un sobre por adulto o por hijo; `fondo` genera uno por fondo activo; `cuota` (deudas) no genera sobres en el MVP (EP11).
+- Después del Acuerdo, la portada muestra la lista "Configura tu hogar": cuentas y tarjetas, categorías, ingresos y pagos fijos, cartolas y perfil inicial. Cada paso se puede retomar desde "Más".
+- Solo los administradores registran cuentas, categorías, ingresos esperados y pagos fijos (RLS restrictiva).

@@ -1,6 +1,6 @@
 # Spec 007 · Ingresos y distribución del día de pago
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP05
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP05
 Procesos: P3 · Reglas: R01, R02, R04, R13, R22, R33, R45 · Decisiones: D01, D02, D03, D04, D05, D22, D23 · Depende de: 006
 
 ## Objetivo
@@ -71,3 +71,9 @@ IngresoRecibido, IngresoAsignado, TransferenciaPendiente.
 ## Fuera de alcance
 
 Transferencias reales desde la app.
+
+## Decisiones de la Beta (D29; 25-10-2026)
+
+- La propuesta de reparto la calcula `proponerDistribucion` (dominio) con las líneas del plan aprobado menos lo ya asignado. Sin plan aprobado, el ingreso queda en Por asignar (D02) y la pantalla lo explica.
+- `app.confirmar_distribucion` inserta las asignaciones (R01 lo valida la base) y crea transferencias pendientes: sin culpa → `a_personal`; Futuro, emergencia y fondos → `aporte_fondo` a la primera cuenta de ahorro o inversión, si existe.
+- El recordatorio a las 72 h es una alerta del control diario (spec 009).

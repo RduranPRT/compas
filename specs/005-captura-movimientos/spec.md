@@ -1,6 +1,6 @@
 # Spec 005 · Captura y clasificación de movimientos
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP06
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP06
 Procesos: P4 · Reglas: R11, R16, R17, R18, R26, R29, R35, R36, R44 · Decisiones: D07, D08, D10, D11, D12, ADR-01, ADR-04 · Depende de: 002
 
 ## Objetivo
@@ -108,3 +108,12 @@ Foto de boleta, gasto compartido con terceros (R30), moneda extranjera (R32), di
 ## Preguntas abiertas
 
 Ninguna.
+
+## Decisiones de la Beta (D26, D29, D31, D32; 25-10-2026)
+
+- Los hijos no inician sesión (D26): el escenario "Menor registra en su mesada" lo cumple un adulto que registra en el sobre de mesada del hijo; la RLS de menores sigue vigente.
+- La captura manual (sin IA) queda confirmada al instante; la confianza solo aplica a lo que propone la IA (R36).
+- La pestaña "Chat" interpreta la frase con reglas en el dispositivo ("12 lucas", "$12.990", "feria", "con débito") y, si hay IA disponible y consentimiento, con `ia-chat` (D31). Siempre muestra la propuesta para confirmar antes de guardar.
+- Cuotas por_cuota (D32): la cuota 1 cae en el mes de compra; el monto se reparte en cuotas enteras y la última absorbe el resto.
+- Sin conexión (D11): la cola local guarda las capturas con `cliente_op_id`; `app.registrar_gasto` es idempotente por ese identificador.
+- RPC: `app.registrar_gasto`, `app.registrar_ingreso`, `app.registrar_reembolso`, `app.confirmar_movimiento`, `app.descartar_movimiento`, `app.resolver_duplicado`.

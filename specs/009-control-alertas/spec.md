@@ -1,6 +1,6 @@
 # Spec 009 · Control, alertas y reasignación N1
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP08, EP09
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP08, EP09
 Procesos: P5, P6 (N1, N2 manual) · Reglas: R09, R10, R11, R12, R16, R37, R38, R40 · Decisiones: D13, D14 · Depende de: 006, 008
 
 ## Objetivo
@@ -68,3 +68,10 @@ RitmoExcedido, SobreNegativo, DesvioDetectado, RecuperacionIniciada, Recuperacio
 ## Fuera de alcance
 
 N3 y N4 automáticos (se registran a mano), abandono detectado (V2).
+
+## Decisiones de la Beta (D29, D33; 25-10-2026)
+
+- Avisos dentro de la app (D33). `app.emitir_alerta` aplica el tope diario (R40): pasado el tope, la alerta queda `en_resumen`.
+- `app.control_diario()` corre con `pg_cron` a las 23:00 UTC (20:00 de Santiago en horario de verano) para todos los hogares. Revisa ritmo (R09), balance proyectado (R12), pagos por vencer y transferencias pendientes a 72 h, y escala al suplente las solicitudes vencidas (R39).
+- `app.reasignar` decide según el origen y el monto: desde Futuro o emergencia → solicitud con doble firma (R37); bajo el umbral → autoaprobada (R38); sobre el umbral → solicitud al otro administrador.
+- Una sola bandeja "Aprobaciones" resuelve las solicitudes de Acuerdo, plan, reasignación, retiro de Futuro y etapa con `app.resolver_solicitud`.

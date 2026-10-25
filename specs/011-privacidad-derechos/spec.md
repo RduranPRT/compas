@@ -1,6 +1,6 @@
 # Spec 011 · Privacidad, derechos y retención (Ley 21.719)
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP14
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP14
 Procesos: S5 · Reglas: R25, R43 · Decisiones: D19, ADR-04, ADR-09 · Depende de: 001, 003
 
 ## Objetivo
@@ -54,3 +54,10 @@ Ajustes → Privacidad: consentimientos, descargar mis datos, borrar hogar. Text
 ## Fuera de alcance
 
 Registro de actividades de tratamiento para terceros (necesario si Compás se ofrece a otros hogares en V2).
+
+## Decisiones de la Beta (D29, D30; 25-10-2026)
+
+- Exportación: el archivo (JSON y CSV) se arma en el dispositivo con lo que la persona puede ver y se descarga de inmediato; queda registrada como `gob.solicitud_derecho` cumplida. No se guarda en el servidor, así que no hay enlace que vencer.
+- Retención de cartolas: no hay documentos guardados (D30); el escenario se cumple con `purgada_en` al importar.
+- Borrado del hogar: solicitud con doble firma. Al aprobarse, el hogar queda con `eliminado_en` y `app.purgar_hogares()` (pg_cron diario) borra sus datos a los 30 días. Mientras tanto, la app muestra que el borrado está programado y permite anularlo.
+- Revocar `datos_menor` desactiva al hijo (`activo = false`); revocar `analitica_ia` apaga las funciones de IA para esa persona.
