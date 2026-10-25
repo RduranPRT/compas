@@ -9,7 +9,7 @@ Fecha: 2026-10-12 · Spec: `specs/001-base-plataforma/spec.md`
 | I1 Invariantes en la base | Alta de hogar e invitaciones por RPC `SECURITY DEFINER` que validan el JWT; RLS forzada en `gob.invitacion`. |
 | I2 Libro inmutable | No se toca el libro. |
 | I3 Dinero en enteros | No hay montos. |
-| I4 Migraciones hacia adelante | Nueva `0004_alta_hogar.sql` con prueba `db/tests/0004_alta_hogar.sql`. |
+| I4 Migraciones hacia adelante | Nuevas `0004_seguridad_supabase.sql` (T005) y `0005_alta_hogar.sql` con prueba `db/tests/0005_test_alta_hogar.sql`. |
 | I5 Trazabilidad | Pruebas nombradas por escenario y regla (R25, R39). |
 | I7 Privacidad | Consentimientos con texto versionado; menor solo con `datos_menor`. |
 | P8 | La IA no participa. |
@@ -38,7 +38,7 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 
 ## Cambios de base de datos
 
-`db/migrations/0004_alta_hogar.sql`:
+`db/migrations/0005_alta_hogar.sql`:
 - Tabla `gob.invitacion` con RLS (administradores del hogar).
 - Agregar `modalidad_sin_culpa` (`igual` | `proporcional_ingreso` | `manual_por_adulto`) al CHECK de `gob.regla_hogar` (ADR-10). Con `manual_por_adulto`, `monto_sin_culpa_clp` guarda un objeto `{integrante_id: monto}` en pesos enteros; en las otras modalidades es opcional y, si existe, es un monto único.
 - RPC `app.crear_hogar`, `app.invitar_integrante` (adultos), `app.registrar_menor` (hijos sin cuenta, D26), `app.aceptar_invitacion`, `app.crear_periodo`, `app.proponer_acuerdo(p_parametros jsonb, p_urgente boolean)`, `app.activar_acuerdo`.
@@ -46,7 +46,7 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 - `app.invitar_integrante` crea el `gob.integrante` (sin `usuario_auth_id`) junto con la invitación, para que el CAD pueda recibir solicitudes de firma antes de ingresar; `aceptar_invitacion` completa `usuario_auth_id`. `gob.invitacion` guarda `integrante_id` y no necesita `es_menor` (los hijos no se invitan, D26).
 - Cada RPC: `SECURITY DEFINER`, `SET search_path`, valida `app.jwt_sub()` y el rol; emite evento en `sys.evento_dominio`.
 
-`db/tests/0004_alta_hogar.sql`: escenarios de la spec simulando JWT como en `0003_test_supabase_auth.sql`.
+`db/tests/0005_test_alta_hogar.sql`: escenarios de la spec simulando JWT como en `0003_test_supabase_auth.sql`.
 
 ## Contratos
 
@@ -57,11 +57,11 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 
 | Criterio de aceptación | Tipo de prueba | Archivo |
 | --- | --- | --- |
-| Crear el hogar | SQL | db/tests/0004_alta_hogar.sql |
-| Invitar a la co-administradora (R39) | SQL | db/tests/0004_alta_hogar.sql |
-| Registrar a los hijos sin cuenta propia (R25, D26) | SQL | db/tests/0004_alta_hogar.sql |
+| Crear el hogar | SQL | db/tests/0005_test_alta_hogar.sql |
+| Invitar a la co-administradora (R39) | SQL | db/tests/0005_test_alta_hogar.sql |
+| Registrar a los hijos sin cuenta propia (R25, D26) | SQL | db/tests/0005_test_alta_hogar.sql |
 | Aislamiento entre hogares | SQL (ya cubierto en 0003) + integración PostgREST | db/tests/0003…, apps/movil/test/aislamiento.test.ts |
-| Firmar el Acuerdo v1 | SQL + unitaria de parámetros | db/tests/0004…, packages/dominio/src/parametros.test.ts |
+| Firmar el Acuerdo v1 | SQL + unitaria de parámetros | db/tests/0005…, packages/dominio/src/parametros.test.ts |
 | Consentimientos | Componente | apps/movil/test/consentimientos.test.tsx |
 
 ## Riesgos

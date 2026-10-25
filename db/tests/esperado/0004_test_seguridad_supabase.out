@@ -1,0 +1,45 @@
+== R1 SET ROLE a los roles de Compás funciona con el dueño de la base (Supabase: postgres no es superusuario)
+ current_user 
+--------------
+ compas_ia
+(1 row)
+
+== R2 ORG de A ve sus filas hijas (esperado 1 en cada tabla)
+ reglas | firmas | lineas | ingresos | cuotas 
+--------+--------+--------+----------+--------
+      1 |      1 |      1 |        1 |      1
+(1 row)
+
+== R3 aislamiento: ORG de B no ve filas hijas de A (esperado 0 en cada tabla)
+ reglas | firmas | lineas | ingresos | cuotas 
+--------+--------+--------+----------+--------
+      0 |      0 |      0 |        0 |      0
+(1 row)
+
+== R4 ORG de B no cambia parámetros del Acuerdo de A (esperado UPDATE 0) ni agrega uno (debe FALLAR)
+UPDATE 0
+ERROR:  new row violates row-level security policy for table "regla_hogar"
+== R5 ORG de B no firma solicitudes de A (debe FALLAR)
+ERROR:  new row violates row-level security policy for table "firma"
+== R6 ORG de B no registra ingresos sobre movimientos de A (debe FALLAR)
+ERROR:  new row violates row-level security policy for table "ingreso"
+== R7 ING de A no puede cambiarse el rol a ORG (esperado UPDATE 0)
+UPDATE 0
+ rol 
+-----
+ ING
+(1 row)
+
+== R8 ING de A no agrega integrantes (debe FALLAR)
+ERROR:  new row violates row-level security policy "r_admin_integrante_ins" for table "integrante"
+== R9 ING de A da su propio consentimiento (esperado 1) pero no el de otro (debe FALLAR)
+ consentimientos 
+-----------------
+               1
+(1 row)
+
+ERROR:  new row violates row-level security policy "r_consentimiento_ins" for table "consentimiento"
+== R10 ningún rol de la app quedó sin RLS en tablas que puede leer (esperado 0 filas)
+ tabla_sin_rls 
+---------------
+(0 rows)

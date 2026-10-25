@@ -97,7 +97,7 @@ Parámetros por defecto del Acuerdo v1 (`gob.regla_hogar`):
 ## Datos
 
 - Migraciones 0001, 0002 y 0003 aplicadas en Supabase.
-- RPC nuevas (migración 0004, `SECURITY DEFINER`, validan el JWT):
+- RPC nuevas (migración 0005, `SECURITY DEFINER`, validan el JWT):
   - `app.crear_hogar(p_nombre_hogar text, p_nombre text) returns uuid`
   - `app.invitar_integrante(p_correo text, p_nombre text, p_rol gob.rol_integrante) returns uuid` (solo adultos en el MVP)
   - `app.registrar_menor(p_nombre text) returns uuid` (integrante MEN sin `usuario_auth_id`; exige consentimiento `datos_menor` en la misma transacción)
