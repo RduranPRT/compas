@@ -1,0 +1,9 @@
+# Railway entrega el puerto en $PORT. Rutas de la app (p. ej. /ingresar) caen en index.html.
+:{$PORT:8080} {
+	root * /srv
+	encode gzip
+	header /_expo/* Cache-Control "public, max-age=31536000, immutable"
+	header /index.html Cache-Control "no-cache"
+	try_files {path} /index.html
+	file_server
+}
