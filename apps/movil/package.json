@@ -34,7 +34,8 @@
     "ios": "expo start --ios",
     "export:web": "expo export --platform web",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:integracion": "vitest run --config vitest.integracion.config.ts"
   },
   "private": true
 }

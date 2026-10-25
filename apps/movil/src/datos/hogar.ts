@@ -1,20 +1,26 @@
-import { supabase } from "../lib/supabase";
+import type { Cliente } from "./cliente";
 
-export async function nombreHogar(): Promise<string | null> {
-  const { data } = await supabase.schema("gob").from("hogar").select("nombre").maybeSingle();
-  return (data?.nombre as string | undefined) ?? null;
+export async function nombreHogar(db: Cliente): Promise<string | null> {
+  const { data } = await db.schema("gob").from("hogar").select("nombre").maybeSingle();
+  return data?.nombre ?? null;
 }
 
-// Acuerdo activado con urgente cuya solicitud de firma sigue pendiente: nombre del aprobador.
-export async function firmaPendienteDelAcuerdo(): Promise<string | null> {
-  const { data } = await supabase
+// Solicitud de firma del Acuerdo aún pendiente: a quién y si el Acuerdo ya rige (urgente).
+export async function firmaPendienteDelAcuerdo(db: Cliente): Promise<{ nombre: string; vigente: boolean } | null> {
+  const { data } = await db
     .schema("gob")
     .from("solicitud_aprobacion")
-    .select("aprobador:integrante!aprobador_id(nombre)")
+    .select("objeto_id, aprobador:integrante!aprobador_id(nombre)")
     .eq("tipo", "acuerdo")
     .eq("estado", "pendiente")
     .maybeSingle();
-  const aprobador = data?.aprobador as { nombre: string } | { nombre: string }[] | null | undefined;
-  if (!aprobador) return null;
-  return Array.isArray(aprobador) ? (aprobador[0]?.nombre ?? null) : aprobador.nombre;
+  const nombre = data?.aprobador?.nombre;
+  if (!data || !nombre) return null;
+  const { data: acuerdo } = await db
+    .schema("gob")
+    .from("acuerdo_hogar")
+    .select("estado")
+    .eq("id", data.objeto_id)
+    .maybeSingle();
+  return { nombre, vigente: acuerdo?.estado === "vigente" };
 }

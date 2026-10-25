@@ -7,6 +7,7 @@ import {
   proponerAcuerdoV1,
 } from "../../src/datos/acuerdo";
 import { integranteActual, type IntegranteActual } from "../../src/datos/integrante";
+import { supabase } from "../../src/lib/supabase";
 import { Acuerdo } from "../../src/pantallas/Acuerdo";
 
 export default function RutaAcuerdo() {
@@ -15,9 +16,9 @@ export default function RutaAcuerdo() {
   const [pendiente, setPendiente] = useState<{ acuerdo: string; solicitud: string } | null>(null);
 
   useEffect(() => {
-    integranteActual().then(setYo);
-    coAdministrador().then(setCad);
-    acuerdoPendienteDeFirma().then(setPendiente);
+    integranteActual(supabase).then(setYo);
+    coAdministrador(supabase).then(setCad);
+    acuerdoPendienteDeFirma(supabase).then(setPendiente);
   }, []);
 
   const firmaElCad = yo?.rol === "CAD" && pendiente !== null;
@@ -25,9 +26,11 @@ export default function RutaAcuerdo() {
     <Acuerdo
       modo={firmaElCad ? "firmar" : "proponer"}
       cad={cad}
-      proponer={proponerAcuerdoV1}
+      proponer={(opciones) => proponerAcuerdoV1(supabase, opciones)}
       firmar={() =>
-        pendiente && yo ? firmarAcuerdo(pendiente, yo.id) : Promise.resolve({ error: { message: "sin solicitud" } })
+        pendiente && yo
+          ? firmarAcuerdo(supabase, pendiente, yo.id)
+          : Promise.resolve({ error: { message: "sin solicitud" } })
       }
       continuar={() => router.replace("/")}
     />
