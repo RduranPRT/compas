@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "movil-web",
+      "runtimeExecutable": "corepack",
+      "runtimeArgs": ["pnpm", "--filter", "movil", "exec", "expo", "start", "--web", "--port", "8081"],
+      "port": 8081
+    }
+  ]
+}
