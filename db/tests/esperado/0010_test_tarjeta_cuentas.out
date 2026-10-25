@@ -1,0 +1,73 @@
+== T1 deuda previa al piloto: Visa debe 420.000 y no hay nada apartado
+ nombre | deuda  | apartado 
+--------+--------+----------
+ Visa   | 420000 |        0
+(1 row)
+
+== T2 compra de $100.000 con la Visa: sale de Alimentación y queda apartada en Pago Visa (R44)
+    nombre    |  saldo  
+--------------+---------
+ Alimentación | -100000
+ Pago Visa    |  100000
+(2 rows)
+
+ deuda  | apartado 
+--------+----------
+ 520000 |   100000
+(1 row)
+
+== T3 pago de la deuda previa en octubre: Pago Visa de octubre queda en -420.000 (deuda previa al piloto)
+ pagado 
+--------
+ t
+(1 row)
+
+    mes     |  saldo  
+------------+---------
+ 2026-10-01 | -420000
+ 2026-11-01 |  100000
+(2 rows)
+
+ deuda  | apartado 
+--------+----------
+ 100000 |  -320000
+(1 row)
+
+== T4 pago de $100.000: Pago Visa de noviembre baja a 0 y ningún sobre de categoría cambia (R27)
+    nombre    |  saldo  
+--------------+---------
+ Alimentación | -100000
+ Pago Visa    |       0
+(2 rows)
+
+ pagos 
+-------
+     2
+(1 row)
+
+== T5 pagar una tarjeta con otra tarjeta (debe FALLAR)
+ERROR:  Paga la tarjeta desde una cuenta corriente, vista, de ahorro o efectivo
+== S1 saldos registrados: la corriente bajó por los pagos; la Visa no debe nada
+      nombre      |      tipo       | saldo  
+------------------+-----------------+--------
+ Cuenta corriente | vista           | 330000
+ Visa             | tarjeta_credito |      0
+(2 rows)
+
+== C1 conciliar con diferencia exige motivo (R34; debe FALLAR) y con motivo queda registrada
+ERROR:  En Cuenta corriente hay una diferencia de −$2.500; escribe el motivo para registrarla (R34)
+ registrado | diferencia 
+------------+------------
+ 330000     | -2500
+(1 row)
+
+  tipo   | fecha_corte | saldo_real | saldo_registrado | diferencia |                motivo                
+---------+-------------+------------+------------------+------------+--------------------------------------
+ semanal | 2026-11-22  |     327500 |           330000 |      -2500 | Comisión de mantención sin registrar
+(1 row)
+
+== C2 montos en mensajes
+    a    |    b    | c  |     d      
+---------+---------+----+------------
+ $12.345 | −$8.000 | $0 | $1.234.567
+(1 row)
