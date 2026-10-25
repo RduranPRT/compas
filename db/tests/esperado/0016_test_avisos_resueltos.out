@@ -1,0 +1,21 @@
+== A1 Vestuario queda negativo: aviso enviado y N1 abierto
+      tipo      | estado  
+----------------+---------
+ sobre_negativo | enviada
+(1 row)
+
+== A2 al cubrirlo, el N1 se cierra y el aviso queda leído
+  estado  
+----------
+ aplicada
+(1 row)
+
+      tipo      | estado | leida 
+----------------+--------+-------
+ sobre_negativo | leida  | t
+(1 row)
+
+ nivel | estado  
+-------+---------
+ N1    | cerrado
+(1 row)
