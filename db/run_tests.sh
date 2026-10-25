@@ -3,7 +3,15 @@
 # la salida con db/tests/esperado/<prueba>.out. Uso:
 #   PGHOST=... PGUSER=... ./db/run_tests.sh            # verificar
 #   ACTUALIZAR=1 ./db/run_tests.sh                       # regenerar salidas esperadas
+#   DATABASE_URL=postgresql://usuario:clave@host:puerto/base ./db/run_tests.sh
 set -uo pipefail
+if [[ -n "${DATABASE_URL:-}" ]]; then
+  # postgresql://usuario[:clave]@host[:puerto][/base] → variables PG* (cada prueba crea su propia base)
+  if [[ ! "$DATABASE_URL" =~ ^postgres(ql)?://([^:@/]+)(:([^@/]*))?@([^:/]+)(:([0-9]+))?(/.*)?$ ]]; then
+    echo "DATABASE_URL no reconocida"; exit 2
+  fi
+  export PGUSER="${BASH_REMATCH[2]}" PGPASSWORD="${BASH_REMATCH[4]}" PGHOST="${BASH_REMATCH[5]}" PGPORT="${BASH_REMATCH[7]:-5432}"
+fi
 export PGOPTIONS="-c client_min_messages=warning"
 cd "$(dirname "$0")"
 PSQL="psql -X -q -v ON_ERROR_STOP=1"
