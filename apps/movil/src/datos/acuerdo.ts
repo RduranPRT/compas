@@ -1,3 +1,4 @@
+import type { Json } from "@compas/contratos";
 import { PARAMETROS_POR_DEFECTO, parametrosAFilas } from "@compas/dominio";
 import { supabase } from "../lib/supabase";
 
@@ -6,7 +7,11 @@ import { supabase } from "../lib/supabase";
 export async function proponerAcuerdoV1({ urgente }: { urgente: boolean }) {
   const { error } = await supabase
     .schema("app")
-    .rpc("proponer_acuerdo", { p_reglas: parametrosAFilas(PARAMETROS_POR_DEFECTO), p_urgente: urgente });
+    .rpc("proponer_acuerdo", {
+      // Filas de valores JSON (validadas por el esquema zod); se tipan como Json para la RPC.
+      p_reglas: parametrosAFilas(PARAMETROS_POR_DEFECTO) as unknown as Json,
+      p_urgente: urgente,
+    });
   return { error };
 }
 

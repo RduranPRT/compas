@@ -5,7 +5,10 @@
   "scripts": {
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "gen:tipos": "supabase gen types typescript --local --schema app,gob,fin,plan,med,ref,ia > packages/contratos/src/db.ts",
+    "db:sync": "./scripts/sync-migraciones.sh",
+    "db:test": "./scripts/db-tests.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
