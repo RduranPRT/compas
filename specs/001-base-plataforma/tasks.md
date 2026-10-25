@@ -20,7 +20,7 @@ Reglas: una tarea = un cambio que se puede probar y commitear. Las pruebas van a
 | T014 | Acuerdo v1: vista de parámetros, solicitud de firma al CAD, activación | apps/movil/app/(alta)/acuerdo.tsx | prueba de integración | hecha |
 | T015 | Portada vacía con siguiente paso | apps/movil/app/(tabs)/index.tsx | prueba de componente | hecha |
 | T016 | CI: workflow que corre pruebas de base y del monorepo | .github/workflows/ci.yml | CI en verde en el PR | en curso (pasos verdes en local; falta verlo en GitHub tras el push) |
-| T017 | Desplegar: proyecto Supabase en sa-east-1, `supabase db push`, publicar la versión web en hosting estático (ADR-03) | docs/despliegue.md | Rodrigo inicia sesión en su teléfono | pendiente |
+| T017 | Desplegar: proyecto Supabase en sa-east-1, `supabase db push`, publicar la versión web en hosting estático (ADR-03) | docs/despliegue.md | Rodrigo inicia sesión en su teléfono | en curso (web publicada en Railway; faltan ajustes del panel de Supabase y la prueba de Rodrigo en su teléfono) |
 
 ## Definición de terminado
 

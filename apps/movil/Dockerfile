@@ -1,5 +1,5 @@
 # Versión web de Compás (ADR-03): se compila con Expo y se sirve como sitio estático con Caddy.
-# Contexto de build: raíz del monorepo (ver railway.json).
+# Contexto de build: raíz del monorepo. En Railway, la variable RAILWAY_DOCKERFILE_PATH del servicio apunta aquí.
 FROM node:22-slim AS build
 WORKDIR /repo
 RUN corepack enable
