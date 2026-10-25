@@ -11,9 +11,9 @@
 BEGIN;
 
 -- Las sumas de las vistas son numeric: misma presentación $12.345
-CREATE FUNCTION app.pesos(p_monto numeric) RETURNS text
+CREATE FUNCTION app.pesos_n(p_monto numeric) RETURNS text
 LANGUAGE sql IMMUTABLE AS $$ SELECT app.pesos(round(p_monto)::bigint) $$;
-GRANT EXECUTE ON FUNCTION app.pesos(numeric) TO compas_app, compas_ia, compas_sistema;
+GRANT EXECUTE ON FUNCTION app.pesos_n(numeric) TO compas_app, compas_ia, compas_sistema;
 
 CREATE FUNCTION app.emitir_alerta(p_hogar uuid, p_destinatario uuid, p_tipo text, p_severidad med.severidad,
                                   p_regla text, p_sobre uuid, p_mensaje text, p_dato jsonb, p_clave text) RETURNS uuid
@@ -63,7 +63,7 @@ BEGIN
   FOR v_dest IN SELECT app.admins(NEW.hogar_id) LOOP
     PERFORM app.emitir_alerta(NEW.hogar_id, v_dest, 'sobre_negativo', 'amarillo', 'R10', v_sobre.id,
       format('%s quedó en %s. Un sobre negativo se cubre moviendo dinero desde otro sobre (R10). Puedes cubrirlo ahora.',
-             v_sobre.nombre, app.pesos(v_sobre.saldo)),
+             v_sobre.nombre, app.pesos_n(v_sobre.saldo)),
       jsonb_build_object('saldo', v_sobre.saldo), 'negativo:' || v_sobre.id);
   END LOOP;
   EXCEPTION WHEN OTHERS THEN
@@ -112,7 +112,7 @@ BEGIN
     RAISE EXCEPTION 'El monto debe ser mayor que cero' USING ERRCODE = 'check_violation';
   END IF;
   IF o.saldo < p_monto THEN
-    RAISE EXCEPTION '% tiene % disponible; elige un monto menor u otro sobre', o.nombre, app.pesos(greatest(o.saldo, 0))
+    RAISE EXCEPTION '% tiene % disponible; elige un monto menor u otro sobre', o.nombre, app.pesos_n(greatest(o.saldo, 0))
       USING ERRCODE = 'check_violation';
   END IF;
 
@@ -141,7 +141,7 @@ BEGIN
       UPDATE plan.reasignacion SET solicitud_id = v_sol WHERE id = v_id;
       v_estado := 'pendiente';
       PERFORM app.emitir_alerta(v_hogar, v_otro, 'aprobacion_pendiente', 'info', 'R38', d.id,
-        format('Hay una reasignación de %s desde %s a %s esperando tu aprobación.', app.pesos(p_monto), o.nombre, d.nombre),
+        format('Hay una reasignación de %s desde %s a %s esperando tu aprobación.', app.pesos_n(p_monto), o.nombre, d.nombre),
         jsonb_build_object('solicitud_id', v_sol), 'solicitud:' || v_sol);
     END IF;
   END IF;
@@ -201,7 +201,7 @@ BEGIN
             WHERE t.hogar_id = p_hogar AND t.estado = 'pendiente' AND t.vence_en <= now() LOOP
     FOR v_dest IN SELECT app.admins(p_hogar) LOOP
       PERFORM app.emitir_alerta(p_hogar, v_dest, 'transferencia_pendiente', 'info', NULL, NULL,
-        format('Queda pendiente una transferencia de %s. Márcala como hecha cuando la hagas en tu banco.', app.pesos(r.monto_clp)),
+        format('Queda pendiente una transferencia de %s. Márcala como hecha cuando la hagas en tu banco.', app.pesos_n(r.monto_clp)),
         jsonb_build_object('transferencia_id', r.id), 'transferencia:' || r.id);
       v_n := v_n + 1;
     END LOOP;
@@ -217,7 +217,7 @@ BEGIN
       FOR v_dest IN SELECT app.admins(p_hogar) LOOP
         PERFORM app.emitir_alerta(p_hogar, v_dest, 'pago_por_vencer', 'info', 'R44', NULL,
           format('La %s vence el %s: debes %s y tienes apartado %s.%s', r.nombre, to_char(r.vence, 'DD-MM'),
-                 app.pesos(r.deuda), app.pesos(greatest(r.apartado, 0)),
+                 app.pesos_n(r.deuda), app.pesos_n(greatest(r.apartado, 0)),
                  CASE WHEN r.apartado < r.deuda THEN ' Lo apartado no alcanza; revisa de qué sobre cubrir la diferencia.' ELSE '' END),
           jsonb_build_object('cuenta_id', r.id, 'deuda', r.deuda, 'apartado', r.apartado), 'vence:' || r.id || ':' || r.vence);
         v_n := v_n + 1;
@@ -256,7 +256,7 @@ BEGIN
       FOR v_dest IN SELECT app.admins(p_hogar) LOOP
         PERFORM app.emitir_alerta(p_hogar, v_dest, 'ritmo', 'amarillo', 'R09', r.sobre_id,
           format('%s va a ritmo %s: lleva %s de %s. Con un ritmo sobre %s, el método sugiere revisar (R09). Puedes moderar el gasto o cubrir desde otro sobre.',
-                 r.nombre, replace(r.ritmo::text, '.', ','), app.pesos(r.gastado), app.pesos(r.disponible), replace(v_umbral::text, '.', ',')),
+                 r.nombre, replace(r.ritmo::text, '.', ','), app.pesos_n(r.gastado), app.pesos_n(r.disponible), replace(v_umbral::text, '.', ',')),
           jsonb_build_object('ritmo', r.ritmo), 'ritmo:' || r.sobre_id || ':' || v_hoy);
         v_n := v_n + 1;
       END LOOP;
@@ -279,7 +279,7 @@ BEGIN
     END IF;
     PERFORM app.emitir_alerta(p_hogar, v_org, 'balance_proyectado', 'rojo', 'R12', NULL,
       format('Al ritmo actual, el mes cerraría en %s. Cuando el balance proyectado es negativo se revisa el mes (R12). Opción: recortar Vida y sin culpa, o pausar aportes no críticos.',
-             app.pesos(v_bal)),
+             app.pesos_n(v_bal)),
       jsonb_build_object('balance', v_bal), 'balance:' || v_hoy);
     v_n := v_n + 1;
   END IF;

@@ -203,8 +203,11 @@ ERROR:  La devolución puede ser de hasta 285001
 
  nivel | regla_codigo | estado  
 -------+--------------+---------
+ N1    | R10          | abierto
+ N1    | R10          | abierto
+ N1    | R10          | abierto
  N1    | R11          | abierto
-(1 row)
+(4 rows)
 
 == P1 un sobre de Por asignar no recibe gastos (debe FALLAR)
 ERROR:  Un gasto no se imputa al sobre por_asignar; elige el sobre de la categoría

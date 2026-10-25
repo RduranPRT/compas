@@ -95,8 +95,8 @@ ERROR:  Ocio y salidas tiene $162.000 disponible; elige un monto menor u otro so
 
  tipo  | regla_codigo | estado  |                                                                                mensaje                                                                                
 -------+--------------+---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
- ritmo | R09          | enviada | Vestuario va a ritmo 2,58: lleva $8.000 de $8.000. Con un ritmo sobre 1,1, el método sugiere revisar (R09). Puedes moderar el gasto o cubrir desde otro sobre.
  ritmo | R09          | enviada | Alimentación va a ritmo 1,15: lleva $200.000 de $450.000. Con un ritmo sobre 1,1, el método sugiere revisar (R09). Puedes moderar el gasto o cubrir desde otro sobre.
+ ritmo | R09          | enviada | Vestuario va a ritmo 2,58: lleva $8.000 de $8.000. Con un ritmo sobre 1,1, el método sugiere revisar (R09). Puedes moderar el gasto o cubrir desde otro sobre.
 (2 rows)
 
 == C2 balance proyectado negativo abre N2 para el ORG (R12)

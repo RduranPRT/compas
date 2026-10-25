@@ -63,7 +63,7 @@ SELECT app.registrar_gasto(NULL, :cc, (SELECT id FROM sd WHERE nombre = 'Aliment
 RESET ROLE;
 DELETE FROM med.alerta;
 SELECT app.control_hogar((SELECT id FROM gob.hogar), '2026-12-12')->>'alertas' AS alertas;
-SELECT tipo, regla_codigo, estado, mensaje FROM med.alerta WHERE destinatario_id = (SELECT id FROM gob.integrante WHERE rol = 'ORG') ORDER BY tipo;
+SELECT tipo, regla_codigo, estado, mensaje FROM med.alerta WHERE destinatario_id = (SELECT id FROM gob.integrante WHERE rol = 'ORG') ORDER BY tipo, mensaje;
 
 \echo '== C2 balance proyectado negativo abre N2 para el ORG (R12)'
 SELECT app.registrar_gasto(NULL, (SELECT id FROM fin.cuenta), (SELECT id FROM plan.v_sobre WHERE nombre = 'Transporte' AND mes = '2026-12-01'), 300000, '2026-12-12') \g /dev/null
