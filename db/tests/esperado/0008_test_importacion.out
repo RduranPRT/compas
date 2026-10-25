@@ -1,0 +1,126 @@
+== I1 cartola de la cuenta corriente que cruza el inicio del piloto: históricos y movimientos por confirmar (R41, R42)
+ filas | historicos | movimientos | duplicados | transferencias |   estado    
+-------+------------+-------------+------------+----------------+-------------
+ 6     | 2          | 2           | 0          | 2              | en_revision
+(1 row)
+
+   fecha    | sentido | monto_clp |    comercio    |  clase  
+------------+---------+-----------+----------------+---------
+ 2026-09-15 | cargo   |     50000 | JUMBO          | gasto
+ 2026-09-30 | abono   |   2400000 | REMUNERACIONES | ingreso
+(2 rows)
+
+     tipo      |    estado     | origen  | fecha_contable | monto_clp | comercio | sentido 
+---------------+---------------+---------+----------------+-----------+----------+---------
+ gasto         | por_confirmar | cartola | 2026-10-03     |     23000 | JUMBO    | cargo
+ transferencia | confirmado    | cartola | 2026-10-06     |    100000 | TRASPASO | cargo
+ gasto         | por_confirmar | cartola | 2026-10-08     |     15000 | JUMBO    | cargo
+(3 rows)
+
+== I2 el archivo no se guarda: la importación nace purgada y sin documento (D30, R43)
+   estado    | sin_archivo | purgada |   desde    |   hasta    
+-------------+-------------+---------+------------+------------
+ en_revision | t           | t       | 2026-09-15 | 2026-10-08
+(1 row)
+
+== I3 pago de tarjeta: transferencia, no gasto; la deuda previa deja Pago Visa de octubre en -420.000 (R27, spec 008)
+     tipo     | estado | monto_clp |   fecha    
+--------------+--------+-----------+------------
+ pago_tarjeta | hecha  |    420000 | 2026-10-05
+(1 row)
+
+  nombre   |  saldo  
+-----------+---------
+ Pago Visa | -407010
+(1 row)
+
+== I4 el mismo archivo dos veces (debe FALLAR indicando la fecha anterior)
+ERROR:  Este archivo ya se importó el 25-10-2026
+== I5 documento traslapado: solo entran las líneas nuevas (huella de línea)
+ movimientos | duplicados | historicos 
+-------------+------------+------------
+ 1           | 1          | 0
+(1 row)
+
+== I6 estado de cuenta de la Visa: la compra manual se calza y el abono del pago no se duplica (R35, R27)
+ movimientos | duplicados 
+-------------+------------
+ 1           | 1
+(1 row)
+
+ origen | monto_clp |   estado   | calzado 
+--------+-----------+------------+---------
+ manual |     12990 | confirmado | t
+(1 row)
+
+ pagos_tarjeta 
+---------------
+             1
+(1 row)
+
+== S1 sugerencias de clasificación: nunca confirman ni imputan (R36, P8)
+ sugeridas 
+-----------
+         2
+(1 row)
+
+    estado     | sugerida  | confianza_ia | imputaciones 
+---------------+-----------+--------------+--------------
+ por_confirmar | Vestuario |         0.92 |            0
+(1 row)
+
+== R1 revisión por comercio: confirmar el grupo JUMBO lo imputa a Alimentación y guarda la regla
+ comercio |   origen   | n | monto | revisado 
+----------+------------+---+-------+----------
+ JUMBO    | historico  | 1 | 50000 | f
+ JUMBO    | movimiento | 2 | 38000 | f
+(2 rows)
+
+                 clasificar_comercio                  
+------------------------------------------------------
+ {"historicos": 1, "pendientes": 0, "confirmados": 2}
+(1 row)
+
+ comercio |   origen   | n | revisado 
+----------+------------+---+----------
+ JUMBO    | historico  | 1 | t
+ JUMBO    | movimiento | 2 | t
+(2 rows)
+
+ patron | veces_usada 
+--------+-------------
+ JUMBO  |           1
+(1 row)
+
+ gastado 
+---------
+   50990
+(1 row)
+
+== R2 confirmar con la categoría sugerida registra si la IA acertó (D10)
+ confirmar_movimiento 
+----------------------
+ 
+(1 row)
+
+   campo   | aceptada 
+-----------+----------
+ categoria | t
+(1 row)
+
+  nombre   |  saldo  
+-----------+---------
+ Pago Visa | -361020
+ Vestuario |  -45990
+(2 rows)
+
+== R3 las transferencias internas no son ingreso ni gasto (R28)
+     tipo      | sentido |   estado   
+---------------+---------+------------
+ transferencia | cargo   | confirmado
+(1 row)
+
+ asientos_transferencia 
+------------------------
+                      0
+(1 row)
