@@ -35,7 +35,7 @@
 (1 row)
 
 == I4 el mismo archivo dos veces (debe FALLAR indicando la fecha anterior)
-ERROR:  Este archivo ya se importó el 25-10-2026
+ERROR:  Este archivo ya se importó el 20-10-2026
 == I5 documento traslapado: solo entran las líneas nuevas (huella de línea)
  movimientos | duplicados | historicos 
 -------------+------------+------------

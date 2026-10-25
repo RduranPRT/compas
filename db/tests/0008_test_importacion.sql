@@ -35,6 +35,9 @@ SELECT tipo, estado, monto_clp, fecha FROM fin.transferencia;
 SELECT nombre, saldo FROM plan.v_sobre WHERE nombre = 'Pago Visa' AND mes = '2026-10-01';
 
 \echo '== I4 el mismo archivo dos veces (debe FALLAR indicando la fecha anterior)'
+RESET ROLE;
+UPDATE fin.importacion SET creado_en = '2026-10-20 12:00-03';
+SET ROLE authenticated;
 SELECT app.importar_cartola(:cc, 'copia.xlsx', 'xlsx', 'sha-cc-1', 'mapeo_columnas', :'lineas_cc'::jsonb);
 
 \echo '== I5 documento traslapado: solo entran las líneas nuevas (huella de línea)'
