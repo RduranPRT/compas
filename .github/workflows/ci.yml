@@ -48,4 +48,9 @@ jobs:
       - if: steps.existe.outputs.si == 'true'
         run: pnpm -r typecheck
       - if: steps.existe.outputs.si == 'true'
+        run: pnpm lint
+      - if: steps.existe.outputs.si == 'true'
         run: pnpm -r test
+      - if: steps.existe.outputs.si == 'true'
+        name: Compilar la versión web (ADR-03)
+        run: pnpm --filter movil export:web
