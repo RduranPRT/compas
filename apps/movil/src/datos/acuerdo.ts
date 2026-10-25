@@ -1,12 +1,12 @@
-import { PARAMETROS_POR_DEFECTO } from "@compas/dominio";
+import { PARAMETROS_POR_DEFECTO, parametrosAFilas } from "@compas/dominio";
 import { supabase } from "../lib/supabase";
 
-// RPC de la migración 0004 (spec 001). La base valida rol y JWT.
+// RPC de la migración 0005 (spec 001). La base valida rol y JWT.
 
 export async function proponerAcuerdoV1({ urgente }: { urgente: boolean }) {
   const { error } = await supabase
     .schema("app")
-    .rpc("proponer_acuerdo", { p_parametros: PARAMETROS_POR_DEFECTO, p_urgente: urgente });
+    .rpc("proponer_acuerdo", { p_reglas: parametrosAFilas(PARAMETROS_POR_DEFECTO), p_urgente: urgente });
   return { error };
 }
 

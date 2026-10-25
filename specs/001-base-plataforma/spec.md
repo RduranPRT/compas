@@ -100,10 +100,11 @@ Parámetros por defecto del Acuerdo v1 (`gob.regla_hogar`):
 - RPC nuevas (migración 0005, `SECURITY DEFINER`, validan el JWT):
   - `app.crear_hogar(p_nombre_hogar text, p_nombre text) returns uuid`
   - `app.invitar_integrante(p_correo text, p_nombre text, p_rol gob.rol_integrante) returns uuid` (solo adultos en el MVP)
-  - `app.registrar_menor(p_nombre text) returns uuid` (integrante MEN sin `usuario_auth_id`; exige consentimiento `datos_menor` en la misma transacción)
+  - `app.registrar_menor(p_nombre text, p_version_consentimiento text) returns uuid` (integrante MEN sin `usuario_auth_id`; registra el consentimiento `datos_menor` con la versión del texto aceptado en la misma transacción; sin versión no registra)
   - `app.aceptar_invitacion() returns uuid` (vincula `usuario_auth_id` del JWT con la invitación por correo)
   - `app.crear_periodo(p_mes date) returns uuid` (crea período y sobre Por asignar; idempotente)
-- Tabla nueva `gob.invitacion` (hogar, correo, rol, es_menor, estado, vence_en) con RLS para administradores.
+  - `app.proponer_acuerdo(p_reglas jsonb, p_urgente boolean) returns uuid` y `app.activar_acuerdo(p_acuerdo uuid) returns uuid` (ver plan).
+- Tabla nueva `gob.invitacion` (hogar, integrante, correo, rol, estado, vence_en) con RLS para administradores; los hijos no se invitan (D26).
 - `gob.acuerdo_hogar`, `gob.regla_hogar`, `gob.solicitud_aprobacion`, `gob.firma` (firma del CAD), `gob.consentimiento`.
 
 ## Interfaz

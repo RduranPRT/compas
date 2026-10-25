@@ -1,0 +1,182 @@
+== H1 crear el hogar: el usuario queda como ORG (spec: Crear el hogar)
+ creado 
+--------
+ t
+(1 row)
+
+    nombre    | integrante | rol | vinculado | rol_actual 
+--------------+------------+-----+-----------+------------
+ Durán Damann | Rodrigo    | ORG | t         | ORG
+(1 row)
+
+    tipo     | actor_tipo 
+-------------+------------
+ HogarCreado | humano
+(1 row)
+
+== H2 quien ya tiene hogar no crea otro (debe FALLAR)
+ERROR:  Ya perteneces a un hogar
+== I1 invitar a la co-administradora: queda CAD pendiente y suplente del ORG (R39)
+ invitada 
+----------
+ t
+(1 row)
+
+     correo     | rol |  estado   | vigente 
+----------------+-----+-----------+---------
+ ana@ejemplo.cl | CAD | pendiente | t
+(1 row)
+
+ nombre | rol | sin_cuenta | suplente_de 
+--------+-----+------------+-------------
+ Ana    | CAD | t          | ORG
+(1 row)
+
+== I2 no se invita a menores (D26) ni a un segundo CAD (ambos deben FALLAR)
+ERROR:  Solo se invita a adultos (CAD o ING); los hijos se registran sin cuenta (D26)
+ERROR:  El hogar ya tiene co-administrador
+== I3 al iniciar sesión con ese correo (sin importar mayúsculas) queda como CAD del mismo hogar
+ aceptada 
+----------
+ t
+(1 row)
+
+ rol |    hogar     
+-----+--------------
+ CAD | Durán Damann
+(1 row)
+
+  estado  
+----------
+ aceptada
+(1 row)
+
+== I4 sin invitación, aceptar no vincula nada (esperado nulo y sin hogar)
+ sin_invitacion | hogares 
+----------------+---------
+ t              |       0
+(1 row)
+
+== M1 registrar 2 hijos sin cuenta, con consentimiento datos_menor otorgado por el ORG (R25, D26)
+ h1 | h2 
+----+----
+ t  | t
+(1 row)
+
+ nombre | rol | es_menor | sin_cuenta |  finalidad  | version_texto | otorgado_por 
+--------+-----+----------+------------+-------------+---------------+--------------
+ Hijo 1 | MEN | t        | t          | datos_menor | v1            | ORG
+ Hijo 2 | MEN | t        | t          | datos_menor | v1            | ORG
+(2 rows)
+
+== M2 sin consentimiento no se registra al menor (debe FALLAR)
+ERROR:  Para registrar a un menor se necesita el consentimiento datos_menor (R25)
+== M3 tampoco por inserción directa, sin pasar por el consentimiento (debe FALLAR)
+ERROR:  new row violates row-level security policy "r_menor_via_rpc" for table "integrante"
+== M4 la cantidad de hijos cambia desactivando integrantes MEN (esperado 1 activo)
+ hijos_activos 
+---------------
+             1
+(1 row)
+
+== M5 quien no administra un hogar no registra menores (debe FALLAR)
+ERROR:  Solo los administradores del hogar (ORG o CAD) pueden hacer esto
+SQL statement "SELECT app.exigir_admin()"
+PL/pgSQL function registrar_menor(text,text) line 4 at PERFORM
+== P1 crear período es idempotente y crea el sobre Por asignar
+ mismo_periodo 
+---------------
+ t
+(1 row)
+
+    mes     |    tipo     | sobres 
+------------+-------------+--------
+ 2026-10-01 | por_asignar |      1
+(1 row)
+
+== A1 el ORG propone el Acuerdo v1: queda en borrador con solicitud de firma al CAD
+ propuesto 
+-----------
+ t
+(1 row)
+
+ version |  estado  | urgente | vigencia_desde | parametros 
+---------+----------+---------+----------------+------------
+       1 | borrador | f       | 2026-10-01     |         21
+(1 row)
+
+  tipo   |  estado   | firmas_requeridas | aprobador | horas 
+---------+-----------+-------------------+-----------+-------
+ acuerdo | pendiente |                 1 | CAD       |    48
+(1 row)
+
+== A2 sin la firma del CAD no se activa, y el ORG no firma lo que propuso (ambos deben FALLAR)
+ERROR:  El Acuerdo necesita la firma del otro administrador
+ERROR:  new row violates row-level security policy "r_firma_acuerdo_ajena" for table "firma"
+== A3 el CAD firma: vigente desde 2026-10-01 con inicio_piloto y mes_primer_plan; evento AcuerdoVersionado
+ activado 
+----------
+ t
+(1 row)
+
+ version | estado  | vigencia_desde | solicitud 
+---------+---------+----------------+-----------
+       1 | vigente | 2026-10-01     | aprobada
+(1 row)
+
+ inicio_piloto | mes_primer_plan | modalidad_sin_culpa 
+---------------+-----------------+---------------------
+ "2026-10-01"  | "2026-12-01"    | "igual"
+(1 row)
+
+       tipo        | count 
+-------------------+-------
+ AcuerdoVersionado |     1
+ HogarCreado       |     1
+(2 rows)
+
+== A4 activar de nuevo no duplica (idempotente) y un Acuerdo vigente no se edita (esperado UPDATE 0)
+ activado 
+----------
+ t
+(1 row)
+
+UPDATE 0
+ eventos_acuerdo 
+-----------------
+               1
+(1 row)
+
+== A5 hogar sin CAD: sin urgente no se puede proponer (debe FALLAR); con urgente queda vigente de inmediato
+ creado 
+--------
+ t
+(1 row)
+
+ERROR:  Falta otro administrador que firme; puedes activar el Acuerdo de inmediato
+ propuesto 
+-----------
+ t
+(1 row)
+
+ estado  | urgente | vigencia_desde | solicitudes 
+---------+---------+----------------+-------------
+ vigente | t       | 2026-10-01     |           0
+(1 row)
+
+== A6 aislamiento: el otro hogar no ve invitaciones, integrantes ni parámetros del primero
+ invitaciones | integrantes | acuerdos 
+--------------+-------------+----------
+            0 |           1 |        1
+(1 row)
+
+== A7 modalidad_sin_culpa queda guardado en gob.regla_hogar (ADR-10; esperado 2, uno por hogar)
+ con_modalidad 
+---------------
+             2
+(1 row)
+
+== X1 sin JWT no se crea hogar (debe FALLAR)
+ERROR:  permission denied for schema app
+LINE 1: SELECT app.crear_hogar('Anónimo', 'Nadie');
+               ^
