@@ -14,7 +14,7 @@ Reglas: una tarea = un cambio que se puede probar y commitear. Las pruebas van a
 | T008 [P] | `packages/dominio/src/parametros.ts`: valores por defecto del Acuerdo con esquema zod y prueba, incluida `modalidad_sin_culpa` | packages/dominio/src/parametros.ts | parametros.test.ts | hecha |
 | T009 [P] | Generar tipos de la base en `packages/contratos` (`supabase gen types`) y script `pnpm gen:tipos` | packages/contratos/src/db.ts | typecheck | pendiente |
 | T010 | App Expo: proyecto base con Expo Router, cliente Supabase con sesión en `expo-secure-store` (web: localStorage) | apps/movil/* | La app abre en web (prioridad del MVP, ADR-03); Android e iOS con Expo Go | hecha (web verificada; Expo Go en el teléfono pendiente) |
-| T011 | Pantalla de ingreso con OTP por correo | apps/movil/app/(auth)/ingresar.tsx | prueba de componente + prueba manual | pendiente |
+| T011 | Pantalla de ingreso con OTP por correo | apps/movil/app/(auth)/ingresar.tsx | prueba de componente + prueba manual | hecha (prueba manual con correo real pendiente: requiere Supabase) |
 | T012 | Asistente de alta: hogar e integrantes (RPC) | apps/movil/app/(alta)/* | prueba de integración contra Supabase local | pendiente |
 | T013 | Consentimientos con texto versionado (`docs/legal/consentimiento-v1.md`) | apps/movil/app/(alta)/consentimientos.tsx, docs/legal/consentimiento-v1.md | prueba de componente | pendiente |
 | T014 | Acuerdo v1: vista de parámetros, solicitud de firma al CAD, activación | apps/movil/app/(alta)/acuerdo.tsx | prueba de integración | pendiente |
