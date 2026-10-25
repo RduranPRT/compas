@@ -1,6 +1,6 @@
 # Spec 001 · Base de la plataforma, hogar y acceso
 
-Estado: borrador · Fecha: 2026-10-12 · Épica: EP01, EP14
+Estado: aprobada · Fecha: 2026-10-12 · Épica: EP01, EP14
 Procesos: P1 (pasos 1 y 6), E1, S5 · Reglas: R25, R39 · Decisiones: D17, D21, D23, ADR-03, ADR-09 · Depende de: —
 
 ## Objetivo
