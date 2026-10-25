@@ -18,7 +18,7 @@ Fecha: 2026-10-12 · Spec: `specs/001-base-plataforma/spec.md`
 
 ```
 apps/movil (Expo Router)
-  app/(auth)/ingresar.tsx       correo → código OTP (supabase.auth.signInWithOtp)
+  app/ingresar.tsx              correo → código OTP (supabase.auth.signInWithOtp)
   app/(alta)/hogar.tsx          RPC app.crear_hogar
   app/(alta)/integrantes.tsx    RPC app.invitar_integrante
   app/(alta)/consentimientos.tsx  insert gob.consentimiento

@@ -1,5 +1,5 @@
-import { Ingresar } from "../../src/pantallas/Ingresar";
-import { supabase } from "../../src/lib/supabase";
+import { Ingresar } from "../src/pantallas/Ingresar";
+import { supabase } from "../src/lib/supabase";
 
 export default function RutaIngresar() {
   return (

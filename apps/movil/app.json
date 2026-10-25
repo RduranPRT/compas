@@ -29,9 +29,6 @@
       "expo-status-bar",
       "expo-secure-store"
     ],
-    "scheme": "compas",
-    "experiments": {
-      "typedRoutes": true
-    }
+    "scheme": "compas"
   }
 }

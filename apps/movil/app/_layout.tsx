@@ -15,10 +15,11 @@ function Navegacion() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!sesion}>
-        <Stack.Screen name="(auth)/ingresar" />
+        <Stack.Screen name="ingresar" />
       </Stack.Protected>
       <Stack.Protected guard={!!sesion}>
-        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(alta)" />
       </Stack.Protected>
     </Stack>
   );
