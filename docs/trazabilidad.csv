@@ -23,7 +23,7 @@ R21,Bola de nieve vs avalancha,4,S2,EP11,V2,dominio,,fuera-mvp
 R22,Parte del reajuste a Futuro,4,P3,007,packages/dominio/src/reglas/r22_reajuste.ts,dominio,,pendiente
 R23,IA propone etapa; personas confirman,4,P1;P7,004;010,db:gob.historial_etapa + ia-perfil,db;ia,,pendiente
 R24,UF del día o último valor,2,S4,ADR-07,supabase/functions/indicadores,db,,pendiente
-R25,Datos de menores solo administradores,1,S5,001;011,db/migrations/0001_esquema_v2.sql:RLS r_menor_* r_datos_menor,db,db/tests/0001_test_invariantes.sql:T9;0003:S5,implementada-db
+R25,Datos de menores solo administradores,1,S5,001;011,db/migrations/0001_esquema_v2.sql:RLS r_menor_* r_datos_menor;0004_seguridad_supabase.sql:r_consentimiento_*;0005_alta_hogar.sql:app.registrar_menor r_menor_via_rpc;apps/movil/src/pantallas/AltaIntegrantes.tsx,db;app,db/tests/0001_test_invariantes.sql:T9;0003:S5;0004:R9;0005:M1-M5;apps/movil/test/alta.test.tsx;apps/movil/test/integracion/alta.test.ts,implementada
 R26,Cuotas preasignadas,2,P4;S2,005;008,db/migrations/0002_piloto.sql:tratamiento_cuotas + imputación por mes,db,db/tests/0002_test_piloto.sql:P10;P15,implementada-db
 R27,Pago de tarjeta no es gasto,2,P4;S1,003;008,db/migrations/0002_piloto.sql:fin.contabilizar_pago_tarjeta,db,db/tests/0002_test_piloto.sql:P7;P8,implementada-db
 R28,Transferencia interna no es ingreso ni gasto,2,P4;S1,003,db:fin.transferencia + lector,db;dominio,,pendiente
@@ -37,7 +37,7 @@ R35,Duplicado candidato,2,P4,003;005,packages/dominio/src/reglas/r35_duplicados.
 R36,"IA < 0,8 por confirmar; nunca a Futuro",2,P4,003;005,db/migrations/0001_esquema_v2.sql:fin.chk_imputacion_ia + grants compas_ia,db,db/tests/0001_test_invariantes.sql:T11,implementada-db
 R37,Doble firma para Futuro y emergencia,3,P6,009,db/migrations/0001_esquema_v2.sql:plan.chk_retiro_futuro,db,db/tests/0001_test_invariantes.sql:T5;T6,implementada-db
 R38,N1 bajo umbral se autoaprueba,4,P6,009,packages/dominio/src/reglas/r38_autoaprobacion.ts,dominio,,pendiente
-R39,Suplente a 48 h,4,Todos,001;006,db:gob.solicitud_aprobacion + job,db,,pendiente
+R39,Suplente a 48 h,4,Todos,001;006,db/migrations/0005_alta_hogar.sql:app.invitar_integrante (CAD suplente del ORG) app.proponer_acuerdo (vence_en = plazo_suplencia_h); escalamiento por job pendiente (006),db,db/tests/0005_test_alta_hogar.sql:I1 A1,parcial
 R40,Máximo 3 alertas al día,6,P5,009,db:med.alerta + app.control_diario,db,,pendiente
 R41,Histórico solo alimenta perfil,2,P1;P4,003,db/migrations/0002_piloto.sql:fin.chk_corte_historico;fin.chk_corte_movimiento,db,db/tests/0002_test_piloto.sql:P2;P3,implementada-db
 R42,Cartola entra por confirmar,2,P4,003,db/migrations/0002_piloto.sql:fin.chk_corte_movimiento,db,db/tests/0002_test_piloto.sql:P3,implementada-db
