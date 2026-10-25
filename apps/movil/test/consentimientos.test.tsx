@@ -50,6 +50,14 @@ describe("Consentimientos al primer ingreso (HU-001-5, S5)", () => {
     expect(continuar).toHaveBeenCalled();
   });
 
+  it("la casilla informa su estado a lectores de pantalla", () => {
+    preparar();
+    const casilla = screen.getByRole("checkbox", { name: "Acepto el uso de la app" });
+    expect(casilla.getAttribute("aria-checked")).toBe("false");
+    fireEvent.click(casilla);
+    expect(casilla.getAttribute("aria-checked")).toBe("true");
+  });
+
   it("con ambos guarda uso_app y analitica_ia y continúa", async () => {
     const { guardar, continuar } = preparar();
     fireEvent.click(screen.getByRole("checkbox", { name: "Acepto el uso de la app" }));

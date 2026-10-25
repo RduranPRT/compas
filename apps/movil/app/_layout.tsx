@@ -3,6 +3,9 @@ import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, View } from "react-native";
 import { ProveedorSesion, useSesion } from "../src/lib/sesion";
 
+// Al iniciar o cerrar sesión, la navegación vuelve a la portada; ella decide el paso del alta.
+export const unstable_settings = { anchor: "(tabs)" };
+
 function Navegacion() {
   const { cargando, sesion } = useSesion();
   if (cargando) {

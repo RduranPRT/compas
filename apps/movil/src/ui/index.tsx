@@ -106,9 +106,9 @@ export function Casilla({
 }) {
   return (
     <Pressable
-      accessibilityRole="checkbox"
-      accessibilityLabel={etiqueta}
-      accessibilityState={{ checked: marcada }}
+      role="checkbox"
+      aria-label={etiqueta}
+      aria-checked={marcada}
       onPress={() => onCambio(!marcada)}
       style={estilosCasilla.fila}
     >
