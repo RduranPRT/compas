@@ -64,6 +64,10 @@ Respuestas a las preguntas de las specs (24-10-2026):
 
 Calendario: la spec 001 aún no se implementa (estaba planificada para el 13 al 18 de octubre); el calendario se ajusta al retomar la Fase 3.
 
+## Decisión de ingreso — 25-10-2026
+
+MVP con correo y contraseña; Rodrigo crea las cuentas en el panel de Supabase y el registro público queda cerrado (D28). **Pendiente para la etapa comercial:** definir el modelo de autenticación e ingreso definitivo.
+
 ## Pendiente del hogar
 
 - Descargar en Excel las cartolas y estados de cuenta de julio a octubre de Santander e Itaú.

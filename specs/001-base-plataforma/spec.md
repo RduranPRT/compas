@@ -11,7 +11,7 @@ Que la familia pueda instalar la app, iniciar sesión, crear el hogar con sus in
 
 - **HU-001-1** Como organizador, quiero crear el hogar e invitar a mi pareja como co-administradora para que ambos administremos las finanzas.
 - **HU-001-2** Como organizador, quiero indicar cuántos hijos tenemos y registrarlos (nombre o apodo y mesada) con el consentimiento parental, sin que ellos necesiten cuenta propia en el MVP.
-- **HU-001-3** Como integrante, quiero iniciar sesión con mi correo sin recordar contraseñas.
+- **HU-001-3** Como integrante adulto, quiero iniciar sesión con mi correo y la contraseña de la cuenta que me creó el organizador (MVP, D28).
 - **HU-001-4** Como administradores, queremos firmar el Acuerdo v1 con los parámetros por defecto para empezar el piloto el 1 de octubre.
 - **HU-001-5** Como integrante, quiero aceptar el uso de la app y, si quiero, el análisis con IA, sabiendo qué datos salen de Chile.
 
@@ -42,6 +42,13 @@ Característica: Hogar, integrantes y acceso (S5, R25, R39)
     Y el consentimiento queda con titular el menor y otorgado por el ORG
     Y sin ese consentimiento no se puede registrar al menor
     Y la cantidad de hijos se puede cambiar después agregando o desactivando integrantes MEN
+
+  Escenario: Ingreso con correo y contraseña (D28)
+    Dado una cuenta creada por el ORG en el panel de Supabase
+    Cuando la persona ingresa su correo y su contraseña
+    Entonces inicia sesión y retoma el alta donde quedó
+    Y si el correo o la contraseña no coinciden, la app lo dice sin culpa y sugiere pedir al organizador que cambie la contraseña (R16)
+    Y nadie puede crear una cuenta desde la app (registro público cerrado)
 
   Escenario: Aislamiento entre hogares
     Dado dos hogares con usuarios distintos
@@ -109,7 +116,7 @@ Parámetros por defecto del Acuerdo v1 (`gob.regla_hogar`):
 
 ## Interfaz
 
-- Inicio de sesión con correo y código de 6 dígitos.
+- Inicio de sesión con correo y contraseña; las cuentas las crea el ORG en el panel de Supabase (D28).
 - Asistente de alta en 4 pasos: hogar → integrantes (adultos; luego "¿Cuántos hijos tienen?" y nombre o apodo de cada uno, sin correo) → consentimientos (incluye datos_menor por cada hijo) → Acuerdo v1 (lista legible de parámetros con su explicación y regla).
 - En el MVP toda la información la ingresan los padres (D26).
 - Portada vacía con el texto "Siguiente paso: cargar tus cuentas" (spec 002).
@@ -131,3 +138,5 @@ Registro público de otros hogares, recuperación de cuenta por soporte, asesor 
 
 - Resuelta 24-10-2026: los hijos no inician sesión en el MVP; toda la información la ingresan los padres (D26).
 - Resuelta 24-10-2026: la cantidad de hijos es parametrizable y se ingresa en el levantamiento de información del alta, con nombre o apodo de cada uno.
+- Ajuste 25-10-2026 (marcha blanca): el ingreso pasa de código por correo a correo y contraseña, porque Supabase exige SMTP propio para enviar el código (D28).
+- [PENDIENTE COMERCIAL] Modelo de autenticación e ingreso definitivo al abrir Compás a otros hogares: registro abierto con verificación de correo, recuperación autoservicio, código o passkeys y SMTP propio (D28).

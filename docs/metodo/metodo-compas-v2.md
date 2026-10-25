@@ -164,6 +164,7 @@ Ritmo por sobre variable (R09, umbral 1,1), pronóstico de fin de mes, balance p
 | D25 | Modalidad del sin culpa | **Nueva 24-10:** se elige al definir el Acuerdo: igual para todos, proporcional al ingreso o monto manual por adulto (parámetro `modalidad_sin_culpa`, ADR-10). |
 | D26 | Hijos en el MVP | **Nueva 24-10:** no inician sesión; los padres ingresan toda la información. La cantidad de hijos es parametrizable y se define en el levantamiento de información. |
 | D27 | Ingesta de cartolas | **Nueva 24-10:** sin lectores por banco; la IA transforma cualquier formato a LineaCartola, tras minimizar (R43) y con validación de totales. |
+| D28 | Ingreso en el MVP | **Nueva 25-10:** correo y contraseña. El ORG crea las cuentas de los adultos en el panel de Supabase y les cambia la contraseña si la olvidan; no hay registro público. **Pendiente para la etapa comercial:** definir el modelo de autenticación definitivo (registro abierto con verificación de correo, recuperación autoservicio, código o passkeys, SMTP propio). |
 
 ## 5. Etapas y flujo del día de pago
 

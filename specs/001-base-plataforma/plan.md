@@ -18,7 +18,7 @@ Fecha: 2026-10-12 · Spec: `specs/001-base-plataforma/spec.md`
 
 ```
 apps/movil (Expo Router)
-  app/ingresar.tsx              correo → código OTP (supabase.auth.signInWithOtp)
+  app/ingresar.tsx              correo + contraseña (supabase.auth.signInWithPassword, D28)
   app/(alta)/hogar.tsx          RPC app.crear_hogar
   app/(alta)/integrantes.tsx    RPC app.invitar_integrante
   app/(alta)/consentimientos.tsx  insert gob.consentimiento
@@ -32,7 +32,7 @@ supabase/
   migrations/                   copia de db/migrations (script scripts/sync-migraciones.sh)
 ```
 
-Flujo de alta: OTP → `aceptar_invitacion()` (si hay invitación pendiente para el correo) o pantalla "crear hogar" → integrantes → consentimientos → Acuerdo → portada.
+Flujo de alta: ingreso con correo y contraseña → `aceptar_invitacion()` (si hay invitación pendiente para el correo) o pantalla "crear hogar" → integrantes → consentimientos → Acuerdo → portada.
 
 Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_aprobacion` tipo `acuerdo` con 1 firma requerida del CAD; al aprobarse, una función `app.activar_acuerdo(p_acuerdo uuid)` lo pasa a `vigente` y registra AcuerdoVersionado. Si el CAD aún no tiene cuenta, el ORG puede activar con `urgente = true` y queda pendiente la firma (se informa en la portada).
 
@@ -69,5 +69,6 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 | Riesgo | Mitigación |
 | --- | --- |
 | En Supabase el rol `postgres` no es superusuario y RLS forzada afecta a funciones `SECURITY DEFINER` | Tarea T005: ejecutar `db/run_tests.sh` contra `supabase start`; si falla, otorgar `BYPASSRLS` al dueño de las funciones o leer desde `app.membresia` (ya sin RLS). |
-| Correos OTP llegan a spam | Configurar remitente en Supabase Auth; probar con los correos reales del hogar. |
+| Contraseña olvidada sin recuperación por correo (D28) | El ORG la cambia desde el panel de Supabase; la recuperación autoservicio queda para la etapa comercial. |
+| Invitado reclamado por otra persona con su correo | Registro público cerrado: solo el ORG crea cuentas, así el correo del JWT es confiable para `aceptar_invitacion`. |
 | iOS sin cuenta Apple Developer | Usar la versión web instalada (ADR-03). |
