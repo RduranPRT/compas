@@ -1,98 +1,57 @@
 import { useState } from "react";
 import { Aviso, Boton, Campo, Pantalla, Parrafo } from "../ui";
 
-type Resultado = Promise<{ error: { message: string } | null }>;
-
 export interface PropsIngresar {
-  enviarCodigo: (correo: string) => Resultado;
-  verificarCodigo: (correo: string, codigo: string) => Resultado;
+  ingresar: (correo: string, clave: string) => Promise<{ error: { message: string } | null }>;
 }
 
 const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// HU-001-3: ingreso con correo y código de 6 dígitos, sin contraseña.
-export function Ingresar({ enviarCodigo, verificarCodigo }: PropsIngresar) {
+// HU-001-3 y D28: correo y contraseña; las cuentas las crea el organizador (sin registro público).
+export function Ingresar({ ingresar }: PropsIngresar) {
   const [correo, setCorreo] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [enviadoA, setEnviadoA] = useState<string | null>(null);
+  const [clave, setClave] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [codigoVencido, setCodigoVencido] = useState(false);
   const [ocupado, setOcupado] = useState(false);
-
-  async function pedirCodigo(destino: string) {
-    setError(null);
-    setCodigoVencido(false);
-    setOcupado(true);
-    const { error } = await enviarCodigo(destino);
-    setOcupado(false);
-    if (error) {
-      setError("No pudimos enviar el código. Revisa tu conexión e inténtalo de nuevo.");
-      return;
-    }
-    setCodigo("");
-    setEnviadoA(destino);
-  }
 
   async function enviar() {
     const limpio = correo.trim().toLowerCase();
-    if (!CORREO.test(limpio)) {
-      setError("Revisa el correo: debe tener la forma nombre@dominio.cl.");
-      return;
-    }
-    await pedirCodigo(limpio);
-  }
-
-  async function verificar() {
-    if (!enviadoA) return;
-    if (!/^\d{6}$/.test(codigo)) {
-      setError("El código tiene 6 dígitos; revisa el último correo que te enviamos.");
-      return;
-    }
+    if (!CORREO.test(limpio)) return setError("Revisa el correo: debe tener la forma nombre@dominio.cl.");
+    if (!clave) return setError("Escribe tu contraseña.");
     setError(null);
     setOcupado(true);
-    const { error } = await verificarCodigo(enviadoA, codigo);
+    const { error } = await ingresar(limpio, clave);
     setOcupado(false);
     if (error) {
-      setCodigoVencido(true);
-      setError("Ese código ya no sirve: vence o se reemplaza al pedir otro. Puedes pedir uno nuevo.");
+      setError(
+        "El correo o la contraseña no coinciden. Si no la recuerdas, pídele al organizador del hogar que te asigne una nueva.",
+      );
     }
-  }
-
-  if (!enviadoA) {
-    return (
-      <Pantalla titulo="Ingresar a Compás">
-        <Parrafo>Te enviaremos un código de 6 dígitos a tu correo. No necesitas contraseña.</Parrafo>
-        <Campo
-          etiqueta="Correo"
-          value={correo}
-          onChangeText={setCorreo}
-          autoCapitalize="none"
-          autoComplete="email"
-          keyboardType="email-address"
-          inputMode="email"
-        />
-        <Aviso texto={error} tipo="error" />
-        <Boton texto="Enviar código" onPress={enviar} ocupado={ocupado} />
-      </Pantalla>
-    );
   }
 
   return (
-    <Pantalla titulo="Revisa tu correo">
-      <Parrafo>Enviamos un código a {enviadoA}.</Parrafo>
+    <Pantalla titulo="Ingresar a Compás">
+      <Parrafo>La cuenta te la crea el organizador del hogar.</Parrafo>
       <Campo
-        etiqueta="Código de 6 dígitos"
-        value={codigo}
-        onChangeText={setCodigo}
-        keyboardType="number-pad"
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        maxLength={6}
+        etiqueta="Correo"
+        value={correo}
+        onChangeText={setCorreo}
+        autoCapitalize="none"
+        autoComplete="email"
+        keyboardType="email-address"
+        inputMode="email"
+      />
+      <Campo
+        etiqueta="Contraseña"
+        value={clave}
+        onChangeText={setClave}
+        secureTextEntry
+        autoCapitalize="none"
+        autoComplete="current-password"
+        onSubmitEditing={enviar}
       />
       <Aviso texto={error} tipo="error" />
-      <Boton texto="Ingresar" onPress={verificar} ocupado={ocupado} />
-      {codigoVencido && <Boton texto="Pedir otro código" secundario onPress={() => pedirCodigo(enviadoA)} />}
-      <Boton texto="Usar otro correo" secundario onPress={() => setEnviadoA(null)} />
+      <Boton texto="Ingresar" onPress={enviar} ocupado={ocupado} />
     </Pantalla>
   );
 }

@@ -25,9 +25,14 @@ corepack pnpm exec supabase migration list --linked
 ### Ajustes del panel que `db push` no sube (una sola vez)
 
 1. **Settings → API → Data API → Exposed schemas**: agregar `app`, `gob`, `fin`, `plan`, `med`, `ref`, `ia`. Sin esto la app no puede leer ni guardar (error `PGRST106 Invalid schema`).
-2. **Authentication → Emails → Templates**: en *Magic Link* y en *Confirm signup*, asunto `Tu código de Compás` y cuerpo = `supabase/templates/codigo.html`. La plantilla por defecto manda un enlace y la app pide el código de 6 dígitos.
+2. **Authentication → Sign In / Providers**: desactivar **Allow new users to sign up** (registro público cerrado, D28). El proveedor **Email** queda activo; en sus opciones, largo mínimo de contraseña **10**.
 3. **Authentication → URL Configuration**: *Site URL* = `https://web-production-136d.up.railway.app`.
-4. **Envío de correos**: el SMTP incluido solo entrega a miembros del equipo del proyecto y con pocos envíos por hora. Para el hogar: invitar a la pareja al equipo de Supabase, o configurar SMTP propio en **Authentication → Emails → SMTP Settings**.
+
+No se necesita SMTP ni plantillas de correo en el MVP: no se envían correos (D28).
+
+### Cuentas (D28)
+
+Las crea el organizador en **Authentication → Users → Add user → Create new user**: correo, contraseña de al menos 10 caracteres y **Auto Confirm User** marcado. La contraseña se entrega en persona; si alguien la olvida, el organizador la cambia desde el mismo panel. Para la pareja: crear su cuenta aquí y luego invitarla desde la app con el mismo correo; al ingresar queda como co-administradora.
 
 ### Respaldo (plan Free, ADR-09)
 
