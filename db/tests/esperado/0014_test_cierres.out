@@ -1,0 +1,80 @@
+== W1 cierre semanal: saldo real igual al registrado concilia los movimientos hasta el corte (R34)
+ conciliados | diferencia 
+-------------+------------
+ 1           | 0
+(1 row)
+
+ fecha_contable |   estado   
+----------------+------------
+ 2026-10-03     | conciliado
+ 2026-10-20     | confirmado
+(2 rows)
+
+  tipo   | fecha_programada | estado 
+---------+------------------+--------
+ semanal | 2026-10-11       | hecho
+(1 row)
+
+== W2 con diferencia y sin motivo (debe FALLAR); con motivo queda registrada
+ERROR:  En Cuenta corriente hay una diferencia de −$2.000; escribe el motivo para registrarla (R34)
+PL/pgSQL function cerrar_semana(date,jsonb) line 8 at assignment
+ diferencia 
+------------
+ 2000
+(1 row)
+
+== M1 cierre de octubre (línea base): pide el estado de cuenta de la Visa o una justificación (ADR-08; debe FALLAR)
+ERROR:  Falta el estado de cuenta de Visa para este mes: impórtalo o escribe por qué se omite
+== M2 valoración de la familia y cierre con KPI de partida: octubre queda cerrado (R19, D21)
+ valoracion |     pregunta     |   respuesta    
+------------+------------------+----------------
+ +          |                  | 
+ -          | ¿Qué cambiarías? | Menos delivery
+(2 rows)
+
+ kpis 
+------
+ 3
+(1 row)
+
+ estado  | version_cierre 
+---------+----------------
+ cerrado |              0
+(1 row)
+
+ kpi_codigo |    valor    | semaforo | version_cierre 
+------------+-------------+----------+----------------
+ K4         |      0.5800 | rojo     |              0
+ K6         | -70000.0000 | rojo     |              0
+ KP1        |      0.9200 |          |              0
+(3 rows)
+
+== M3 un mes cerrado no admite movimientos (I1; debe FALLAR)
+ERROR:  Período cerrado: reabrir con motivo (D20) antes de modificar
+SQL statement "INSERT INTO fin.movimiento(hogar_id, periodo_id, cuenta_id, tipo, estado, origen, fecha_contable, monto_clp,
+                             comercio, nota, intencion, confianza_ia, cliente_op_id, registrado_por,
+                             registrado_por_tipo, n_cuotas, tratamiento_cuotas)
+  VALUES (v_hogar, v_periodo, p_cuenta, 'gasto', 'capturado', p_origen,
+          coalesce(p_fecha, (now() AT TIME ZONE 'America/Santiago')::date), p_monto,
+          nullif(btrim(p_comercio), ''), nullif(btrim(p_nota), ''), v_intencion, p_confianza, p_cliente_op, v_yo,
+          'humano', CASE WHEN coalesce(p_n_cuotas, 1) > 1 THEN p_n_cuotas END, v_tratamiento)
+  RETURNING id"
+PL/pgSQL function registrar_gasto(uuid,uuid,uuid,bigint,date,text,text,intencion,integer,text,origen_movimiento,numeric) line 31 at SQL statement
+== R1 reabrir con motivo y volver a cerrar: KPI versión 1 y se conserva la 0 (D20)
+ERROR:  Escribe el motivo para reabrir el mes (D20)
+ version 
+---------
+       1
+(1 row)
+
+ kpi_codigo |    valor    | version_cierre 
+------------+-------------+----------------
+ K6         | -70000.0000 |              0
+ K6         | -71000.0000 |              1
+(2 rows)
+
+== P1 pronóstico del mes para la portada (sin período, nulo)
+ sin_periodo 
+-------------
+ t
+(1 row)
