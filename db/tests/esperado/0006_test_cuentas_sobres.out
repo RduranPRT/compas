@@ -1,0 +1,116 @@
+== C1 registrar una tarjeta de crédito: tipo tarjeta_credito, fondo común y solo los últimos 4 (D23)
+ nombre |      tipo       | es_fondo_comun | ultimos4 | saldo_inicial | fecha_saldo_inicial 
+--------+-----------------+----------------+----------+---------------+---------------------
+ Visa   | tarjeta_credito | t              | 4321     |       -420000 | 2026-10-01
+(1 row)
+
+== C2 el número completo de la tarjeta no se acepta (debe FALLAR)
+ERROR:  value too long for type character(4)
+== C3 una tarjeta sin día de facturación ni de pago no se acepta (debe FALLAR)
+ERROR:  new row for relation "cuenta" violates check constraint "cuenta_check"
+== C4 saldo inicial de cuenta corriente al inicio del piloto y efectivo como billetera (R31)
+      nombre      |   tipo    | saldo_inicial | fecha_saldo_inicial 
+------------------+-----------+---------------+---------------------
+ Cuenta corriente | vista     |        850000 | 2026-10-01
+ Efectivo         | billetera |         40000 | 2026-10-01
+(2 rows)
+
+== K1 plantilla de categorías: 15, con Cuatro Paredes en Alimentación, Vivienda, Servicios y Transporte (R05)
+ creadas 
+---------
+      15
+(1 row)
+
+ categorias | cuatro_paredes 
+------------+----------------
+         15 |              4
+(1 row)
+
+          nombre          | bloque_codigo | tipo_sobre | intencion_default 
+--------------------------+---------------+------------+-------------------
+ Alimentación             | ESENCIALES    | variable   | supervivencia
+ Arriendo o dividendo     | ESENCIALES    | fijo       | supervivencia
+ Luz, agua, gas, internet | ESENCIALES    | fijo       | supervivencia
+ Transporte               | ESENCIALES    | variable   | supervivencia
+(4 rows)
+
+== K2 aplicarla dos veces no duplica; renombrar, desactivar y agregar categorías
+ creadas_otra_vez 
+------------------
+                0
+(1 row)
+
+ activas 
+---------
+      15
+(1 row)
+
+== K3 un fondo de gastos anuales
+== S1 sobres de noviembre: por categoría activa, sin culpa por adulto, mesada por hijo y pago de tarjeta (D06, D17, R44)
+ periodo 
+---------
+ t
+(1 row)
+
+     tipo     | sobres 
+--------------+--------
+ por_asignar  |      1
+ fijo         |      3
+ variable     |      6
+ fondo        |      1
+ futuro       |      1
+ emergencia   |      1
+ sin_culpa    |      2
+ mesada       |      2
+ pago_tarjeta |      1
+(9 rows)
+
+         nombre         
+------------------------
+ Mesada Hijo 1
+ Mesada Hijo 2
+ Pago Visa
+ Permiso de circulación
+ Sin culpa Ana
+ Sin culpa Rodrigo
+(6 rows)
+
+== S2 crear los sobres otra vez no los duplica
+ nuevos | total 
+--------+-------
+      0 |    18
+(1 row)
+
+== S3 una tarjeta nueva aparece en el mes al asegurarlo (asegurar_mes es idempotente)
+ mismo_periodo 
+---------------
+ t
+(1 row)
+
+ pagos_tarjeta 
+---------------
+             2
+(1 row)
+
+== I1 ingresos típicos: base y variable (R45)
+ base_para_el_plan | variable 
+-------------------+----------
+           2400000 |   600000
+(1 row)
+
+== I2 pago fijo en UF
+  nombre   | moneda |  monto  | dia_vencimiento 
+-----------+--------+---------+-----------------
+ Dividendo | UF     | 18.5000 |               5
+(1 row)
+
+== R1 la co-administradora ve las cuentas; un integrante con ingresos no configura (debe FALLAR)
+ cuentas_visibles 
+------------------
+                4
+(1 row)
+
+ERROR:  new row violates row-level security policy "r_admin_config_ins" for table "cuenta"
+ERROR:  Solo los administradores del hogar (ORG o CAD) pueden hacer esto
+SQL statement "SELECT app.exigir_admin()"
+PL/pgSQL function aplicar_plantilla_categorias() line 4 at PERFORM

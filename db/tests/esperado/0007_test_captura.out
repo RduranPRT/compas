@@ -1,0 +1,212 @@
+== G1 captura rápida: $12.990 en Alimentación con la Visa queda confirmada con la intención de la categoría (R17)
+   estado   | duplicado 
+------------+-----------
+ confirmado | false
+(1 row)
+
+ tipo  |   estado   | origen | fecha_contable | monto_clp |   intencion   |    sobre     
+-------+------------+--------+----------------+-----------+---------------+--------------
+ gasto | confirmado | manual | 2026-11-03     |     12990 | supervivencia | Alimentación
+(1 row)
+
+    nombre    | gastado | saldo  
+--------------+---------+--------
+ Alimentación |   12990 | -12990
+ Pago Visa    |       0 |  12990
+(2 rows)
+
+== G2 la cola reenvía la misma captura: se responde la ya registrada (D11)
+ repetida 
+----------
+ true
+(1 row)
+
+ movimientos 
+-------------
+           1
+(1 row)
+
+== G3 duplicado candidato: mismo monto, misma tarjeta, al día siguiente (R35)
+    estado     | duplicado 
+---------------+-----------
+ por_confirmar | true
+(1 row)
+
+ estado  | count 
+---------+-------
+ abierto |     1
+(1 row)
+
+          tipo          
+------------------------
+ DuplicadoCandidato
+ MovimientoPorConfirmar
+(2 rows)
+
+== G4 compra de $300.000 en 3 cuotas por_cuota: $100.000 en Vestuario de nov, dic y ene, y reserva en Pago Visa de cada mes (R26, D32, R44)
+   estado   
+------------
+ confirmado
+(1 row)
+
+  nombre   |    mes     | gastado |  saldo  
+-----------+------------+---------+---------
+ Pago Visa | 2026-11-01 |       0 |  112990
+ Pago Visa | 2026-12-01 |       0 |  100000
+ Pago Visa | 2027-01-01 |       0 |  100000
+ Vestuario | 2026-11-01 |  100000 | -100000
+ Vestuario | 2026-12-01 |  100000 | -100000
+ Vestuario | 2027-01-01 |  100000 | -100000
+(6 rows)
+
+     tipo      | n_cuotas | cuota_monto | saldo_actual | cuotas |  primera   |   ultima   
+---------------+----------+-------------+--------------+--------+------------+------------
+ compra_cuotas |        3 |      100000 |       300000 |      3 | 2026-11-01 | 2027-01-01
+(1 row)
+
+== G5 la misma compra con tratamiento total: $300.000 en el mes de compra y sin deuda (D08)
+   estado   
+------------
+ confirmado
+(1 row)
+
+ imputaciones |  sum   
+--------------+--------
+            1 | 300001
+(1 row)
+
+ deudas 
+--------
+      1
+(1 row)
+
+== G6 cuotas con cuenta corriente (debe FALLAR)
+ERROR:  Las compras en cuotas se registran con tarjeta de crédito
+== G7 devolución de $15.000 de la compra total: vuelve a Vestuario y libera la reserva de Visa (R29, R44)
+  nombre   |  saldo  
+-----------+---------
+ Pago Visa |  412991
+ Vestuario | -400001
+(2 rows)
+
+   estado   
+------------
+ confirmado
+(1 row)
+
+  nombre   |  saldo  
+-----------+---------
+ Pago Visa |  397991
+ Vestuario | -385001
+(2 rows)
+
+== G8 devolver más de lo comprado (debe FALLAR)
+ERROR:  La devolución puede ser de hasta 285001
+== G9 propuesta de la IA con confianza 0,5: queda por confirmar (R36)
+    estado     
+---------------
+ por_confirmar
+(1 row)
+
+== B1 bandeja: pendientes por antigüedad
+ monto_clp |    estado     | origen 
+-----------+---------------+--------
+     12990 | por_confirmar | manual
+      8000 | por_confirmar | chat
+(2 rows)
+
+== B2 la CAD corrige el sobre del chat y confirma; resuelve el duplicado como duplicado
+ confirmar_movimiento 
+----------------------
+ 
+(1 row)
+
+   estado   | intencion |   sobre   
+------------+-----------+-----------
+ confirmado | deseo     | Vestuario
+(1 row)
+
+ resolver_duplicado 
+--------------------
+ 
+(1 row)
+
+ monto_clp |   estado   
+-----------+------------
+     12990 | confirmado
+     12990 | descartado
+(2 rows)
+
+ gastado | saldo  
+---------+--------
+   12990 | -12990
+(1 row)
+
+== B3 descartar un gasto confirmado deja asientos de signo contrario (I2)
+ descartar_movimiento 
+----------------------
+ 
+(1 row)
+
+ gastado | saldo 
+---------+-------
+       0 |     0
+(1 row)
+
+ asientos | neto 
+----------+------
+        4 |    0
+(1 row)
+
+== N1 ingreso base menor al esperado: diferencia -8,33 % y entra a Por asignar (R33, R45)
+  dif  | ajuste 
+-------+--------
+ -8.33 | false
+(1 row)
+
+  saldo  
+---------
+ 2200000
+(1 row)
+
+== N2 bono variable desde el día 20 para el mes siguiente: no se compara con el base (D01, R45)
+ dif 
+-----
+ 
+(1 row)
+
+    mes     |  saldo  
+------------+---------
+ 2026-11-01 | 2200000
+ 2026-12-01 |  600000
+ 2027-01-01 |       0
+(3 rows)
+
+== L1 línea base: los sobres negativos de noviembre no avisan; los de diciembre en adelante sí, incluidas las cuotas (spec 005)
+    mes     | avisos 
+------------+--------
+ 2026-12-01 |      1
+ 2027-01-01 |      1
+(2 rows)
+
+    mes     | avisos 
+------------+--------
+ 2026-12-01 |      2
+ 2027-01-01 |      1
+(2 rows)
+
+== L2 gasto en sobre cerrado: se imputa igual y abre N1 (R11)
+   estado   
+------------
+ confirmado
+(1 row)
+
+ nivel | regla_codigo | estado  
+-------+--------------+---------
+ N1    | R11          | abierto
+(1 row)
+
+== P1 un sobre de Por asignar no recibe gastos (debe FALLAR)
+ERROR:  Un gasto no se imputa al sobre por_asignar; elige el sobre de la categoría
+SQL statement "SELECT app.imputar(v_id, p_sobre, 'humano')"
+PL/pgSQL function registrar_gasto(uuid,uuid,uuid,bigint,date,text,text,intencion,integer,text,origen_movimiento,numeric) line 39 at PERFORM
