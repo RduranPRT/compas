@@ -1,0 +1,3 @@
+-- Los catálogos (db/seed/0001_catalogos.sql) se aplican como migración, no aquí:
+-- 0002 depende de ellos y `supabase db push` no ejecuta este archivo.
+-- Ver scripts/sync-migraciones.sh. Este archivo queda para datos de prueba locales.

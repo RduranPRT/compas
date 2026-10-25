@@ -5,8 +5,8 @@ Reglas: una tarea = un cambio que se puede probar y commitear. Las pruebas van a
 | ID | Tarea | Archivos | Prueba que la cierra | Estado |
 | --- | --- | --- | --- | --- |
 | T001 | Crear el monorepo pnpm con `apps/movil`, `packages/dominio`, `packages/contratos`; TypeScript estricto, Vitest y ESLint | package.json, pnpm-workspace.yaml, tsconfig.base.json | `pnpm -r test` corre (0 pruebas) | hecha |
-| T002 | Inicializar Supabase local (`supabase init`) y script `scripts/sync-migraciones.sh` que copia `db/migrations/*.sql` a `supabase/migrations/` con prefijo de fecha | supabase/config.toml, scripts/sync-migraciones.sh | `supabase db reset` aplica 0001–0003 sin errores | pendiente |
-| T003 | Aplicar el seed de catálogos en `supabase/seed.sql` desde `db/seed/0001_catalogos.sql` | supabase/seed.sql | `select count(*) from ref.regla_metodo` = 45 | pendiente |
+| T002 | Inicializar Supabase local (`supabase init`) y script `scripts/sync-migraciones.sh` que copia `db/migrations/*.sql` a `supabase/migrations/` con prefijo de fecha | supabase/config.toml, scripts/sync-migraciones.sh | `supabase db reset` aplica 0001–0003 sin errores | en curso (config y script listos; falta `supabase db reset` con Docker) |
+| T003 | Aplicar el seed de catálogos como migración tras 0001 (0002 depende de él y `db push` no ejecuta `seed.sql`) | scripts/sync-migraciones.sh | `select count(*) from ref.regla_metodo` = 45 | en curso (falta verificar con Docker) |
 | T004 | Ajustar `db/run_tests.sh` para aceptar `DATABASE_URL` y correrlo contra la base de `supabase start` | db/run_tests.sh | 3 pruebas OK contra Supabase local | pendiente |
 | T005 | Verificar funciones `SECURITY DEFINER` y RLS con el rol `postgres` de Supabase (no superusuario); corregir con migración si hace falta | db/migrations/0004_*.sql | `db/run_tests.sh` OK en Supabase local | pendiente |
 | T006 | Escribir `db/tests/0004_alta_hogar.sql` con los escenarios de la spec (deben fallar) | db/tests/0004_alta_hogar.sql | Falla por funciones inexistentes | pendiente |
