@@ -11,7 +11,7 @@ Reglas: una tarea = un cambio que se puede probar y commitear. Las pruebas van a
 | T005 | Verificar funciones `SECURITY DEFINER` y RLS con el rol `postgres` de Supabase (no superusuario); corregir con migración si hace falta | db/migrations/0004_*.sql | `db/run_tests.sh` OK en Supabase local | pendiente |
 | T006 | Escribir `db/tests/0004_alta_hogar.sql` con los escenarios de la spec (deben fallar) | db/tests/0004_alta_hogar.sql | Falla por funciones inexistentes | pendiente |
 | T007 | Migración `0004_alta_hogar.sql`: `gob.invitacion` + RPC de alta, invitación, períodos y activación del Acuerdo + parámetro `modalidad_sin_culpa` (ADR-10) | db/migrations/0004_alta_hogar.sql | T006 en verde; salida esperada revisada y guardada | pendiente |
-| T008 [P] | `packages/dominio/src/parametros.ts`: valores por defecto del Acuerdo con esquema zod y prueba, incluida `modalidad_sin_culpa` | packages/dominio/src/parametros.ts | parametros.test.ts | pendiente |
+| T008 [P] | `packages/dominio/src/parametros.ts`: valores por defecto del Acuerdo con esquema zod y prueba, incluida `modalidad_sin_culpa` | packages/dominio/src/parametros.ts | parametros.test.ts | hecha |
 | T009 [P] | Generar tipos de la base en `packages/contratos` (`supabase gen types`) y script `pnpm gen:tipos` | packages/contratos/src/db.ts | typecheck | pendiente |
 | T010 | App Expo: proyecto base con Expo Router, cliente Supabase con sesión en `expo-secure-store` (web: localStorage) | apps/movil/* | La app abre en web (prioridad del MVP, ADR-03); Android e iOS con Expo Go | pendiente |
 | T011 | Pantalla de ingreso con OTP por correo | apps/movil/app/(auth)/ingresar.tsx | prueba de componente + prueba manual | pendiente |

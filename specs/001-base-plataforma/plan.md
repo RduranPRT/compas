@@ -40,7 +40,7 @@ Firma del Acuerdo: el ORG crea `acuerdo_hogar` en `borrador` y una `solicitud_ap
 
 `db/migrations/0004_alta_hogar.sql`:
 - Tabla `gob.invitacion` con RLS (administradores del hogar).
-- Agregar `modalidad_sin_culpa` (`igual` | `proporcional_ingreso` | `manual_por_adulto`) al CHECK de `gob.regla_hogar` (ADR-10) y definir cómo se guarda el monto por adulto en la modalidad manual.
+- Agregar `modalidad_sin_culpa` (`igual` | `proporcional_ingreso` | `manual_por_adulto`) al CHECK de `gob.regla_hogar` (ADR-10). Con `manual_por_adulto`, `monto_sin_culpa_clp` guarda un objeto `{integrante_id: monto}` en pesos enteros; en las otras modalidades es opcional y, si existe, es un monto único.
 - RPC `app.crear_hogar`, `app.invitar_integrante` (adultos), `app.registrar_menor` (hijos sin cuenta, D26), `app.aceptar_invitacion`, `app.crear_periodo`, `app.activar_acuerdo`.
 - Cada RPC: `SECURITY DEFINER`, `SET search_path`, valida `app.jwt_sub()` y el rol; emite evento en `sys.evento_dominio`.
 
