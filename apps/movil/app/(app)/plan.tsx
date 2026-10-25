@@ -1,6 +1,6 @@
 import { hoyIso, semaforoDe } from "@compas/dominio";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { mensajeError } from "../../src/datos/cliente";
 import { sobresDelMes } from "../../src/datos/finanzas";
 import { calcularBorrador, enviarPlan, guardarBorrador, mesAPlanificar, planDelMes } from "../../src/datos/plan";
@@ -13,6 +13,10 @@ import { ErrorCarga } from "../../src/ui";
 export default function RutaPlan() {
   const { parametros, etapa, esAdmin } = useHogar();
   const [mes, setMes] = useState(() => mesAPlanificar(hoyIso(), parametros.dia_plan, parametros.mes_primer_plan));
+  // Los parámetros del Acuerdo llegan después del primer render: el mes por defecto se recalcula con ellos
+  useEffect(() => {
+    setMes(mesAPlanificar(hoyIso(), parametros.dia_plan, parametros.mes_primer_plan));
+  }, [parametros.dia_plan, parametros.mes_primer_plan]);
   const { datos, error, cargando, recargar } = useDatos(async () => {
     const [plan, sobres] = await Promise.all([planDelMes(supabase, mes), sobresDelMes(supabase, mes)]);
     return { plan, sobres };

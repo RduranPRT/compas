@@ -114,7 +114,7 @@ export function Plan({ mes, mesPrimerPlan, cargando, plan, sobres, semaforo, esA
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <View style={{ flex: 1 }}>
                   <Parrafo>{nombre(l.sobreId)}</Parrafo>
-                  {l.explicacion ? <Parrafo suave>{`${l.explicacion}${l.regla ? ` (${l.regla})` : ""}`}</Parrafo> : null}
+                  {l.explicacion ? <Parrafo suave>{`${l.explicacion}${l.regla && !l.explicacion.includes(l.regla) ? ` (${l.regla})` : ""}`}</Parrafo> : null}
                 </View>
                 {editable ? (
                   <TextInput

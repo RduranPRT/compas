@@ -63,7 +63,7 @@ export async function generarPerfil(db: Cliente): Promise<{ error: string | null
   if (!hist?.length) return { error: "Primero carga cartolas de julio a septiembre: el perfil se arma con esos meses.", conIA: false };
   const perfil = calcularPerfil(
     hist.map((h) => ({ fecha: h.fecha, sentido: h.sentido as "cargo" | "abono", monto: Number(h.monto_clp), comercio: h.comercio, glosa: h.glosa, clase: h.clase, categoria_id: h.categoria_id, cuenta_id: h.cuenta_id })),
-    cats.map((c) => ({ id: c.id, nombre: c.nombre, bloque: c.bloque, codigo: c.codigo })),
+    cats.map((c) => ({ id: c.id, nombre: c.nombre, bloque: c.bloque, codigo: c.codigo, tipo: c.tipo })),
     ctas.map((c) => ({ id: c.id, nombre: c.nombre, tipo: c.tipo, saldo: c.saldo })),
   );
   // La IA recibe solo métricas (sin glosas, comercios ni nombres) y redacta (P8)

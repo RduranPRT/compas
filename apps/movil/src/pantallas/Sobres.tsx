@@ -18,9 +18,11 @@ export interface PropsSobres {
   cambiarMes: (mes: string) => void;
   abrir: (id: string) => void;
   registrar: () => void;
+  /** Mes de línea base: sin presupuesto ni avisos (D21). */
+  lineaBase?: boolean;
 }
 
-export function Sobres({ mes, sobres, cambiarMes, abrir, registrar }: PropsSobres) {
+export function Sobres({ mes, sobres, cambiarMes, abrir, registrar, lineaBase = false }: PropsSobres) {
   return (
     <Pantalla titulo="Sobres" flotante={<BotonFlotante onPress={registrar} />}>
       <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
@@ -28,6 +30,7 @@ export function Sobres({ mes, sobres, cambiarMes, abrir, registrar }: PropsSobre
         <View style={{ flex: 2, alignItems: "center" }}><Parrafo>{nombreMes(mes)}</Parrafo></View>
         <View style={{ flex: 1 }}><Boton texto="Siguiente ›" secundario onPress={() => cambiarMes(sumarMeses(mes, 1))} /></View>
       </View>
+      {lineaBase && <Parrafo suave>Mes de línea base: se ve lo gastado por sobre, sin presupuesto ni avisos (D21).</Parrafo>}
       {!sobres ? (
         <Cargando />
       ) : sobres.length <= 1 ? (
@@ -45,7 +48,7 @@ export function Sobres({ mes, sobres, cambiarMes, abrir, registrar }: PropsSobre
                   <Fila
                     etiqueta={s.nombre}
                     valor={s.saldo}
-                    detalle={s.tipo === "pago_tarjeta" ? "Apartado para pagar la tarjeta (R44)" : s.saldo < 0 ? "Quedó negativo: toca para cubrirlo (R10)" : `Gastado ${formatoPesos(Math.max(0, s.gastado))} de ${formatoPesos(Math.max(0, s.disponible))}`}
+                    detalle={detalleSobre(s, lineaBase)}
                   />
                   {s.tipo !== "por_asignar" && s.tipo !== "pago_tarjeta" && (s.disponible > 0 || s.gastado > 0) && <Barra valor={s.gastado} total={s.disponible} />}
                 </Tarjeta>
@@ -57,4 +60,16 @@ export function Sobres({ mes, sobres, cambiarMes, abrir, registrar }: PropsSobre
       )}
     </Pantalla>
   );
+}
+
+function detalleSobre(s: Sobre, lineaBase: boolean): string | undefined {
+  if (s.tipo === "por_asignar") return "Dinero recibido que aún no tiene sobre (R01)";
+  if (s.tipo === "pago_tarjeta") {
+    if (lineaBase && s.saldo < 0) return "Incluye la deuda previa al piloto, pagada sin plan";
+    return "Apartado para pagar la tarjeta (R44)";
+  }
+  if (lineaBase) return s.gastado ? `Gastado ${formatoPesos(s.gastado)}` : undefined;
+  if (s.saldo < 0) return "Quedó negativo: toca para cubrirlo (R10)";
+  if (!s.disponible && !s.gastado) return undefined;
+  return `Gastado ${formatoPesos(Math.max(0, s.gastado))} de ${formatoPesos(Math.max(0, s.disponible))}`;
 }

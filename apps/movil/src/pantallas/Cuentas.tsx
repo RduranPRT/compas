@@ -1,4 +1,4 @@
-import { leerMonto, nombreMes } from "@compas/dominio";
+import { formatoFecha, leerMonto } from "@compas/dominio";
 import { useState } from "react";
 import { View } from "react-native";
 import type { Cuenta, NuevaCuenta, TipoCuenta } from "../datos/configuracion";
@@ -74,7 +74,7 @@ export function Cuentas({ cuentas, inicioPiloto, crear, activar, volver, continu
 
   return (
     <Pantalla titulo="Cuentas y tarjetas" {...(volver ? { volver } : {})}>
-      <Parrafo suave>{`Todas las cuentas registradas son del fondo común (D23). El saldo es el del ${nombreMes(inicioPiloto).replace(" de ", " de ")}, inicio del piloto.`}</Parrafo>
+      <Parrafo suave>{`Todas las cuentas registradas son del fondo común (D23). El saldo inicial es el del ${formatoFecha(inicioPiloto)}, inicio del piloto.`}</Parrafo>
       {cuentas.length === 0 ? (
         <Vacio texto="Aún no hay cuentas. Agrega tu cuenta corriente y tus tarjetas de crédito." />
       ) : (

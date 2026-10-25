@@ -96,7 +96,7 @@ function necesidades(d: DatosBorrador): Necesidad[] {
       case "variable": {
         const { monto, texto } = conCuotas(redondear(s.promedio ?? 0, 1000), "Promedio de gasto de los últimos 3 meses.");
         if (monto > 0) n.push({ sobre: s, destino: s.cuatroParedes && d.etapa === "E0" ? "cuatro_paredes" : "sobres", monto,
-          regla: s.cuatroParedes ? "R05" : "R04", explicacion: texto });
+          regla: s.cuatroParedes && d.etapa === "E0" ? "R05" : "R04", explicacion: texto });
         break;
       }
       case "fondo": {

@@ -20,6 +20,8 @@ export interface CategoriaPerfil {
   nombre: string;
   bloque: "ESENCIALES" | "FUTURO" | "VIDA";
   codigo?: string | null;
+  /** Tipo de sobre: los gastos de categorías variables (supermercado, bencina) no son pagos fijos. */
+  tipo?: string | null;
 }
 
 export interface CuentaPerfil {
@@ -120,7 +122,8 @@ export function calcularPerfil(hist: Historico[], categorias: CategoriaPerfil[],
   const irregulares: Perfil["irregulares"] = [];
   for (const [comercio, items] of porComercio) {
     const mensual = [...porMes(items, (i) => i.fecha).values()].map((xs) => xs.reduce((s, x) => s + x.monto, 0));
-    if (mensual.length >= 2 && mensual.length >= Math.min(2, nMeses) && variacion(mensual) < 0.2) {
+    const variable = cat.get(items[0]?.categoria_id ?? "")?.tipo === "variable";
+    if (!variable && mensual.length >= 2 && mensual.length >= Math.min(2, nMeses) && variacion(mensual) < 0.2) {
       pagosFijos.push({
         comercio,
         categoriaId: items[0]?.categoria_id ?? null,
@@ -180,16 +183,16 @@ export function calcularPerfil(hist: Historico[], categorias: CategoriaPerfil[],
     razonEtapa = "Hay cargos por mora o intereses penales: primero se estabilizan los pagos esenciales.";
   } else if (k2 === null || k2 < 1) {
     etapaSugerida = "E1";
-    razonEtapa = `La reserva cubre ${k2 ?? 0} meses de esenciales; la meta de esta etapa es 1 mes.`;
+    razonEtapa = `La reserva cubre ${String(k2 ?? 0).replace(".", ",")} meses de esenciales; la meta de esta etapa es 1 mes.`;
   } else if (deudaConsumo) {
     etapaSugerida = "E2";
     razonEtapa = "Hay deuda de consumo o la tarjeta no se paga completa cada mes.";
   } else if (k2 < 3) {
     etapaSugerida = "E3";
-    razonEtapa = `Sin deuda de consumo; la reserva cubre ${k2} meses y la meta es de 3 a 6.`;
+    razonEtapa = `Sin deuda de consumo; la reserva cubre ${String(k2).replace(".", ",")} meses y la meta es de 3 a 6.`;
   } else {
     etapaSugerida = "E4";
-    razonEtapa = `La reserva cubre ${k2} meses de esenciales y no hay deuda de consumo.`;
+    razonEtapa = `La reserva cubre ${String(k2).replace(".", ",")} meses de esenciales y no hay deuda de consumo.`;
   }
 
   return {
@@ -280,14 +283,6 @@ export function hallazgosPorReglas(p: Perfil): Hallazgo[] {
       accion: "Mantengan los fijos revisados una vez al año.",
     });
   }
-  if (h.length < 3) {
-    h.push({
-      titulo: `Etapa sugerida: ${p.etapaSugerida}`,
-      explicacion: p.razonEtapa,
-      cifra: p.k2 === null ? "s/d" : `${String(p.k2).replace(".", ",")} meses de reserva`, regla_codigo: "R23", fuente_codigo: "COMPAS",
-      accion: "Confirmen la etapa entre ambos para que el plan use su orden de prioridades.",
-    });
-  }
   if (h.length < 3 && p.pagosFijos.length) {
     const total = p.pagosFijos.reduce((s, x) => s + x.monto, 0);
     h.push({
@@ -295,6 +290,14 @@ export function hallazgosPorReglas(p: Perfil): Hallazgo[] {
       explicacion: `Se reconocieron ${p.pagosFijos.length} pagos que se repiten cada mes, por ${formatoPesos(total)} en total.`,
       cifra: formatoPesos(total), regla_codigo: "R08", fuente_codigo: "COMPAS",
       accion: "Revisen la lista y acepten los que deban quedar en el plan.",
+    });
+  }
+  if (h.length < 3) {
+    h.push({
+      titulo: `Etapa sugerida: ${p.etapaSugerida}`,
+      explicacion: p.razonEtapa,
+      cifra: p.k2 === null ? "s/d" : `${String(p.k2).replace(".", ",")} meses de reserva`, regla_codigo: "R23", fuente_codigo: "COMPAS",
+      accion: "Confirmen la etapa entre ambos para que el plan use su orden de prioridades.",
     });
   }
   return h.slice(0, 5);
