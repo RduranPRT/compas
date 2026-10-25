@@ -1,31 +1,28 @@
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  acuerdoPendienteDeFirma,
-  coAdministrador,
-  firmarAcuerdo,
-  proponerAcuerdoV1,
-} from "../../src/datos/acuerdo";
-import { integranteActual, type IntegranteActual } from "../../src/datos/integrante";
+import { ActivityIndicator, View } from "react-native";
+import { firmarAcuerdo, pantallaAcuerdo, proponerAcuerdoV1, type EstadoPantallaAcuerdo } from "../../src/datos/acuerdo";
 import { supabase } from "../../src/lib/supabase";
 import { Acuerdo } from "../../src/pantallas/Acuerdo";
 
 export default function RutaAcuerdo() {
-  const [yo, setYo] = useState<IntegranteActual | null>(null);
-  const [cad, setCad] = useState<{ nombre: string; tieneCuenta: boolean } | null>(null);
-  const [pendiente, setPendiente] = useState<{ acuerdo: string; solicitud: string } | null>(null);
-
+  const [estado, setEstado] = useState<EstadoPantallaAcuerdo | null>(null);
   useEffect(() => {
-    integranteActual(supabase).then(setYo);
-    coAdministrador(supabase).then(setCad);
-    acuerdoPendienteDeFirma(supabase).then(setPendiente);
+    pantallaAcuerdo(supabase).then(setEstado);
   }, []);
 
-  const firmaElCad = yo?.rol === "CAD" && pendiente !== null;
+  if (!estado) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  const { yo, modo, pendiente, otro } = estado;
   return (
     <Acuerdo
-      modo={firmaElCad ? "firmar" : "proponer"}
-      cad={cad}
+      modo={modo}
+      otro={otro}
       proponer={(opciones) => proponerAcuerdoV1(supabase, opciones)}
       firmar={() =>
         pendiente && yo

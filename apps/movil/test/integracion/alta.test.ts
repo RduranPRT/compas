@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { firmaPendienteDelAcuerdo, nombreHogar } from "../../src/datos/hogar";
-import { acuerdoPendienteDeFirma, firmarAcuerdo, proponerAcuerdoV1 } from "../../src/datos/acuerdo";
+import { firmarAcuerdo, pantallaAcuerdo, proponerAcuerdoV1 } from "../../src/datos/acuerdo";
 import {
   crearHogar,
   estadoAlta,
@@ -52,9 +52,9 @@ describe("Alta del hogar contra Supabase local (T012, T014)", () => {
     expect((await integranteActual(cad))?.rol).toBe("CAD");
     expect((await guardarConsentimientos(cad, ["uso_app", "analitica_ia"], "v1")).error).toBeNull();
     expect(await estadoAlta(cad)).toBe("acuerdo");
-    const pendiente = await acuerdoPendienteDeFirma(cad);
-    const yo = await integranteActual(cad);
-    expect((await firmarAcuerdo(cad, pendiente!, yo!.id)).error).toBeNull();
+    const pantalla = await pantallaAcuerdo(cad);
+    expect(pantalla.modo).toBe("firmar");
+    expect((await firmarAcuerdo(cad, pantalla.pendiente!, pantalla.yo!.id)).error).toBeNull();
     expect(await estadoAlta(cad)).toBe("listo");
     expect(await firmaPendienteDelAcuerdo(org)).toBeNull();
     const { data } = await org.schema("gob").from("acuerdo_hogar").select("version, estado, vigencia_desde");

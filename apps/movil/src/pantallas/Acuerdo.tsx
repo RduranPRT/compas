@@ -11,20 +11,21 @@ import { Aviso, Boton, Pantalla, Parrafo, colores } from "../ui";
 type Resultado = Promise<{ error: { message: string } | null }>;
 
 export interface PropsAcuerdo {
-  /** ORG propone; CAD firma el que está pendiente. */
+  /** Un administrador propone; el otro firma la solicitud dirigida a él (E1). */
   modo: "proponer" | "firmar";
-  cad: { nombre: string; tieneCuenta: boolean } | null;
+  /** El otro administrador (ORG o CAD): firma lo que propongo. */
+  otro: { nombre: string; tieneCuenta: boolean } | null;
   proponer: (opciones: { urgente: boolean }) => Resultado;
   firmar: () => Resultado;
   continuar: () => void;
 }
 
 // HU-001-4 y escenario "Firmar el Acuerdo v1" (E1). Parámetros por defecto: tabla de la spec 001.
-export function Acuerdo({ modo, cad, proponer, firmar, continuar }: PropsAcuerdo) {
+export function Acuerdo({ modo, otro, proponer, firmar, continuar }: PropsAcuerdo) {
   const [error, setError] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState(false);
   const [esperandoFirma, setEsperandoFirma] = useState(false);
-  const firmaInmediata = cad?.tieneCuenta === true;
+  const firmaInmediata = otro?.tieneCuenta === true;
 
   async function ejecutar(accion: () => Resultado, alTerminar: () => void) {
     setError(null);
@@ -35,10 +36,10 @@ export function Acuerdo({ modo, cad, proponer, firmar, continuar }: PropsAcuerdo
     else alTerminar();
   }
 
-  if (esperandoFirma && cad) {
+  if (esperandoFirma && otro) {
     return (
       <Pantalla titulo="Acuerdo del Hogar v1">
-        <Aviso texto={`Listo. El Acuerdo v1 queda vigente cuando ${cad.nombre} lo firme.`} />
+        <Aviso texto={`Listo. El Acuerdo v1 queda vigente cuando ${otro.nombre} lo firme.`} />
         <Boton texto="Ir a la portada" onPress={continuar} />
       </Pantalla>
     );
@@ -65,7 +66,7 @@ export function Acuerdo({ modo, cad, proponer, firmar, continuar }: PropsAcuerdo
         <Boton texto="Firmar el Acuerdo v1" ocupado={ocupado} onPress={() => ejecutar(firmar, continuar)} />
       ) : firmaInmediata ? (
         <Boton
-          texto={`Pedir la firma de ${cad.nombre}`}
+          texto={`Pedir la firma de ${otro.nombre}`}
           ocupado={ocupado}
           onPress={() => ejecutar(() => proponer({ urgente: false }), () => setEsperandoFirma(true))}
         />
@@ -73,8 +74,8 @@ export function Acuerdo({ modo, cad, proponer, firmar, continuar }: PropsAcuerdo
         <>
           <Aviso
             texto={
-              cad
-                ? `${cad.nombre} aún no ingresa a Compás: puedes activar el Acuerdo ahora y su firma quedará pendiente.`
+              otro
+                ? `${otro.nombre} aún no ingresa a Compás: puedes activar el Acuerdo ahora y su firma quedará pendiente.`
                 : "Puedes activar el Acuerdo ahora; cuando invites a tu pareja, se le pedirá su firma."
             }
           />

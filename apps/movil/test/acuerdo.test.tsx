@@ -6,7 +6,7 @@ import { Acuerdo, type PropsAcuerdo } from "../src/pantallas/Acuerdo";
 function preparar(over: Partial<PropsAcuerdo> = {}) {
   const props: PropsAcuerdo = {
     modo: "proponer",
-    cad: { nombre: "Ana", tieneCuenta: true },
+    otro: { nombre: "Ana", tieneCuenta: true },
     proponer: vi.fn(async () => ({ error: null })),
     firmar: vi.fn(async () => ({ error: null })),
     continuar: vi.fn(),
@@ -38,7 +38,7 @@ describe("Firmar el Acuerdo v1 (HU-001-4, E1)", () => {
   });
 
   it("si el CAD aún no tiene cuenta, el ORG puede activarlo ahora y la firma queda pendiente", async () => {
-    const p = preparar({ cad: { nombre: "Ana", tieneCuenta: false } });
+    const p = preparar({ otro: { nombre: "Ana", tieneCuenta: false } });
     expect(screen.getByText("Ana aún no ingresa a Compás: puedes activar el Acuerdo ahora y su firma quedará pendiente.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Activar ahora" }));
     await waitFor(() => expect(p.proponer).toHaveBeenCalledWith({ urgente: true }));
