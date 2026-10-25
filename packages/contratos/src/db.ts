@@ -25,11 +25,89 @@ export type Database = {
             [_ in never]: never
           }
           Functions: {
-            "aceptar_invitacion":
+            "abrir_periodo":
+{ Args: { "p_periodo": string }; Returns: number
+                           },
+"aceptar_invitacion":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
 "activar_acuerdo":
 { Args: { "p_acuerdo": string }; Returns: string
+                           },
+"actualizar_linea_plan":
+{ Args: { "p_monto": number,"p_presupuesto": string,"p_sobre": string }; Returns: undefined
+                           },
+"admins":
+{ Args: { "p_hogar": string }; Returns: string[]
+                           },
+"anular_borrado_hogar":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"aplicar_acuerdo":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"aplicar_ajuste_plan":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"aplicar_borrado_hogar":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"aplicar_etapa":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"aplicar_plantilla_categorias":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"aplicar_presupuesto":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"aplicar_reasignacion":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"aplicar_retiro_futuro":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"asegurar_mes":
+{ Args: { "p_mes": string }; Returns: string
+                           },
+"balance_proyectado":
+{ Args: { "p_hoy": string,"p_periodo": string }; Returns: number
+                           },
+"cerrar_importaciones_revisadas":
+{ Args: { "p_hogar": string }; Returns: undefined
+                           },
+"cerrar_mes":
+{ Args: { "p_justificacion"?: string,"p_kpis": Json,"p_periodo": string,"p_resumen"?: string }; Returns: Json
+                           },
+"cerrar_n1_cubiertos":
+{ Args: { "p_hogar": string }; Returns: number
+                           },
+"cerrar_semana":
+{ Args: { "p_fecha_corte": string,"p_saldos": Json }; Returns: Json
+                           },
+"clasificar_comercio":
+{ Args: { "p_categoria": string,"p_comercio": string,"p_importacion": string,"p_integrante"?: string,"p_intencion"?: Database["fin"]['Enums']["intencion"] }; Returns: Json
+                           },
+"conciliar_cuenta":
+{ Args: { "p_cuenta": string,"p_fecha_corte": string,"p_motivo"?: string,"p_saldo_real": number,"p_tipo": string }; Returns: Json
+                           },
+"confirmar_distribucion":
+{ Args: { "p_asignaciones": Json,"p_ingreso": string }; Returns: Json
+                           },
+"confirmar_interno":
+{ Args: { "p_mov": string }; Returns: undefined
+                           },
+"confirmar_movimiento":
+{ Args: { "p_intencion"?: Database["fin"]['Enums']["intencion"],"p_mov": string,"p_sobre"?: string }; Returns: undefined
+                           },
+"consentimiento_vigente":
+{ Args: { "p_finalidad": Database["gob"]['Enums']["finalidad_consent"],"p_integrante": string }; Returns: boolean
+                           },
+"control_diario":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"control_hogar":
+{ Args: { "p_hogar": string,"p_hoy"?: string }; Returns: Json
                            },
 "crear_hogar":
 { Args: { "p_nombre": string,"p_nombre_hogar": string }; Returns: string
@@ -37,8 +115,37 @@ export type Database = {
 "crear_periodo":
 { Args: { "p_mes": string }; Returns: string
                            },
+"crear_sobres_periodo":
+{ Args: { "p_periodo": string }; Returns: number
+                           },
+"crear_sobres_periodo_interno":
+{ Args: { "p_periodo": string }; Returns: number
+                           },
+"crear_solicitud":
+{ Args: { "p_aprobador": string,"p_firmas": number,"p_objeto": string,"p_regla": string,"p_tabla": string,"p_tipo": Database["gob"]['Enums']["tipo_solicitud"] }; Returns: string
+                           },
+"cuenta_del_hogar":
+{ Args: { "p_cuenta": string }; Returns: Database["fin"]['Tables']["cuenta"]['Row']
+                          SetofOptions: {
+        from: "*"
+        to: "cuenta"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"decidir_perfil":
+{ Args: { "p_aceptar": boolean,"p_perfil": string }; Returns: undefined
+                           },
+"descartar_movimiento":
+{ Args: { "p_mov": string }; Returns: undefined
+                           },
+"emitir_alerta":
+{ Args: { "p_clave": string,"p_dato": Json,"p_destinatario": string,"p_hogar": string,"p_mensaje": string,"p_regla": string,"p_severidad": Database["med"]['Enums']["severidad"],"p_sobre": string,"p_tipo": string }; Returns: string
+                           },
 "emitir_evento":
 { Args: { "p_actor": string,"p_carga": Json,"p_hogar": string,"p_tipo": string }; Returns: undefined
+                           },
+"enviar_plan":
+{ Args: { "p_presupuesto": string }; Returns: string
                            },
 "es_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
@@ -46,11 +153,35 @@ export type Database = {
 "exigir_admin":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"exigir_base_cero":
+{ Args: { "p_presupuesto": string }; Returns: undefined
+                           },
+"exigir_integrante":
+{ Args: Record<PropertyKey, never>; Returns: Database["gob"]['Enums']["rol_integrante"]
+                           },
+"guardar_borrador_plan":
+{ Args: { "p_generado_por"?: "humano"|"ia"|"sistema"|"externo","p_ingreso": number,"p_lineas": Json,"p_mes": string,"p_motivo"?: string }; Returns: string
+                           },
+"guardar_perfil":
+{ Args: { "p_desde": string,"p_etapa": string,"p_hasta": string,"p_modelo"?: string,"p_perfil": Json,"p_retro": Json }; Returns: string
+                           },
+"guardar_sugerencias":
+{ Args: { "p_items": Json }; Returns: number
+                           },
 "hogar_actual":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
 "hogar_solicitado":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"importar_cartola":
+{ Args: { "p_archivo": string,"p_cuenta": string,"p_formato": string,"p_lector": string,"p_lineas": Json,"p_sha256": string }; Returns: Json
+                           },
+"imputar":
+{ Args: { "p_actor": "humano"|"ia"|"sistema"|"externo","p_mov": string,"p_sobre": string }; Returns: undefined
+                           },
+"iniciar_cierre_mes":
+{ Args: { "p_periodo": string }; Returns: string
                            },
 "inicio_piloto":
 { Args: { "p_hogar": string }; Returns: string
@@ -64,23 +195,118 @@ export type Database = {
 "jwt_sub":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"marcar_avisos_leidos":
+{ Args: { "p_ids": (string)[] }; Returns: number
+                           },
+"marcar_duplicados":
+{ Args: { "p_mov": string }; Returns: number
+                           },
+"marcar_transferencia":
+{ Args: { "p_hecha": boolean,"p_transferencia": string }; Returns: undefined
+                           },
+"mes_primer_plan":
+{ Args: { "p_hogar": string }; Returns: string
+                           },
+"otro_admin":
+{ Args: { "p_hogar": string,"p_yo": string }; Returns: string
+                           },
+"pago_tarjeta_de_linea":
+{ Args: { "p_fecha": string,"p_hash": string,"p_hogar": string,"p_imp": string,"p_monto": number,"p_origen": string,"p_tarjeta": string }; Returns: boolean
+                           },
 "parametro":
 { Args: { "p_codigo": string,"p_hogar": string }; Returns: Json
+                           },
+"parametro_num":
+{ Args: { "p_codigo": string,"p_defecto": number,"p_hogar": string }; Returns: number
+                           },
+"periodo_de":
+{ Args: { "p_fecha": string,"p_hogar": string }; Returns: string
+                           },
+"pesos":
+{ Args: { "p_monto": number }; Returns: string
+                           },
+"pesos_n":
+{ Args: { "p_monto": number }; Returns: string
                            },
 "poner_vigente":
 { Args: { "p_actor": string,"p_acuerdo": string }; Returns: undefined
                            },
+"presupuesto_del_hogar":
+{ Args: { "p_presupuesto": string }; Returns: Database["plan"]['Tables']["presupuesto_mensual"]['Row']
+                          SetofOptions: {
+        from: "*"
+        to: "presupuesto_mensual"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"pronostico_mes":
+{ Args: { "p_mes": string }; Returns: number
+                           },
 "proponer_acuerdo":
 { Args: { "p_reglas": Json,"p_urgente": boolean }; Returns: string
+                           },
+"proponer_etapa":
+{ Args: { "p_etapa": string,"p_evidencia": Json,"p_origen"?: "humano"|"ia"|"sistema"|"externo" }; Returns: string
                            },
 "puede_consentir_por":
 { Args: { "p_otorgante": string,"p_titular": string }; Returns: boolean
                            },
+"purgar_hogar":
+{ Args: { "p_hogar": string }; Returns: undefined
+                           },
+"purgar_hogares":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"reabrir_periodo":
+{ Args: { "p_motivo": string,"p_periodo": string }; Returns: number
+                           },
+"reasignar":
+{ Args: { "p_destino": string,"p_monto": number,"p_motivo"?: string,"p_origen": string }; Returns: Json
+                           },
+"rechazar_etapa":
+{ Args: { "p_solicitud": string }; Returns: undefined
+                           },
+"registrar_exportacion":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
+"registrar_gasto":
+{ Args: { "p_cliente_op": string,"p_comercio"?: string,"p_confianza"?: number,"p_cuenta": string,"p_fecha": string,"p_intencion"?: Database["fin"]['Enums']["intencion"],"p_monto": number,"p_n_cuotas"?: number,"p_nota"?: string,"p_origen"?: Database["fin"]['Enums']["origen_movimiento"],"p_sobre": string,"p_tratamiento"?: string }; Returns: Json
+                           },
+"registrar_ingreso":
+{ Args: { "p_cliente_op": string,"p_cuenta": string,"p_descripcion"?: string,"p_es_variable"?: boolean,"p_fecha": string,"p_integrante": string,"p_monto": number,"p_para_mes_siguiente"?: boolean,"p_tipo_ingreso"?: Database["fin"]['Enums']["tipo_ingreso"] }; Returns: Json
+                           },
 "registrar_menor":
 { Args: { "p_nombre": string,"p_version_consentimiento": string }; Returns: string
                            },
+"registrar_pago_tarjeta":
+{ Args: { "p_cliente_op": string,"p_fecha": string,"p_monto": number,"p_origen": string,"p_tarjeta": string }; Returns: string
+                           },
+"registrar_reembolso":
+{ Args: { "p_cliente_op": string,"p_fecha": string,"p_monto": number,"p_original": string }; Returns: Json
+                           },
+"resolver_duplicado":
+{ Args: { "p_dup": string,"p_es_duplicado": boolean }; Returns: undefined
+                           },
+"resolver_solicitud":
+{ Args: { "p_aprueba": boolean,"p_comentario"?: string,"p_solicitud": string }; Returns: Database["gob"]['Enums']["estado_solicitud"]
+                           },
+"revocar_consentimiento":
+{ Args: { "p_finalidad": Database["gob"]['Enums']["finalidad_consent"],"p_titular"?: string }; Returns: number
+                           },
 "rol_actual":
 { Args: Record<PropertyKey, never>; Returns: Database["gob"]['Enums']["rol_integrante"]
+                           },
+"sobre_categoria":
+{ Args: { "p_categoria": string,"p_integrante": string,"p_periodo": string }; Returns: string
+                           },
+"sobre_en_periodo":
+{ Args: { "p_periodo": string,"p_sobre": string }; Returns: string
+                           },
+"solicitar_borrado_hogar":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
+"valorar":
+{ Args: { "p_categoria": string,"p_cierre": string,"p_pregunta"?: string,"p_respuesta"?: string,"p_valoracion": Database["med"]['Enums']["valoracion"] }; Returns: undefined
                            }
           }
           Enums: {
@@ -124,11 +350,29 @@ isOneToOne: false
       referencedRelation: "movimiento"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "conciliacion_ajuste_movimiento_id_fkey"
+      columns: ["ajuste_movimiento_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "conciliacion_cuenta_id_fkey"
       columns: ["cuenta_id"]
 isOneToOne: false
       referencedRelation: "cuenta"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "conciliacion_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "conciliacion_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
     }
                   ]
                 },"cuenta": {
@@ -184,10 +428,28 @@ isOneToOne: false
       referencedRelation: "cuenta"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "deuda_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "deuda_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
+    },{
       foreignKeyName: "deuda_movimiento_origen_id_fkey"
       columns: ["movimiento_origen_id"]
 isOneToOne: false
       referencedRelation: "movimiento"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "deuda_movimiento_origen_id_fkey"
+      columns: ["movimiento_origen_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
       referencedColumns: ["id"]
     }
                   ]
@@ -210,10 +472,22 @@ isOneToOne: false
       referencedRelation: "movimiento"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "duplicado_candidato_movimiento_a_id_fkey"
+      columns: ["movimiento_a_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "duplicado_candidato_movimiento_b_id_fkey"
       columns: ["movimiento_b_id"]
 isOneToOne: false
       referencedRelation: "movimiento"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "duplicado_candidato_movimiento_b_id_fkey"
+      columns: ["movimiento_b_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
       referencedColumns: ["id"]
     }
                   ]
@@ -235,6 +509,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "movimiento"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "evidencia_movimiento_id_fkey"
+      columns: ["movimiento_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
     }
                   ]
                 },"importacion": {
@@ -255,6 +535,18 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "cuenta"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "importacion_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "importacion_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
     }
                   ]
                 },"imputacion": {
@@ -274,6 +566,12 @@ isOneToOne: false
       columns: ["movimiento_id"]
 isOneToOne: false
       referencedRelation: "movimiento"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "imputacion_movimiento_id_fkey"
+      columns: ["movimiento_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
       referencedColumns: ["id"]
     }
                   ]
@@ -295,26 +593,56 @@ isOneToOne: false
 isOneToOne: true
       referencedRelation: "movimiento"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "ingreso_movimiento_id_fkey"
+      columns: ["movimiento_id"]
+isOneToOne: true
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
     }
                   ]
                 },"movimiento": {
                   Row: {
-                    "actualizado_en": string,"cliente_op_id": string | null,"comercio": string | null,"confianza_ia": number | null,"confirmado_en": string | null,"confirmado_por": string | null,"creado_en": string,"cuenta_id": string,"estado": Database["fin"]['Enums']["estado_movimiento"],"fecha_contable": string,"hash_dedup": string | null,"hash_linea": string | null,"hogar_id": string,"id": string,"importacion_id": string | null,"intencion": Database["fin"]['Enums']["intencion"] | null,"moneda_original": Database["fin"]['Enums']["moneda"],"monto_clp": number,"monto_original": number | null,"movimiento_original_id": string | null,"n_cuotas": number | null,"nota": string | null,"origen": Database["fin"]['Enums']["origen_movimiento"],"periodo_id": string,"registrado_por": string | null,"registrado_por_tipo": "humano"|"ia"|"sistema"|"externo","tipo": Database["fin"]['Enums']["tipo_movimiento"],"tratamiento_cuotas": string | null,"valor_conversion": number | null
+                    "actualizado_en": string,"calce_importacion_id": string | null,"categoria_sugerida_id": string | null,"cliente_op_id": string | null,"comercio": string | null,"confianza_ia": number | null,"confirmado_en": string | null,"confirmado_por": string | null,"creado_en": string,"cuenta_id": string,"estado": Database["fin"]['Enums']["estado_movimiento"],"fecha_contable": string,"hash_dedup": string | null,"hash_linea": string | null,"hogar_id": string,"id": string,"importacion_id": string | null,"intencion": Database["fin"]['Enums']["intencion"] | null,"moneda_original": Database["fin"]['Enums']["moneda"],"monto_clp": number,"monto_original": number | null,"movimiento_original_id": string | null,"n_cuotas": number | null,"nota": string | null,"origen": Database["fin"]['Enums']["origen_movimiento"],"periodo_id": string,"registrado_por": string | null,"registrado_por_tipo": "humano"|"ia"|"sistema"|"externo","sentido": string | null,"tipo": Database["fin"]['Enums']["tipo_movimiento"],"tratamiento_cuotas": string | null,"valor_conversion": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "actualizado_en"?: string,"cliente_op_id"?: string | null,"comercio"?: string | null,"confianza_ia"?: number | null,"confirmado_en"?: string | null,"confirmado_por"?: string | null,"creado_en"?: string,"cuenta_id": string,"estado"?: Database["fin"]['Enums']["estado_movimiento"],"fecha_contable": string,"hash_dedup"?: never,"hash_linea"?: string | null,"hogar_id": string,"id"?: string,"importacion_id"?: string | null,"intencion"?: Database["fin"]['Enums']["intencion"] | null,"moneda_original"?: Database["fin"]['Enums']["moneda"],"monto_clp": number,"monto_original"?: number | null,"movimiento_original_id"?: string | null,"n_cuotas"?: number | null,"nota"?: string | null,"origen": Database["fin"]['Enums']["origen_movimiento"],"periodo_id": string,"registrado_por"?: string | null,"registrado_por_tipo"?: "humano"|"ia"|"sistema"|"externo","tipo": Database["fin"]['Enums']["tipo_movimiento"],"tratamiento_cuotas"?: string | null,"valor_conversion"?: number | null
+                    "actualizado_en"?: string,"calce_importacion_id"?: string | null,"categoria_sugerida_id"?: string | null,"cliente_op_id"?: string | null,"comercio"?: string | null,"confianza_ia"?: number | null,"confirmado_en"?: string | null,"confirmado_por"?: string | null,"creado_en"?: string,"cuenta_id": string,"estado"?: Database["fin"]['Enums']["estado_movimiento"],"fecha_contable": string,"hash_dedup"?: never,"hash_linea"?: string | null,"hogar_id": string,"id"?: string,"importacion_id"?: string | null,"intencion"?: Database["fin"]['Enums']["intencion"] | null,"moneda_original"?: Database["fin"]['Enums']["moneda"],"monto_clp": number,"monto_original"?: number | null,"movimiento_original_id"?: string | null,"n_cuotas"?: number | null,"nota"?: string | null,"origen": Database["fin"]['Enums']["origen_movimiento"],"periodo_id": string,"registrado_por"?: string | null,"registrado_por_tipo"?: "humano"|"ia"|"sistema"|"externo","sentido"?: string | null,"tipo": Database["fin"]['Enums']["tipo_movimiento"],"tratamiento_cuotas"?: string | null,"valor_conversion"?: number | null
                   }
                   Update: {
-                    "actualizado_en"?: string,"cliente_op_id"?: string | null,"comercio"?: string | null,"confianza_ia"?: number | null,"confirmado_en"?: string | null,"confirmado_por"?: string | null,"creado_en"?: string,"cuenta_id"?: string,"estado"?: Database["fin"]['Enums']["estado_movimiento"],"fecha_contable"?: string,"hash_dedup"?: never,"hash_linea"?: string | null,"hogar_id"?: string,"id"?: string,"importacion_id"?: string | null,"intencion"?: Database["fin"]['Enums']["intencion"] | null,"moneda_original"?: Database["fin"]['Enums']["moneda"],"monto_clp"?: number,"monto_original"?: number | null,"movimiento_original_id"?: string | null,"n_cuotas"?: number | null,"nota"?: string | null,"origen"?: Database["fin"]['Enums']["origen_movimiento"],"periodo_id"?: string,"registrado_por"?: string | null,"registrado_por_tipo"?: "humano"|"ia"|"sistema"|"externo","tipo"?: Database["fin"]['Enums']["tipo_movimiento"],"tratamiento_cuotas"?: string | null,"valor_conversion"?: number | null
+                    "actualizado_en"?: string,"calce_importacion_id"?: string | null,"categoria_sugerida_id"?: string | null,"cliente_op_id"?: string | null,"comercio"?: string | null,"confianza_ia"?: number | null,"confirmado_en"?: string | null,"confirmado_por"?: string | null,"creado_en"?: string,"cuenta_id"?: string,"estado"?: Database["fin"]['Enums']["estado_movimiento"],"fecha_contable"?: string,"hash_dedup"?: never,"hash_linea"?: string | null,"hogar_id"?: string,"id"?: string,"importacion_id"?: string | null,"intencion"?: Database["fin"]['Enums']["intencion"] | null,"moneda_original"?: Database["fin"]['Enums']["moneda"],"monto_clp"?: number,"monto_original"?: number | null,"movimiento_original_id"?: string | null,"n_cuotas"?: number | null,"nota"?: string | null,"origen"?: Database["fin"]['Enums']["origen_movimiento"],"periodo_id"?: string,"registrado_por"?: string | null,"registrado_por_tipo"?: "humano"|"ia"|"sistema"|"externo","sentido"?: string | null,"tipo"?: Database["fin"]['Enums']["tipo_movimiento"],"tratamiento_cuotas"?: string | null,"valor_conversion"?: number | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "movimiento_calce_importacion_id_fkey"
+      columns: ["calce_importacion_id"]
+isOneToOne: false
+      referencedRelation: "importacion"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_calce_importacion_id_fkey"
+      columns: ["calce_importacion_id"]
+isOneToOne: false
+      referencedRelation: "v_importacion_por_purgar"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "movimiento_cuenta_id_fkey"
       columns: ["cuenta_id"]
 isOneToOne: false
       referencedRelation: "cuenta"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "movimiento_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
     },{
       foreignKeyName: "movimiento_importacion_id_fkey"
       columns: ["importacion_id"]
@@ -332,6 +660,12 @@ isOneToOne: false
       columns: ["movimiento_original_id"]
 isOneToOne: false
       referencedRelation: "movimiento"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_movimiento_original_id_fkey"
+      columns: ["movimiento_original_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
       referencedColumns: ["id"]
     }
                   ]
@@ -353,6 +687,18 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "cuenta"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_historico_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "movimiento_historico_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
     },{
       foreignKeyName: "movimiento_historico_importacion_id_fkey"
       columns: ["importacion_id"]
@@ -386,23 +732,49 @@ isOneToOne: false
       referencedRelation: "movimiento"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "por_cobrar_movimiento_origen_id_fkey"
+      columns: ["movimiento_origen_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "por_cobrar_movimiento_pago_id_fkey"
       columns: ["movimiento_pago_id"]
 isOneToOne: false
       referencedRelation: "movimiento"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "por_cobrar_movimiento_pago_id_fkey"
+      columns: ["movimiento_pago_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
     }
                   ]
-                },"transferencia": {
+                },"regla_comercio": {
                   Row: {
-                    "cliente_op_id": string | null,"creado_en": string,"cuenta_destino_id": string | null,"cuenta_origen_id": string,"estado": Database["fin"]['Enums']["estado_transferencia"],"fecha": string,"hecha_en": string | null,"hecha_por": string | null,"hogar_id": string,"id": string,"monto_clp": number,"sobre_id": string | null,"tipo": Database["fin"]['Enums']["tipo_transferencia"],"vence_en": string | null
+                    "categoria_id": string,"creada_por": string,"creado_en": string,"hogar_id": string,"id": string,"integrante_id": string | null,"intencion": Database["fin"]['Enums']["intencion"] | null,"patron": string,"veces_usada": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "cliente_op_id"?: string | null,"creado_en"?: string,"cuenta_destino_id"?: string | null,"cuenta_origen_id": string,"estado"?: Database["fin"]['Enums']["estado_transferencia"],"fecha": string,"hecha_en"?: string | null,"hecha_por"?: string | null,"hogar_id": string,"id"?: string,"monto_clp": number,"sobre_id"?: string | null,"tipo": Database["fin"]['Enums']["tipo_transferencia"],"vence_en"?: string | null
+                    "categoria_id": string,"creada_por": string,"creado_en"?: string,"hogar_id": string,"id"?: string,"integrante_id"?: string | null,"intencion"?: Database["fin"]['Enums']["intencion"] | null,"patron": string,"veces_usada"?: number
                   }
                   Update: {
-                    "cliente_op_id"?: string | null,"creado_en"?: string,"cuenta_destino_id"?: string | null,"cuenta_origen_id"?: string,"estado"?: Database["fin"]['Enums']["estado_transferencia"],"fecha"?: string,"hecha_en"?: string | null,"hecha_por"?: string | null,"hogar_id"?: string,"id"?: string,"monto_clp"?: number,"sobre_id"?: string | null,"tipo"?: Database["fin"]['Enums']["tipo_transferencia"],"vence_en"?: string | null
+                    "categoria_id"?: string,"creada_por"?: string,"creado_en"?: string,"hogar_id"?: string,"id"?: string,"integrante_id"?: string | null,"intencion"?: Database["fin"]['Enums']["intencion"] | null,"patron"?: string,"veces_usada"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"transferencia": {
+                  Row: {
+                    "cliente_op_id": string | null,"creado_en": string,"cuenta_destino_id": string | null,"cuenta_origen_id": string,"estado": Database["fin"]['Enums']["estado_transferencia"],"fecha": string,"hash_linea": string | null,"hecha_en": string | null,"hecha_por": string | null,"hogar_id": string,"id": string,"importacion_id": string | null,"monto_clp": number,"sobre_id": string | null,"tipo": Database["fin"]['Enums']["tipo_transferencia"],"vence_en": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cliente_op_id"?: string | null,"creado_en"?: string,"cuenta_destino_id"?: string | null,"cuenta_origen_id": string,"estado"?: Database["fin"]['Enums']["estado_transferencia"],"fecha": string,"hash_linea"?: string | null,"hecha_en"?: string | null,"hecha_por"?: string | null,"hogar_id": string,"id"?: string,"importacion_id"?: string | null,"monto_clp": number,"sobre_id"?: string | null,"tipo": Database["fin"]['Enums']["tipo_transferencia"],"vence_en"?: string | null
+                  }
+                  Update: {
+                    "cliente_op_id"?: string | null,"creado_en"?: string,"cuenta_destino_id"?: string | null,"cuenta_origen_id"?: string,"estado"?: Database["fin"]['Enums']["estado_transferencia"],"fecha"?: string,"hash_linea"?: string | null,"hecha_en"?: string | null,"hecha_por"?: string | null,"hogar_id"?: string,"id"?: string,"importacion_id"?: string | null,"monto_clp"?: number,"sobre_id"?: string | null,"tipo"?: Database["fin"]['Enums']["tipo_transferencia"],"vence_en"?: string | null
                   }
                   Relationships: [
                     {
@@ -412,10 +784,46 @@ isOneToOne: false
       referencedRelation: "cuenta"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "transferencia_cuenta_destino_id_fkey"
+      columns: ["cuenta_destino_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "transferencia_cuenta_destino_id_fkey"
+      columns: ["cuenta_destino_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
+    },{
       foreignKeyName: "transferencia_cuenta_origen_id_fkey"
       columns: ["cuenta_origen_id"]
 isOneToOne: false
       referencedRelation: "cuenta"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencia_cuenta_origen_id_fkey"
+      columns: ["cuenta_origen_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "transferencia_cuenta_origen_id_fkey"
+      columns: ["cuenta_origen_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "transferencia_importacion_id_fkey"
+      columns: ["importacion_id"]
+isOneToOne: false
+      referencedRelation: "importacion"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencia_importacion_id_fkey"
+      columns: ["importacion_id"]
+isOneToOne: false
+      referencedRelation: "v_importacion_por_purgar"
       referencedColumns: ["id"]
     }
                   ]
@@ -436,13 +844,109 @@ isOneToOne: false
                         Relationships: [
                     
                   ]
+                },"v_movimiento": {
+                  Row: {
+                    "bloque_codigo": string | null,"categoria_id": string | null,"comercio": string | null,"confianza_ia": number | null,"creado_en": string,"cuenta": string,"cuenta_id": string,"estado": Database["fin"]['Enums']["estado_movimiento"],"fecha_contable": string,"hogar_id": string,"id": string,"importacion_id": string | null,"intencion": Database["fin"]['Enums']["intencion"] | null,"monto_clp": number,"movimiento_original_id": string | null,"n_cuotas": number | null,"nota": string | null,"origen": Database["fin"]['Enums']["origen_movimiento"],"periodo_id": string,"registrado_por": string | null,"sobre": string | null,"sobre_id": string | null,"tipo": Database["fin"]['Enums']["tipo_movimiento"],"tipo_cuenta": Database["fin"]['Enums']["tipo_cuenta"],"tratamiento_cuotas": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "movimiento_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "cuenta"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_cuenta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "movimiento_cuenta_id_fkey"
+      columns: ["cuenta_id"]
+isOneToOne: false
+      referencedRelation: "v_tarjeta"
+      referencedColumns: ["cuenta_id"]
+    },{
+      foreignKeyName: "movimiento_importacion_id_fkey"
+      columns: ["importacion_id"]
+isOneToOne: false
+      referencedRelation: "importacion"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_importacion_id_fkey"
+      columns: ["importacion_id"]
+isOneToOne: false
+      referencedRelation: "v_importacion_por_purgar"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_movimiento_original_id_fkey"
+      columns: ["movimiento_original_id"]
+isOneToOne: false
+      referencedRelation: "movimiento"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "movimiento_movimiento_original_id_fkey"
+      columns: ["movimiento_original_id"]
+isOneToOne: false
+      referencedRelation: "v_movimiento"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_revision_comercio": {
+                  Row: {
+                    "categoria_sugerida_id": string | null,"comercio": string | null,"confianza": number | null,"hogar_id": string | null,"importacion_id": string | null,"monto": number | null,"n": number | null,"origen": string | null,"revisado": boolean | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_saldo_cuenta": {
+                  Row: {
+                    "activa": boolean,"conciliada_hasta": string | null,"cuenta_id": string,"fecha_saldo_inicial": string,"hogar_id": string,"institucion": string | null,"nombre": string,"saldo": number | null,"saldo_inicial": number,"tipo": Database["fin"]['Enums']["tipo_cuenta"],"ultimos4": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "activa"?: boolean | null,"conciliada_hasta"?: never,"cuenta_id"?: string | null,"fecha_saldo_inicial"?: string | null,"hogar_id"?: string | null,"institucion"?: string | null,"nombre"?: string | null,"saldo"?: never,"saldo_inicial"?: number | null,"tipo"?: Database["fin"]['Enums']["tipo_cuenta"] | null,"ultimos4"?: string | null
+                         }
+                        Update: {
+                           "activa"?: boolean | null,"conciliada_hasta"?: never,"cuenta_id"?: string | null,"fecha_saldo_inicial"?: string | null,"hogar_id"?: string | null,"institucion"?: string | null,"nombre"?: string | null,"saldo"?: never,"saldo_inicial"?: number | null,"tipo"?: Database["fin"]['Enums']["tipo_cuenta"] | null,"ultimos4"?: string | null
+                         }
+                        Relationships: [
+                    
+                  ]
+                },"v_tarjeta": {
+                  Row: {
+                    "activa": boolean,"apartado": number | null,"cuenta_id": string,"cupo": number | null,"deuda": number | null,"dia_facturacion": number | null,"dia_pago": number | null,"hogar_id": string,"nombre": string,"ultimos4": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "activa"?: boolean | null,"apartado"?: never,"cuenta_id"?: string | null,"cupo"?: number | null,"deuda"?: never,"dia_facturacion"?: number | null,"dia_pago"?: number | null,"hogar_id"?: string | null,"nombre"?: string | null,"ultimos4"?: string | null
+                         }
+                        Update: {
+                           "activa"?: boolean | null,"apartado"?: never,"cuenta_id"?: string | null,"cupo"?: number | null,"deuda"?: never,"dia_facturacion"?: number | null,"dia_pago"?: number | null,"hogar_id"?: string | null,"nombre"?: string | null,"ultimos4"?: string | null
+                         }
+                        Relationships: [
+                    
+                  ]
+                },"v_transferencia_pendiente": {
+                  Row: {
+                    "cuenta_destino": string | null,"cuenta_origen": string,"fecha": string,"hogar_id": string,"id": string,"integrante_id": string | null,"monto_clp": number,"sobre": string | null,"tipo": Database["fin"]['Enums']["tipo_transferencia"],"vence_en": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Functions: {
-            [_ in never]: never
+            "saldo_cuenta":
+{ Args: { "p_cuenta": string,"p_hasta": string }; Returns: number
+                           }
           }
           Enums: {
-            "estado_movimiento": "capturado"|"por_confirmar"|"confirmado"|"conciliado"|"descartado","estado_simple": "abierto"|"resuelto"|"anulado","estado_transferencia": "pendiente"|"hecha"|"anulada","intencion": "supervivencia"|"deseo"|"cultura"|"imprevisto","moneda": "CLP"|"UF"|"USD"|"EUR","origen_movimiento": "manual"|"chat"|"foto"|"correo"|"banco"|"sistema"|"cartola","tipo_cuenta": "vista"|"ahorro"|"billetera"|"tarjeta_credito"|"inversion","tipo_deuda": "consumo"|"tarjeta"|"compra_cuotas"|"automotriz"|"hipotecario"|"educacion"|"informal"|"otra","tipo_evidencia": "foto"|"correo"|"chat"|"pdf"|"csv"|"xlsx","tipo_ingreso": "sueldo"|"honorarios_liquido"|"bono"|"gratificacion"|"reajuste"|"otro","tipo_movimiento": "gasto"|"ingreso"|"reembolso"|"ajuste","tipo_transferencia": "interna"|"pago_tarjeta"|"a_personal"|"aporte_fondo"
+            "estado_movimiento": "capturado"|"por_confirmar"|"confirmado"|"conciliado"|"descartado","estado_simple": "abierto"|"resuelto"|"anulado","estado_transferencia": "pendiente"|"hecha"|"anulada","intencion": "supervivencia"|"deseo"|"cultura"|"imprevisto","moneda": "CLP"|"UF"|"USD"|"EUR","origen_movimiento": "manual"|"chat"|"foto"|"correo"|"banco"|"sistema"|"cartola","tipo_cuenta": "vista"|"ahorro"|"billetera"|"tarjeta_credito"|"inversion","tipo_deuda": "consumo"|"tarjeta"|"compra_cuotas"|"automotriz"|"hipotecario"|"educacion"|"informal"|"otra","tipo_evidencia": "foto"|"correo"|"chat"|"pdf"|"csv"|"xlsx","tipo_ingreso": "sueldo"|"honorarios_liquido"|"bono"|"gratificacion"|"reajuste"|"otro","tipo_movimiento": "gasto"|"ingreso"|"reembolso"|"ajuste"|"transferencia","tipo_transferencia": "interna"|"pago_tarjeta"|"a_personal"|"aporte_fondo"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -531,6 +1035,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "solicitud_aprobacion"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "firma_solicitud_id_fkey"
+      columns: ["solicitud_id"]
+isOneToOne: false
+      referencedRelation: "v_solicitud"
+      referencedColumns: ["id"]
     }
                   ]
                 },"historial_etapa": {
@@ -556,6 +1066,12 @@ isOneToOne: false
       columns: ["solicitud_id"]
 isOneToOne: false
       referencedRelation: "solicitud_aprobacion"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "historial_etapa_solicitud_id_fkey"
+      columns: ["solicitud_id"]
+isOneToOne: false
+      referencedRelation: "v_solicitud"
       referencedColumns: ["id"]
     }
                   ]
@@ -732,13 +1248,39 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "v_solicitud": {
+                  Row: {
+                    "aprobador": string | null,"aprobador_id": string | null,"creado_en": string,"escalada_a_suplente": boolean,"estado": Database["gob"]['Enums']["estado_solicitud"],"firmas": Json | null,"firmas_requeridas": number,"hogar_id": string,"id": string,"objeto_id": string,"objeto_tabla": string,"regla_codigo": string | null,"solicitada_por": string | null,"solicitada_por_nombre": string | null,"tipo": Database["gob"]['Enums']["tipo_solicitud"],"vence_en": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "solicitud_aprobacion_aprobador_id_fkey"
+      columns: ["aprobador_id"]
+isOneToOne: false
+      referencedRelation: "integrante"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "solicitud_aprobacion_hogar_id_fkey"
+      columns: ["hogar_id"]
+isOneToOne: false
+      referencedRelation: "hogar"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "solicitud_aprobacion_solicitada_por_fkey"
+      columns: ["solicitada_por"]
+isOneToOne: false
+      referencedRelation: "integrante"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
           }
           Functions: {
             [_ in never]: never
           }
           Enums: {
-            "decision_firma": "aprueba"|"rechaza","direccion_etapa": "inicial"|"avance"|"retroceso"|"reinicio","estado_acuerdo": "borrador"|"vigente"|"reemplazado","estado_etapa": "propuesta"|"confirmada"|"rechazada","estado_solicitud": "pendiente"|"aprobada"|"rechazada"|"vencida"|"autoaprobada","finalidad_consent": "uso_app"|"datos_menor"|"lectura_correo"|"banca_abierta"|"asesor_externo"|"analitica_ia","rol_integrante": "ORG"|"CAD"|"ING"|"MEN"|"ASE","tipo_derecho": "acceso"|"exportacion"|"rectificacion"|"borrado"|"oposicion","tipo_solicitud": "presupuesto"|"ajuste_plan"|"reasignacion"|"retiro_futuro"|"etapa"|"acuerdo"|"recuperacion"|"reapertura"|"duplicado"
+            "decision_firma": "aprueba"|"rechaza","direccion_etapa": "inicial"|"avance"|"retroceso"|"reinicio","estado_acuerdo": "borrador"|"vigente"|"reemplazado","estado_etapa": "propuesta"|"confirmada"|"rechazada","estado_solicitud": "pendiente"|"aprobada"|"rechazada"|"vencida"|"autoaprobada","finalidad_consent": "uso_app"|"datos_menor"|"lectura_correo"|"banca_abierta"|"asesor_externo"|"analitica_ia","rol_integrante": "ORG"|"CAD"|"ING"|"MEN"|"ASE","tipo_derecho": "acceso"|"exportacion"|"rectificacion"|"borrado"|"oposicion","tipo_solicitud": "presupuesto"|"ajuste_plan"|"reasignacion"|"retiro_futuro"|"etapa"|"acuerdo"|"recuperacion"|"reapertura"|"duplicado"|"borrado_hogar"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -888,7 +1430,21 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "v_aviso": {
+                  Row: {
+                    "creado_en": string,"dato": Json | null,"destinatario_id": string,"estado": Database["med"]['Enums']["estado_alerta"],"fecha_local": string,"hogar_id": string,"id": string,"leida_en": string | null,"mensaje": string,"regla_codigo": string | null,"severidad": Database["med"]['Enums']["severidad"],"sobre_id": string | null,"tipo": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "creado_en"?: string | null,"dato"?: Json | null,"destinatario_id"?: string | null,"estado"?: Database["med"]['Enums']["estado_alerta"] | null,"fecha_local"?: string | null,"hogar_id"?: string | null,"id"?: string | null,"leida_en"?: string | null,"mensaje"?: string | null,"regla_codigo"?: string | null,"severidad"?: Database["med"]['Enums']["severidad"] | null,"sobre_id"?: string | null,"tipo"?: string | null
+                         }
+                        Update: {
+                           "creado_en"?: string | null,"dato"?: Json | null,"destinatario_id"?: string | null,"estado"?: Database["med"]['Enums']["estado_alerta"] | null,"fecha_local"?: string | null,"hogar_id"?: string | null,"id"?: string | null,"leida_en"?: string | null,"mensaje"?: string | null,"regla_codigo"?: string | null,"severidad"?: Database["med"]['Enums']["severidad"] | null,"sobre_id"?: string | null,"tipo"?: string | null
+                         }
+                        Relationships: [
+                    
+                  ]
+                }
           }
           Functions: {
             [_ in never]: never
@@ -931,6 +1487,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_saldo_sobre"
       referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "asignacion_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
     }
                   ]
                 },"categoria": {
@@ -1017,6 +1579,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_saldo_sobre"
       referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "libro_sobre_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
     }
                   ]
                 },"linea_plan": {
@@ -1055,6 +1623,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_saldo_sobre"
       referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "linea_plan_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
     }
                   ]
                 },"pago_fijo": {
@@ -1153,6 +1727,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_saldo_sobre"
       referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "programacion_flujo_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
     }
                   ]
                 },"reasignacion": {
@@ -1192,6 +1772,12 @@ isOneToOne: false
       referencedRelation: "v_saldo_sobre"
       referencedColumns: ["sobre_id"]
     },{
+      foreignKeyName: "reasignacion_sobre_destino_id_fkey"
+      columns: ["sobre_destino_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "reasignacion_sobre_origen_id_fkey"
       columns: ["sobre_origen_id"]
 isOneToOne: false
@@ -1209,6 +1795,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_saldo_sobre"
       referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "reasignacion_sobre_origen_id_fkey"
+      columns: ["sobre_origen_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
     }
                   ]
                 },"sobre": {
@@ -1260,6 +1852,70 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"v_ingreso_por_repartir": {
+                  Row: {
+                    "comercio": string | null,"cuenta_id": string,"diferencia_pct": number | null,"es_variable": boolean,"fecha_contable": string,"hogar_id": string,"ingreso_id": string,"integrante_id": string | null,"mes": string,"monto_clp": number,"periodo_id": string,"por_repartir": number | null,"tipo_ingreso": Database["fin"]['Enums']["tipo_ingreso"]
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "movimiento_periodo_id_fkey"
+      columns: ["periodo_id"]
+isOneToOne: false
+      referencedRelation: "periodo"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_linea_plan": {
+                  Row: {
+                    "aporte_calculado": number | null,"bloque_codigo": string | null,"cuenta_id": string | null,"disponible": number | null,"es_cuatro_paredes": boolean,"estado_plan": Database["plan"]['Enums']["estado_presupuesto"],"explicacion": string | null,"fondo_id": string | null,"gastado": number | null,"hogar_id": string,"holgura_pct": number,"integrante_id": string | null,"monto_proyectado": number,"monto_uf": number | null,"nombre": string | null,"periodo_id": string,"presupuesto_id": string,"regla_codigo": string | null,"saldo": number | null,"sobre_id": string,"tipo": Database["plan"]['Enums']["tipo_sobre"],"version": number
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "linea_plan_presupuesto_id_fkey"
+      columns: ["presupuesto_id"]
+isOneToOne: false
+      referencedRelation: "presupuesto_mensual"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "linea_plan_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "sobre"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "linea_plan_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_ritmo_sobre"
+      referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "linea_plan_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_saldo_sobre"
+      referencedColumns: ["sobre_id"]
+    },{
+      foreignKeyName: "linea_plan_sobre_id_fkey"
+      columns: ["sobre_id"]
+isOneToOne: false
+      referencedRelation: "v_sobre"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "presupuesto_mensual_periodo_id_fkey"
+      columns: ["periodo_id"]
+isOneToOne: false
+      referencedRelation: "periodo"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "sobre_fondo_id_fkey"
+      columns: ["fondo_id"]
+isOneToOne: false
+      referencedRelation: "fondo"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"v_ritmo_sobre": {
                   Row: {
                     "dias_mes": number | null,"dias_transcurridos": number | null,"disponible": number | null,"gastado": number | null,"hogar_id": string,"mes": string,"periodo_id": string,"ritmo": number | null,"sobre_id": string
@@ -1285,6 +1941,32 @@ isOneToOne: false
       columns: ["categoria_id"]
 isOneToOne: false
       referencedRelation: "categoria"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "sobre_periodo_id_fkey"
+      columns: ["periodo_id"]
+isOneToOne: false
+      referencedRelation: "periodo"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_sobre": {
+                  Row: {
+                    "bloque_codigo": string | null,"categoria_id": string | null,"cerrado": boolean,"cuenta_id": string | null,"disponible": number | null,"es_cuatro_paredes": boolean,"fondo_id": string | null,"gastado": number | null,"hogar_id": string,"id": string,"integrante_id": string | null,"intencion_default": Database["fin"]['Enums']["intencion"] | null,"mes": string,"nombre": string | null,"periodo_id": string,"saldo": number | null,"tipo": Database["plan"]['Enums']["tipo_sobre"]
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "sobre_categoria_id_fkey"
+      columns: ["categoria_id"]
+isOneToOne: false
+      referencedRelation: "categoria"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "sobre_fondo_id_fkey"
+      columns: ["fondo_id"]
+isOneToOne: false
+      referencedRelation: "fondo"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "sobre_periodo_id_fkey"
@@ -1588,11 +2270,11 @@ export const Constants = {
           }
         },"fin": {
           Enums: {
-            "estado_movimiento": ["capturado", "por_confirmar", "confirmado", "conciliado", "descartado"],"estado_simple": ["abierto", "resuelto", "anulado"],"estado_transferencia": ["pendiente", "hecha", "anulada"],"intencion": ["supervivencia", "deseo", "cultura", "imprevisto"],"moneda": ["CLP", "UF", "USD", "EUR"],"origen_movimiento": ["manual", "chat", "foto", "correo", "banco", "sistema", "cartola"],"tipo_cuenta": ["vista", "ahorro", "billetera", "tarjeta_credito", "inversion"],"tipo_deuda": ["consumo", "tarjeta", "compra_cuotas", "automotriz", "hipotecario", "educacion", "informal", "otra"],"tipo_evidencia": ["foto", "correo", "chat", "pdf", "csv", "xlsx"],"tipo_ingreso": ["sueldo", "honorarios_liquido", "bono", "gratificacion", "reajuste", "otro"],"tipo_movimiento": ["gasto", "ingreso", "reembolso", "ajuste"],"tipo_transferencia": ["interna", "pago_tarjeta", "a_personal", "aporte_fondo"]
+            "estado_movimiento": ["capturado", "por_confirmar", "confirmado", "conciliado", "descartado"],"estado_simple": ["abierto", "resuelto", "anulado"],"estado_transferencia": ["pendiente", "hecha", "anulada"],"intencion": ["supervivencia", "deseo", "cultura", "imprevisto"],"moneda": ["CLP", "UF", "USD", "EUR"],"origen_movimiento": ["manual", "chat", "foto", "correo", "banco", "sistema", "cartola"],"tipo_cuenta": ["vista", "ahorro", "billetera", "tarjeta_credito", "inversion"],"tipo_deuda": ["consumo", "tarjeta", "compra_cuotas", "automotriz", "hipotecario", "educacion", "informal", "otra"],"tipo_evidencia": ["foto", "correo", "chat", "pdf", "csv", "xlsx"],"tipo_ingreso": ["sueldo", "honorarios_liquido", "bono", "gratificacion", "reajuste", "otro"],"tipo_movimiento": ["gasto", "ingreso", "reembolso", "ajuste", "transferencia"],"tipo_transferencia": ["interna", "pago_tarjeta", "a_personal", "aporte_fondo"]
           }
         },"gob": {
           Enums: {
-            "decision_firma": ["aprueba", "rechaza"],"direccion_etapa": ["inicial", "avance", "retroceso", "reinicio"],"estado_acuerdo": ["borrador", "vigente", "reemplazado"],"estado_etapa": ["propuesta", "confirmada", "rechazada"],"estado_solicitud": ["pendiente", "aprobada", "rechazada", "vencida", "autoaprobada"],"finalidad_consent": ["uso_app", "datos_menor", "lectura_correo", "banca_abierta", "asesor_externo", "analitica_ia"],"rol_integrante": ["ORG", "CAD", "ING", "MEN", "ASE"],"tipo_derecho": ["acceso", "exportacion", "rectificacion", "borrado", "oposicion"],"tipo_solicitud": ["presupuesto", "ajuste_plan", "reasignacion", "retiro_futuro", "etapa", "acuerdo", "recuperacion", "reapertura", "duplicado"]
+            "decision_firma": ["aprueba", "rechaza"],"direccion_etapa": ["inicial", "avance", "retroceso", "reinicio"],"estado_acuerdo": ["borrador", "vigente", "reemplazado"],"estado_etapa": ["propuesta", "confirmada", "rechazada"],"estado_solicitud": ["pendiente", "aprobada", "rechazada", "vencida", "autoaprobada"],"finalidad_consent": ["uso_app", "datos_menor", "lectura_correo", "banca_abierta", "asesor_externo", "analitica_ia"],"rol_integrante": ["ORG", "CAD", "ING", "MEN", "ASE"],"tipo_derecho": ["acceso", "exportacion", "rectificacion", "borrado", "oposicion"],"tipo_solicitud": ["presupuesto", "ajuste_plan", "reasignacion", "retiro_futuro", "etapa", "acuerdo", "recuperacion", "reapertura", "duplicado", "borrado_hogar"]
           }
         },"ia": {
           Enums: {
