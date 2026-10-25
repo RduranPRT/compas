@@ -1,0 +1,80 @@
+== C1 revocar analitica_ia: queda revocado y la app sigue en modo manual
+ revocados 
+-----------
+         1
+(1 row)
+
+ ia | app 
+----+-----
+ f  | t
+(1 row)
+
+== C2 revocar datos_menor desactiva al hijo (R25); una adulta no revoca por otro adulto (debe FALLAR)
+ revocados 
+-----------
+         1
+(1 row)
+
+ nombre | activo 
+--------+--------
+ Hijo 1 | f
+(1 row)
+
+ERROR:  Solo puedes revocar tus consentimientos o los de tus hijos
+== E1 exportación registrada como derecho cumplido
+ registrada 
+------------
+ t
+(1 row)
+
+    tipo     |  estado  
+-------------+----------
+ exportacion | cumplida
+(1 row)
+
+== B1 borrado del hogar: con una firma queda pendiente; con ambas, el hogar queda programado
+ tras_rodrigo 
+--------------
+ pendiente
+(1 row)
+
+ sin_programar 
+---------------
+ t
+(1 row)
+
+ tras_ana 
+----------
+ aprobada
+(1 row)
+
+ programado 
+------------
+ t
+(1 row)
+
+== B2 antes de 30 días no se purga (debe FALLAR) y el libro sigue inmutable (debe FALLAR)
+ERROR:  El hogar no tiene un borrado aprobado hace 30 días
+ERROR:  libro_sobre es solo inserción
+== B3 a los 30 días se borran todos sus datos; el otro hogar queda intacto (D19)
+ purgados 
+----------
+        1
+(1 row)
+
+   nombre   
+------------
+ Hogar Otra
+(1 row)
+
+       tabla        | filas 
+--------------------+-------
+ app.membresia      |     1
+ fin.cuenta         |     0
+ fin.movimiento     |     0
+ gob.integrante     |     1
+ plan.categoria     |    15
+ plan.libro_sobre   |     0
+ plan.sobre         |     0
+ sys.evento_dominio |     2
+(8 rows)
