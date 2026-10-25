@@ -11,10 +11,10 @@ Proyecto en cuatro fases: (1) investigación, (2) análisis y diseño con Spec-D
 | Método v2 consolidado | Listo · `docs/metodo/metodo-compas-v2.md` |
 | Decisiones del hogar piloto | Listas · `docs/decisiones-hogar.md` |
 | ADR 01–10 | Revisadas 24-10-2026: 01–05, 07, 09 y 10 aceptadas; 06 y 08 postergadas · `docs/adr/` |
-| Base de datos (migraciones 0001–0003) | Probada en PostgreSQL 16 · `db/` |
-| Specs 001–011 | Borrador, por aprobar · `specs/` |
-| Plan y tareas | Spec 001 · `specs/001-base-plataforma/` |
-| Código de la app | Por construir con Claude Code (spec 001, tarea T001) |
+| Base de datos (migraciones 0001–0016) | Probada en PostgreSQL 16 y Supabase local · `db/` |
+| Specs 001–011 | 001 implementada; 002–011 aprobadas por delegación (D29) e implementadas en la Beta · `specs/` |
+| Plan y tareas | Spec 001 y Beta 002–011 · `specs/beta-mvp-plan.md` y `specs/NNN-*/tasks.md` |
+| Código de la app | Beta completa del MVP en web (Expo); IA con respaldo por reglas (D31) |
 
 ## Cómo empezar con Claude Code
 

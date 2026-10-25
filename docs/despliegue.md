@@ -22,6 +22,17 @@ corepack pnpm exec supabase migration list --linked
 
 `db push` pide la contraseña de la base (guardada en el gestor de contraseñas, nunca en el repositorio).
 
+Desde la Beta (migraciones 0006–0016), `db push` también programa con `pg_cron` el control diario (`compas-control-diario`, 23:00 UTC = 20:00 de Santiago en verano) y la retención (`compas-retencion`). Para revisarlos: SQL Editor → `select jobname, schedule from cron.job;`.
+
+### Funciones de IA (ADR-04, D31)
+
+```bash
+corepack pnpm exec supabase functions deploy ia-extraer-cartola ia-clasificar ia-chat ia-texto --project-ref opoeeyxpharopjftfdnt
+corepack pnpm exec supabase secrets set ANTHROPIC_API_KEY=<clave> --project-ref opoeeyxpharopjftfdnt
+```
+
+Sin `ANTHROPIC_API_KEY` las funciones responden 503 y la app usa sus reglas: la Beta funciona completa sin IA. Opcional: `CLAUDE_MODELO_LIVIANO` y `CLAUDE_MODELO_MAYOR` para cambiar de modelo. La IA solo procesa datos de quien tiene vigente el consentimiento `analitica_ia`.
+
 ### Ajustes del panel que `db push` no sube (una sola vez)
 
 1. **Settings → API → Data API → Exposed schemas**: agregar `app`, `gob`, `fin`, `plan`, `med`, `ref`, `ia`. Sin esto la app no puede leer ni guardar (error `PGRST106 Invalid schema`).
