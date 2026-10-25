@@ -1,0 +1,124 @@
+== L1 línea base: un sobre negativo en noviembre no abre N1 ni avisa
+ alertas | recuperaciones 
+---------+----------------
+       0 |              0
+(1 row)
+
+== N1 Vestuario de diciembre queda en −8.000: N1 abierto y aviso sin culpa a ambos administradores (R10, R16)
+ nivel | regla_codigo | estado  
+-------+--------------+---------
+ N1    | R10          | abierto
+(1 row)
+
+ nombre  |      tipo      | estado  |                                                        mensaje                                                        
+---------+----------------+---------+-----------------------------------------------------------------------------------------------------------------------
+ Ana     | sobre_negativo | enviada | Vestuario quedó en −$8.000. Un sobre negativo se cubre moviendo dinero desde otro sobre (R10). Puedes cubrirlo ahora.
+ Rodrigo | sobre_negativo | enviada | Vestuario quedó en −$8.000. Un sobre negativo se cubre moviendo dinero desde otro sobre (R10). Puedes cubrirlo ahora.
+(2 rows)
+
+== R1 cubrir desde Ocio $8.000 (4 % de 200.000): se autoaprueba y cierra el N1 (R38)
+  estado  
+----------
+ aplicada
+(1 row)
+
+     nombre     | saldo  
+----------------+--------
+ Ocio y salidas | 192000
+ Vestuario      |      0
+(2 rows)
+
+ autoaprobada | aplicada 
+--------------+----------
+ t            | t
+(1 row)
+
+ nivel | estado  
+-------+---------
+ N1    | cerrado
+(1 row)
+
+== R2 sobre el umbral ($30.000 de 192.000): queda pendiente de la CAD; al aprobar se aplica
+  estado   
+-----------
+ pendiente
+(1 row)
+
+   nombre   | saldo  
+------------+--------
+ Transporte | 100000
+(1 row)
+
+  estado  
+----------
+ aprobada
+(1 row)
+
+   nombre   | saldo  
+------------+--------
+ Transporte | 130000
+(1 row)
+
+== R3 tomar de Futuro exige doble firma (R37): con una firma no se aplica; con dos, sí
+  estado   
+-----------
+ pendiente
+(1 row)
+
+ tras_ana  
+-----------
+ pendiente
+(1 row)
+
+       nombre       | saldo  
+--------------------+--------
+ Ahorro e inversión | 300000
+(1 row)
+
+ tras_rodrigo 
+--------------
+ aprobada
+(1 row)
+
+       nombre       | saldo  
+--------------------+--------
+ Ahorro e inversión | 250000
+(1 row)
+
+== R4 mover más de lo que tiene el sobre (debe FALLAR)
+ERROR:  Ocio y salidas tiene $162.000 disponible; elige un monto menor u otro sobre
+== C1 ritmo excedido el 12 de diciembre: Alimentación con 400.000 y 200.000 gastados (R09)
+ alertas 
+---------
+ 4
+(1 row)
+
+ tipo  | regla_codigo | estado  |                                                                                mensaje                                                                                
+-------+--------------+---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ritmo | R09          | enviada | Vestuario va a ritmo 2,58: lleva $8.000 de $8.000. Con un ritmo sobre 1,1, el método sugiere revisar (R09). Puedes moderar el gasto o cubrir desde otro sobre.
+ ritmo | R09          | enviada | Alimentación va a ritmo 1,15: lleva $200.000 de $450.000. Con un ritmo sobre 1,1, el método sugiere revisar (R09). Puedes moderar el gasto o cubrir desde otro sobre.
+(2 rows)
+
+== C2 balance proyectado negativo abre N2 para el ORG (R12)
+ negativo 
+----------
+ t
+(1 row)
+
+ nivel | regla_codigo | estado  
+-------+--------------+---------
+ N2    | R12          | abierto
+(1 row)
+
+== T1 tope diario (R40): pasadas 3 alertas, el resto va al resumen
+   estado   | count 
+------------+-------
+ enviada    |     3
+ en_resumen |     2
+(2 rows)
+
+== T2 línea base: el control de noviembre no emite ritmo ni balance
+             resultado              
+------------------------------------
+ {"alertas": 0, "linea_base": true}
+(1 row)
