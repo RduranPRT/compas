@@ -14,7 +14,7 @@ R21 compara bola de nieve (menor saldo primero) y avalancha (mayor tasa primero)
 
 ## Consecuencias
 
-Si el perfil inicial detecta deuda de consumo (intereses o cuotas en los estados de cuenta), la retroalimentación lo señala y se adelanta EP11.
+Si el hogar declara deuda de consumo, se adelanta EP11. El perfil inicial que la detectaba se retiró el 06-11-2026 (D35).
 
 ## Cómo verificar
 

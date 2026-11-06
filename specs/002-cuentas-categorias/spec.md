@@ -77,7 +77,7 @@ Característica: Cuentas, categorías y sobres (S1, R31, R44, D23)
 
 - Paso "Cuentas" del alta: lista, alta rápida (nombre, tipo, institución, últimos 4, saldo al 1-10).
 - Paso "Categorías": plantilla editable agrupada por bloque.
-- Pantalla "Ingresos y pagos fijos" con base/variable (también se precarga desde el perfil inicial, spec 004).
+- Pantalla "Ingresos y pagos fijos" con base/variable.
 
 ## IA
 
@@ -99,5 +99,5 @@ Fondos y metas con aportes (spec 006), deudas con plan de pago (EP11), cuentas e
 
 - La plantilla suma **Vestuario** (Vida, variable, deseo) y **Comisiones e intereses** (Esenciales, variable, imprevisto), que usan las specs 005 y 008: quedan 15 categorías.
 - Los sobres del período los crea `app.asegurar_periodo(p_mes date)`, idempotente; también la llaman las RPC de captura cuando el mes aún no existe. Las categorías `sin_culpa` y `mesada` generan un sobre por adulto o por hijo; `fondo` genera uno por fondo activo; `cuota` (deudas) no genera sobres en el MVP (EP11).
-- Después del Acuerdo, la portada muestra la lista "Configura tu hogar": cuentas y tarjetas, categorías, ingresos y pagos fijos, cartolas y perfil inicial. Cada paso se puede retomar desde "Más".
+- Después del Acuerdo, la portada muestra la lista "Configura tu hogar": cuentas y tarjetas, categorías, ingresos y pagos fijos, y primer plan (D35). Cada paso se puede retomar desde "Más".
 - Solo los administradores registran cuentas, categorías, ingresos esperados y pagos fijos (RLS restrictiva).

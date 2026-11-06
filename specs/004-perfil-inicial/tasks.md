@@ -1,5 +1,7 @@
 # Tareas · Spec 004 Perfil inicial y retroalimentación
 
+**Spec retirada (D35, 06-11-2026).** De estas tareas sigue vigente solo la parte de aprobaciones y etapa de T401; el resto se quitó de la app.
+
 | ID | Tarea | Archivos | Prueba que la cierra | Estado |
 | --- | --- | --- | --- | --- |
 | T401 | `guardar_perfil`, `proponer_etapa`, `resolver_solicitud` con suplencia y firma doble | db/migrations/0009_perfil_etapa.sql | db/tests/0009_test_perfil_etapa.sql | hecha |

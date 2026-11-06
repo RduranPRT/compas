@@ -1,10 +1,10 @@
-// ia-texto (specs 004, 006 y 010): redacta hallazgos o recomendaciones a partir de cifras ya calculadas por el
+// ia-texto (specs 006 y 010): redacta hallazgos o recomendaciones a partir de cifras ya calculadas por el
 // dominio. La IA no calcula montos (P8): recibe métricas sin glosas ni nombres y devuelve texto con regla y fuente.
 import { z } from "npm:zod@4";
 import { atender, ErrorIA, exigirConsentimiento, MODELO_MAYOR, pedirJson } from "../_compartido/ia.ts";
 
 const Entrada = z.object({
-  tipo: z.enum(["perfil", "plan", "resumen"]),
+  tipo: z.enum(["plan", "resumen"]),
   metricas: z.record(z.string(), z.unknown()),
   reglas: z.array(z.object({ codigo: z.string(), enunciado: z.string() })).max(60),
 });
@@ -18,7 +18,7 @@ const Hallazgo = z.object({
   accion: z.string().min(5).max(300),
 });
 
-const LIMITES = { perfil: [3, 5], plan: [1, 3], resumen: [1, 3] } as const;
+const LIMITES = { plan: [1, 3], resumen: [1, 3] } as const;
 
 Deno.serve((req) =>
   atender(req, async (r) => {

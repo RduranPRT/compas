@@ -1,4 +1,4 @@
-import { extraerConMapeo, proponerDistribucion, type Tabla } from "@compas/dominio";
+import { extraerConMapeo, proponerDistribucion, soloDelPiloto, type Tabla } from "@compas/dominio";
 import { describe, expect, it } from "vitest";
 import { clasificarComercio, gruposDeRevision, importar, preparar } from "../../src/datos/cartolas";
 import { cerrarMes, cerrarSemana, iniciarCierreMes, periodos, resumenDelMes, valorar } from "../../src/datos/cierres";
@@ -25,7 +25,6 @@ import {
 import { avisos, reasignar, resolverSolicitud, solicitudesPendientes } from "../../src/datos/gobierno";
 import { integrantes, parametros } from "../../src/datos/hogar";
 import { integranteActual } from "../../src/datos/integrante";
-import { generarPerfil, perfilVigente } from "../../src/datos/perfil";
 import { calcularBorrador, enviarPlan, guardarBorrador, planDelMes } from "../../src/datos/plan";
 import { exportarDatos } from "../../src/datos/privacidad";
 import { usuarioDePrueba, type Cliente } from "./entorno";
@@ -81,7 +80,7 @@ describe("Beta del MVP contra Supabase local", () => {
     expect(sobres.some((s) => s.nombre === "Pago Visa")).toBe(true);
   });
 
-  it("spec 003: cartola por mapeo de columnas, históricos y movimientos, y revisión por comercio", async () => {
+  it("spec 003: cartola por mapeo de columnas, solo desde el inicio del piloto, y revisión por comercio (R41, D35)", async () => {
     const tabla: Tabla = [
       ["Fecha", "Descripción", "Cargos", "Abonos"],
       ["30/07/2026", "ABONO REMUNERACIONES", "", "2.400.000"],
@@ -102,16 +101,15 @@ describe("Beta del MVP contra Supabase local", () => {
     const cc = ctas.find((c) => c.tipo === "vista")!;
     const cats = await categorias(org);
     const porCodigo = Object.fromEntries(cats.filter((c) => c.codigo).map((c) => [c.codigo!, c.id]));
-    const prep = await preparar(org, lineas, { cuenta: cc, cuentas: ctas, categoriasPorCodigo: porCodigo, nombresMenores: ["Tomás"] });
+    const prep = await preparar(org, soloDelPiloto(lineas, "2026-10-01"), { cuenta: cc, cuentas: ctas, categoriasPorCodigo: porCodigo, nombresMenores: ["Tomás"] });
     const r = await importar(org, cc.id, "cartola.xlsx", "xlsx", `sha-${Date.now()}`, "mapeo_columnas", prep);
     sinError(r);
-    expect(r.data).toMatchObject({ n_historicos: 9, n_movimientos: 2, n_transferencias: 1 });
+    expect(r.data).toMatchObject({ n_historicos: 0, n_movimientos: 2, n_transferencias: 1 });
     const grupos = await gruposDeRevision(org, r.data!.importacion_id);
     const jumbo = grupos.find((g) => g.comercio === "JUMBO REINA")!;
-    expect(jumbo).toMatchObject({ n: 4, categoriaSugeridaId: porCodigo.alimentacion });
+    expect(jumbo).toMatchObject({ n: 1, categoriaSugeridaId: porCodigo.alimentacion });
     const c = await clasificarComercio(org, r.data!.importacion_id, "JUMBO REINA", porCodigo.alimentacion!);
-    expect(c.data).toMatchObject({ historicos: 3, confirmados: 1 });
-    sinError(await clasificarComercio(org, r.data!.importacion_id, "PAC DIVIDENDO", porCodigo.vivienda!));
+    expect(c.data).toMatchObject({ historicos: 0, confirmados: 1 });
     sinError(await clasificarComercio(org, r.data!.importacion_id, "COPEC RUTA", porCodigo.transporte!));
     const [visa] = await tarjetas(org);
     expect(visa!.deuda).toBe(0);
@@ -131,14 +129,10 @@ describe("Beta del MVP contra Supabase local", () => {
     expect((await bandeja(cad)).duplicados).toHaveLength(0);
   });
 
-  it("spec 004: perfil con reglas (sin IA), etapa propuesta y confirmada por ambos (R23)", async () => {
-    const g = await generarPerfil(org);
-    expect(g).toEqual({ error: null, conIA: false });
-    const p = (await perfilVigente(org))!;
-    expect(p.perfil.ingresoBase).toBe(2400000);
-    expect(p.hallazgos.length).toBeGreaterThanOrEqual(3);
-    expect(p.modelo).toBe("reglas");
-    sinError(await org.schema("app").rpc("proponer_etapa", { p_etapa: p.perfil.etapaSugerida, p_evidencia: {}, p_origen: "sistema" }));
+  it("D35: el hogar parte en E1 y un cambio de etapa lo confirman ambos (R23)", async () => {
+    const { data: hogar } = await org.schema("gob").from("hogar").select("etapa_codigo").single();
+    expect(hogar?.etapa_codigo).toBe("E1");
+    sinError(await org.schema("app").rpc("proponer_etapa", { p_etapa: "E1", p_evidencia: {}, p_origen: "sistema" }));
     const [sol] = (await solicitudesPendientes(org)).filter((s) => s.tipo === "etapa");
     expect((await resolverSolicitud(org, sol!.id, true)).estado).toBe("pendiente");
     expect((await resolverSolicitud(cad, sol!.id, true)).estado).toBe("aprobada");

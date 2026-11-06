@@ -14,7 +14,7 @@ export interface PropsMas {
 
 const SECCIONES: { titulo: string; soloAdmin?: boolean; items: [string, string][] }[] = [
   { titulo: "El mes", items: [["Llegó un ingreso", "/ingreso"], ["Plan del mes", "/plan"], ["Cierre semanal", "/cierre-semanal"], ["Cierre del mes", "/cierre-mensual"], ["Indicadores", "/indicadores"]] },
-  { titulo: "Datos", soloAdmin: true, items: [["Cargar cartola", "/cargar-cartola"], ["Cartolas cargadas", "/cartolas"], ["Tu punto de partida (perfil)", "/perfil"]] },
+  { titulo: "Datos", soloAdmin: true, items: [["Cargar cartola", "/cargar-cartola"], ["Cartolas cargadas", "/cartolas"]] },
   { titulo: "Hogar", soloAdmin: true, items: [["Cuentas y tarjetas", "/cuentas"], ["Categorías y fondos", "/categorias"], ["Ingresos y pagos fijos", "/ingresos-fijos"]] },
   { titulo: "Acuerdos", items: [["Aprobaciones", "/aprobaciones"], ["Avisos", "/avisos"]] },
   { titulo: "Privacidad", items: [["Consentimientos y datos", "/privacidad"]] },

@@ -6,8 +6,8 @@ import type { GrupoRevision } from "../datos/cartolas";
 import type { Persona } from "../datos/hogar";
 import { Aviso, Boton, Cargando, Etiqueta, colores, Opciones, Pantalla, Parrafo, Subtitulo, Tarjeta, Vacio } from "../ui";
 
-// HU-003-2: revisión en lote por comercio. Confirmar un grupo clasifica los históricos, confirma los
-// movimientos del piloto y guarda la regla del comercio para las próximas cartolas.
+// HU-003-2: revisión en lote por comercio. Confirmar un grupo confirma los movimientos del piloto y guarda
+// la regla del comercio para las próximas cartolas.
 
 type Clasificar = (comercio: string, categoriaId: string, integranteId: string | null) => Promise<{ error: string | null; mensaje?: string }>;
 

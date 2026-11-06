@@ -6,6 +6,7 @@ import {
   mapeoCompleto,
   proponerMapeo,
   resumirLineas,
+  soloDelPiloto,
   textoCelda,
   type LineaCartola,
   type Mapeo,
@@ -45,7 +46,7 @@ export interface PropsCargarCartola {
   leerConIA: (tabla: Tabla, cuenta: CuentaCartola) => Promise<ResultadoIA>;
   importar: (cuenta: CuentaCartola, archivo: ArchivoLeido, lineas: LineaCartola[], lector: string) => Promise<{
     error: string | null;
-    resultado?: { importacionId: string; historicos: number; movimientos: number; duplicados: number; transferencias: number; calzados: number };
+    resultado?: { importacionId: string; movimientos: number; duplicados: number; transferencias: number; calzados: number };
   }>;
   revisar: (importacionId: string) => void;
   volver?: () => void;
@@ -101,11 +102,12 @@ export function CargarCartola({ cuentas, inicioPiloto, elegirArchivo, leerConIA,
   const extraido = archivo && fila >= 0 && mapeoCompleto(mapeo) ? extraerConMapeo(archivo.tabla, fila, mapeo, Number(inicioPiloto.slice(0, 4))) : null;
   const lineas = lineasIA ?? extraido?.lineas ?? [];
   const resumen = resumirLineas(lineas, inicioPiloto);
+  const delPiloto = soloDelPiloto(lineas, inicioPiloto);
 
   async function confirmar() {
-    if (!archivo || !cuenta || !lineas.length) return;
+    if (!archivo || !cuenta || !delPiloto.length) return;
     setOcupado(true);
-    const r = await importar(cuenta, archivo, lineas, lineasIA ? "ia" : "mapeo_columnas");
+    const r = await importar(cuenta, archivo, delPiloto, lineasIA ? "ia" : "mapeo_columnas");
     setOcupado(false);
     if (r.error) return setAviso({ texto: r.error, tipo: "error" });
     setHecho(r.resultado ?? null);
@@ -153,7 +155,7 @@ export function CargarCartola({ cuentas, inicioPiloto, elegirArchivo, leerConIA,
           <Subtitulo>Resumen</Subtitulo>
           <Fila etiqueta="Movimientos" valor={String(lineas.length)} />
           <Fila etiqueta="Desde – hasta" valor={`${formatoFecha(resumen.desde ?? inicioPiloto)} – ${formatoFecha(resumen.hasta ?? inicioPiloto)}`} />
-          <Fila etiqueta={`Antes del ${formatoFecha(inicioPiloto)} (solo perfil, R41)`} valor={String(resumen.antesDelPiloto)} />
+          <Fila etiqueta={`Antes del ${formatoFecha(inicioPiloto)} (no se importan, R41)`} valor={String(resumen.antesDelPiloto)} />
           <Fila etiqueta="Desde el inicio del piloto (por confirmar, R42)" valor={String(resumen.desdeElPiloto)} />
           <Fila etiqueta="Cargos" valor={-resumen.cargos} />
           <Fila etiqueta="Abonos" valor={resumen.abonos} />
@@ -163,14 +165,17 @@ export function CargarCartola({ cuentas, inicioPiloto, elegirArchivo, leerConIA,
           {extraido && extraido.noLeidas.length > 0 && !lineasIA && (
             <Parrafo suave>{`Filas que no pudimos leer: ${extraido.noLeidas.slice(0, 10).join(", ")}.`}</Parrafo>
           )}
-          <Boton texto={`Importar ${lineas.length} movimientos`} onPress={confirmar} ocupado={ocupado} />
+          {delPiloto.length > 0 ? (
+            <Boton texto={`Importar ${delPiloto.length} movimientos`} onPress={confirmar} ocupado={ocupado} />
+          ) : (
+            <Aviso texto={`Esta cartola no trae movimientos desde el ${formatoFecha(inicioPiloto)}. Solo se importa desde esa fecha (R41); elige otra cartola.`} tipo="info" />
+          )}
         </Tarjeta>
       )}
       {aviso && <Aviso texto={aviso.texto} tipo={aviso.tipo} />}
       {hecho && (
         <Tarjeta>
           <Subtitulo>Cartola importada</Subtitulo>
-          <Fila etiqueta="Históricos para el perfil" valor={String(hecho.historicos)} />
           <Fila etiqueta="Movimientos del piloto" valor={String(hecho.movimientos)} />
           <Fila etiqueta="Ya estaban (duplicados)" valor={String(hecho.duplicados)} />
           <Fila etiqueta="Transferencias y pagos de tarjeta" valor={String(hecho.transferencias)} />

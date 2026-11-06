@@ -1,8 +1,9 @@
-import { hoyIso, mesDe, sumarMeses } from "@compas/dominio";
+import { hoyIso, mesDe, sumarMeses, type Etapa } from "@compas/dominio";
 import { router } from "expo-router";
 import { useState } from "react";
 import { cerrarMes, iniciarCierreMes, periodos, reabrirMes, resumenDelMes, valorar } from "../../src/datos/cierres";
 import { mensajeError } from "../../src/datos/cliente";
+import { etapaPropuesta, proponerEtapa } from "../../src/datos/gobierno";
 import { useHogar } from "../../src/lib/hogar";
 import { supabase } from "../../src/lib/supabase";
 import { useDatos } from "../../src/lib/useDatos";
@@ -10,9 +11,10 @@ import { CierreMensual, PREGUNTA_KAKEIBO } from "../../src/pantallas/CierreMensu
 import { Cargando, ErrorCarga } from "../../src/ui";
 
 export default function RutaCierreMensual() {
-  const { etapa, parametros } = useHogar();
+  const { etapa, esAdmin, parametros } = useHogar();
   const [elegido, setElegido] = useState<string | null>(null);
   const lista = useDatos(() => periodos(supabase));
+  const propuesta = useDatos(() => etapaPropuesta(supabase));
   const ps = lista.datos ?? [];
   // Por defecto, el mes anterior (el cierre se hace los días 1 a 3)
   const anterior = ps.find((p) => p.mes === sumarMeses(mesDe(hoyIso()), -1)) ?? ps.find((p) => p.mes <= mesDe(hoyIso()));
@@ -32,6 +34,15 @@ export default function RutaCierreMensual() {
       resumen={resumen.datos}
       lineaBase={!!periodo && periodo.mes < parametros.mes_primer_plan}
       irBandeja={() => router.push("/bandeja")}
+      etapaActual={etapa}
+      etapaPropuesta={propuesta.datos?.etapa ?? null}
+      {...(esAdmin ? {
+        proponerEtapa: async (nueva: Etapa) => {
+          const r = await proponerEtapa(supabase, nueva, { origen: "cierre_mensual", mes: periodo?.mes, kpis: resumen.datos?.kpis });
+          if (!r.error) await propuesta.recargar();
+          return res(r);
+        },
+      } : {})}
       valorar={async (categoriaId, v) => {
         if (!periodoId) return { error: "Elige el mes." };
         const c = await iniciarCierreMes(supabase, periodoId);

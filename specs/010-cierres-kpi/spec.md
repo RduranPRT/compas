@@ -12,7 +12,7 @@ Cerrar cada semana en 15 minutos y cada mes en 45, con las cuentas cuadradas, la
 - **HU-010-1** Como co-administradora, el domingo quiero cuadrar las cuentas y despejar pendientes.
 - **HU-010-2** Como familia, a fin de mes queremos valorar cada categoría (+/0/−) y responder las preguntas Kakeibo.
 - **HU-010-3** Como organizador, quiero ver los indicadores del mes y la comparación con la línea base.
-- **HU-010-4** Como administradores, queremos que la IA nos proponga el cambio de etapa si corresponde.
+- **HU-010-4** Como administradores, queremos proponer un cambio de etapa con los indicadores del mes cerrado (D35).
 
 ## Criterios de aceptación
 
@@ -38,7 +38,7 @@ Característica: Cierres (R19, R20, R34)
     Cuando se cierra
     Entonces se calculan arrastres (R20), KPI e ICF
     Y la IA redacta un resumen con 1 a 3 recomendaciones con regla y fuente
-    Y se propone avance o retroceso de etapa si se cumplen los criterios (R23, D15)
+    Y un administrador puede proponer avance o retroceso de etapa, que ambos confirman (R23, D15, D35)
 
   Escenario: Importar estado de cuenta antes de cerrar (ADR-08)
     Dado una tarjeta sin estado de cuenta importado para el ciclo

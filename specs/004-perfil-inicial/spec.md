@@ -1,7 +1,9 @@
 # Spec 004 · Perfil inicial y retroalimentación
 
-Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP16 (nueva)
+Estado: **retirada (D35, 06-11-2026)** · Fecha: 2026-10-12 · Épica: EP16 (nueva)
 Procesos: P1 (pasos 4–6) · Reglas: R06, R07, R16, R23, R41, R43, R45, P8 · Decisiones: D21, D22, ADR-04 · Depende de: 003
+
+> **Spec retirada.** Rodrigo eliminó esta funcionalidad el 06-11-2026 (D35): analizar los gastos previos desgasta en la primera etapa y es poco práctico, porque las glosas del banco son poco claras. El código se quitó de la app; `med.perfil_inicial` y `fin.movimiento_historico` se conservan sin uso. La etapa inicial es E1 y el cambio de etapa pasó al cierre mensual (spec 010). El texto siguiente queda solo como historia.
 
 ## Objetivo
 
