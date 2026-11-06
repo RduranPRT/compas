@@ -1,16 +1,16 @@
 == E1 un hogar nuevo nace en E1, sin propuesta abierta (D35)
- etapa_hogar
+ etapa_hogar 
 -------------
  E1
 (1 row)
 
- historial
+ historial 
 -----------
          0
 (1 row)
 
 == I1 una importación con históricos sin revisar se cierra sin revisarlos y los conserva (D35)
- importacion | historicos_conservados
+ importacion | historicos_conservados 
 -------------+------------------------
  importada   |                      1
 (1 row)
