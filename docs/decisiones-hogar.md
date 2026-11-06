@@ -15,9 +15,11 @@ Respuestas de Rodrigo a las 10 preguntas abiertas de la Fase 2 y requisito nuevo
 | 7 | Tope de hosting e IA | Hasta USD 25 al mes | Supabase plan gratuito en marcha blanca; IA liviana (ADR-04, ADR-09). | G40, G41 |
 | 8 | IA alojada fuera de Chile | Sí, con datos minimizados | Consentimiento `analitica_ia` obligatorio; filtro de minimización (ADR-04). | G36 |
 | 9 | Tratamiento de cuotas | Elegir en cada compra | `fin.movimiento.tratamiento_cuotas`; por defecto cada cuota en su mes (D08 ajustada). | G08 |
-| 10 | Horas y fecha del piloto | Más de 20 h por semana; piloto desde el 1-10-2026 con datos retroactivos | Octubre y noviembre como línea base desde cartolas; primer plan 1-12-2026 (D21). | G63, G64 |
+| 10 | Horas y fecha del piloto | Más de 20 h por semana; piloto desde el 1-10-2026 con datos retroactivos | Octubre y noviembre como línea base; primer plan 1-12-2026 (D21). Las cartolas son opcionales desde D35. | G63, G64 |
 
 ## Requisito nuevo EP16 — Diagnóstico inicial desde cartolas
+
+**Retirado el 06-11-2026 (D35).** El diagnóstico y el perfil inicial se eliminaron; sigue solo la carga opcional de cartolas desde el inicio del piloto. Se conserva el texto original como historia de la decisión.
 
 Pedido de Rodrigo: el sistema debe permitir cargar cartolas bancarias para que la IA analice el comportamiento previo, arme un perfil inicial y entregue retroalimentación para construir el plan.
 
@@ -32,7 +34,7 @@ Pedido de Rodrigo: el sistema debe permitir cargar cartolas bancarias para que l
 | --- | --- | --- |
 | 12 oct | Kit SDD, ADR, migraciones 0002–0003 probadas | Repositorio listo para Claude Code |
 | 13–18 oct | Specs 001 y 002 | Base, autenticación, hogar, cuentas y categorías operativos |
-| 19–30 oct | Specs 003, 004 y 005 | **Marcha blanca v0:** cartolas cargadas, perfil inicial, captura diaria |
+| 19–30 oct | Specs 003, 004 (retirada por D35) y 005 | **Marcha blanca v0:** captura diaria y cartolas opcionales |
 | 2–20 nov | Specs 006, 007 y 008 | Plan, distribución de ingresos y ciclo de tarjeta |
 | 21–30 nov | Specs 009, 010 y 011 | Alertas, N1, cierres y privacidad; app lista para el primer plan |
 | 1 dic | Primer presupuesto real | Operación con plan; entra en vigencia la Ley 21.719 |
@@ -72,9 +74,18 @@ MVP con correo y contraseña; Rodrigo crea las cuentas en el panel de Supabase y
 
 Rodrigo pide avanzar más rápido: Claude Code define y aprueba las specs 002–011 con buenas prácticas de programación y UX, sobre la documentación existente, e implementa el MVP completo como Beta (D29). Decisiones tomadas para la Beta: D30 (cartolas en Excel o CSV procesadas en el dispositivo, sin subir el archivo), D31 (IA con respaldo por reglas), D32 (mes de cada cuota), D33 (avisos dentro de la app) y D34 (transferencias de cartola). Rodrigo revisa en la marcha blanca y corrige con `/ajustar`.
 
+## Análisis de cartolas retirado — 06-11-2026
+
+Rodrigo decide eliminar el análisis de cartolas (D35): identificar patrones de gasto desgasta mucho en la primera etapa y es poco práctico, porque no hay claridad sobre las glosas del banco.
+
+- Se elimina el perfil inicial: diagnóstico, hallazgos, precarga de ingresos y fijos, y etapa sugerida.
+- La carga de cartolas sigue, es opcional y solo importa líneas desde el inicio del piloto.
+- Todo hogar parte en E1. Con el mes cerrado, un administrador puede proponer otra etapa y ambos la confirman (R23).
+- `fin.movimiento_historico` y `med.perfil_inicial` se conservan sin uso; siguen en la exportación y el borrado del hogar.
+
 ## Pendiente del hogar
 
-- Descargar en Excel las cartolas y estados de cuenta de julio a octubre de Santander e Itaú.
+- Si el hogar quiere, descargar en Excel las cartolas y estados de cuenta desde octubre de Santander e Itaú.
 - Anotar gastos en efectivo desde el 1 de octubre.
 - Registrarse en la API de la CMF para obtener la clave de indicadores (ADR-07).
 - Entregar la clave de la API de Claude cuando se implemente la primera función de IA (ADR-04).

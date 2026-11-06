@@ -142,10 +142,10 @@ export interface GrupoRevision {
 }
 
 export async function gruposDeRevision(db: Cliente, importacionId: string | null): Promise<GrupoRevision[]> {
-  let q = db.schema("fin").from("v_revision_comercio").select("*");
+  // Los históricos anteriores a D35 se conservan en la base, pero ya no se revisan
+  let q = db.schema("fin").from("v_revision_comercio").select("*").eq("origen", "movimiento");
   if (importacionId) q = q.eq("importacion_id", importacionId);
   const { data } = await q;
-  // Un comercio puede aparecer como histórico y como movimiento: se revisa una vez
   const porComercio = new Map<string, GrupoRevision>();
   for (const g of data ?? []) {
     const clave = g.comercio ?? "";
@@ -177,14 +177,11 @@ export async function clasificarComercio(db: Cliente, importacionId: string | nu
 
 /** Sugerencias de la IA por comercio (R36: solo sugerencias). Devuelve cuántas se guardaron. */
 export async function sugerirConIA(db: Cliente, importacionId: string, categorias: { id: string; nombre: string; bloque: string; tipo: string }[]) {
-  const [{ data: movs }, { data: hist }] = await Promise.all([
-    db.schema("fin").from("movimiento").select("id, comercio, nota, monto_clp, sentido").eq("importacion_id", importacionId).eq("estado", "por_confirmar").eq("tipo", "gasto"),
-    db.schema("fin").from("movimiento_historico").select("id, comercio, glosa, monto_clp, sentido").eq("importacion_id", importacionId).eq("revisado", false),
-  ]);
-  const items = [
-    ...(movs ?? []).map((m) => ({ clave: `m:${m.id}`, comercio: m.comercio ?? "", glosa: m.nota ?? m.comercio ?? "", monto: Number(m.monto_clp), sentido: (m.sentido ?? "cargo") as "cargo" | "abono" })),
-    ...(hist ?? []).map((h) => ({ clave: `h:${h.id}`, comercio: h.comercio ?? "", glosa: h.glosa, monto: Number(h.monto_clp), sentido: h.sentido as "cargo" | "abono" })),
-  ].slice(0, 300);
+  const { data: movs } = await db.schema("fin").from("movimiento").select("id, comercio, nota, monto_clp, sentido")
+    .eq("importacion_id", importacionId).eq("estado", "por_confirmar").eq("tipo", "gasto");
+  const items = (movs ?? [])
+    .map((m) => ({ clave: `m:${m.id}`, comercio: m.comercio ?? "", glosa: m.nota ?? m.comercio ?? "", monto: Number(m.monto_clp), sentido: (m.sentido ?? "cargo") as "cargo" | "abono" }))
+    .slice(0, 300);
   if (!items.length) return { ok: true as const, guardadas: 0 };
   const opciones = categorias.filter((c) => !["futuro", "emergencia", "cuota"].includes(c.tipo)).map(({ id, nombre, bloque }) => ({ id, nombre, bloque }));
   const r = await llamarIA<{ resultados: { clave: string; categoria_id: string | null; intencion: string | null; confianza: number; clase: string }[]; modelo: string }>(
@@ -192,7 +189,7 @@ export async function sugerirConIA(db: Cliente, importacionId: string, categoria
   );
   if (!r.ok) return r;
   const sugerencias = r.datos.resultados.map((x) => ({
-    tabla: x.clave.startsWith("m:") ? "movimiento" : "historico",
+    tabla: "movimiento",
     id: x.clave.slice(2),
     categoria_id: x.categoria_id,
     intencion: x.intencion,

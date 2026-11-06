@@ -26,7 +26,6 @@ packages/dominio/src/
   cartola/                 tabla → LineaCartola (mapeo asistido), huella, clase por reglas, comercio
   frase.ts                 intérprete de frases de captura ("12 lucas feria con débito")
   reglas/rNN_*.ts          una función pura por regla (R03, R04, R05, R06, R07, R08, R09, R12, R13, R18, R20, R22, R33, R35, R38, R45)
-  perfil/                  métricas del perfil inicial, etapa sugerida y hallazgos por reglas
   plan/                    generarBorrador (base cero) y proponerDistribucion
   kpi.ts                   K1, K2, K3, K4, K6, KP1, ICF
 packages/contratos/src/
@@ -35,7 +34,7 @@ packages/contratos/src/
 apps/movil/
   app/(tabs)/              Inicio · Sobres · Movimientos · Más (barra visible) y botón "+"
   app/<pantalla>.tsx       rutas de stack: registrar, bandeja, cuentas, categorias, ingresos-fijos,
-                           cartolas, revisar/[id], perfil, plan, distribuir, tarjeta/[id], cubrir/[id],
+                           cartolas, revisar/[id], plan, distribuir, tarjeta/[id], cubrir/[id],
                            aprobaciones, cierre-semanal, cierre-mensual, indicadores, privacidad, avisos
   src/datos/*.ts           acceso a Supabase (RPC y lecturas), un archivo por área
   src/pantallas/*.tsx      componentes puros con props (probados con Testing Library)
@@ -47,7 +46,7 @@ db/migrations/
   0006_cuentas_sobres      plantilla 15, asegurar_periodo, crear_sobres_periodo, RLS de configuración
   0007_captura             registrar_gasto/ingreso/reembolso, confirmar, descartar, duplicados (R11, R26, R29, R35)
   0008_importacion         tipo transferencia, regla_comercio, importar_cartola, clasificar_comercio (R27, R28, R41–R43)
-  0009_perfil_etapa        guardar_perfil, proponer_etapa, confirmación con firmas (R23)
+  0009_perfil_etapa        proponer_etapa, confirmación con firmas (R23); guardar_perfil sin uso desde D35
   0010_tarjeta             registrar_pago_tarjeta, v_saldo_cuenta, conciliar_cuenta (R27, R34, R44)
   0011_plan                guardar_borrador_plan, enviar_plan, aprobar_plan, abrir_periodo con arrastre (R20, R39)
   0012_distribucion        confirmar_distribucion, transferencias pendientes (R01, R04)
@@ -58,7 +57,7 @@ db/migrations/
 
 ## Navegación y UX
 
-- Cuatro pestañas visibles: **Inicio** (lo urgente: avisos, pendientes, Por asignar, tarjetas, ritmo del mes, lista "Configura tu hogar"), **Sobres** (saldo de cada sobre del mes, con "Cubrir" en los negativos), **Movimientos** (lista con filtro y bandeja de pendientes) y **Más** (configuración, cartolas, perfil, plan, cierres, aprobaciones, privacidad, salir).
+- Cuatro pestañas visibles: **Inicio** (lo urgente: avisos, pendientes, Por asignar, tarjetas, ritmo del mes, lista "Configura tu hogar"), **Sobres** (saldo de cada sobre del mes, con "Cubrir" en los negativos), **Movimientos** (lista con filtro y bandeja de pendientes) y **Más** (configuración, cartolas, plan, cierres, aprobaciones, privacidad, salir).
 - Botón "+" fijo en Inicio, Sobres y Movimientos: abre la captura con el teclado numérico primero y los sobres frecuentes después (≤ 10 s, HU-005-1).
 - Mensajes sin culpa (R16): hecho, regla y opción. Montos con `formatoPesos` ($12.345).
 - Cada pantalla muestra estados vacíos que dicen qué hacer, y errores de red con opción de reintentar.

@@ -5,6 +5,7 @@ import type { Sobre } from "../src/datos/finanzas";
 import { encolar, leerCola, sincronizar, type Almacen } from "../src/lib/cola";
 import { Bandeja } from "../src/pantallas/Bandeja";
 import { CargarCartola } from "../src/pantallas/CargarCartola";
+import { CierreMensual } from "../src/pantallas/CierreMensual";
 import { CierreSemanal } from "../src/pantallas/CierreSemanal";
 import { Plan } from "../src/pantallas/Plan";
 import { Registrar } from "../src/pantallas/Registrar";
@@ -160,9 +161,9 @@ describe("Cartolas (spec 003, D30)", () => {
     expect(await screen.findByText("Por ahora Compás lee cartolas en Excel o CSV. Descárgala en ese formato desde tu banco.")).toBeTruthy();
   });
 
-  it("propone las columnas, resume lo anterior y lo posterior al inicio del piloto e importa", async () => {
+  it("propone las columnas, resume el corte del piloto e importa solo desde su inicio (R41, D35)", async () => {
     const tabla: Tabla = [["Fecha", "Descripción", "Cargos", "Abonos"], ["15/09/2026", "JUMBO", "50.000", ""], ["03/10/2026", "JUMBO", "23.000", ""]];
-    const importar = vi.fn(async () => ({ error: null, resultado: { importacionId: "i", historicos: 1, movimientos: 1, duplicados: 0, transferencias: 0, calzados: 0 } }));
+    const importar = vi.fn(async () => ({ error: null, resultado: { importacionId: "i", movimientos: 1, duplicados: 0, transferencias: 0, calzados: 0 } }));
     render(
       <CargarCartola
         cuentas={[{ id: "cc", nombre: "Cuenta corriente", tipo: "vista" }]}
@@ -174,13 +175,58 @@ describe("Cartolas (spec 003, D30)", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Elegir archivo Excel o CSV" }));
-    expect(await screen.findByText("Antes del 01-10-2026 (solo perfil, R41)")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Importar 2 movimientos" }));
+    expect(await screen.findByText("Antes del 01-10-2026 (no se importan, R41)")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Importar 1 movimientos" }));
     await waitFor(() => expect(importar).toHaveBeenCalledWith(expect.anything(), expect.anything(), [
-      { fecha: "2026-09-15", monto: -50000, glosa: "JUMBO" },
       { fecha: "2026-10-03", monto: -23000, glosa: "JUMBO" },
     ], "mapeo_columnas"));
     expect(await screen.findByText("Cartola importada")).toBeTruthy();
+  });
+
+  it("una cartola solo con meses anteriores al piloto no se importa y lo explica sin culpa (R41, R16)", async () => {
+    const tabla: Tabla = [["Fecha", "Descripción", "Cargos", "Abonos"], ["15/09/2026", "JUMBO", "50.000", ""]];
+    render(
+      <CargarCartola
+        cuentas={[{ id: "cc", nombre: "Cuenta corriente", tipo: "vista" }]}
+        inicioPiloto="2026-10-01"
+        elegirArchivo={async () => ({ nombre: "c.xlsx", formato: "xlsx", sha256: "x", tabla })}
+        leerConIA={vi.fn()}
+        importar={vi.fn()}
+        revisar={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Elegir archivo Excel o CSV" }));
+    expect(await screen.findByText("Esta cartola no trae movimientos desde el 01-10-2026. Solo se importa desde esa fecha (R41); elige otra cartola.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Importar/ })).toBeNull();
+  });
+});
+
+describe("Etapa en el cierre del mes (R23, D35)", () => {
+  const base = {
+    periodos: [{ id: "p", mes: "2026-10-01", estado: "cerrado" }] as never,
+    periodoId: "p",
+    elegirPeriodo: vi.fn(),
+    resumen: { ingresos: 0, gastos: 0, porCategoria: [], kpis: [], pendientes: 0 },
+    lineaBase: false,
+    irBandeja: vi.fn(),
+    valorar: vi.fn(),
+    cerrar: vi.fn(),
+    reabrir: vi.fn(),
+    etapaActual: "E1",
+    etapaPropuesta: null,
+  };
+
+  it("con el mes cerrado, un administrador propone otra etapa", async () => {
+    const proponerEtapa = vi.fn(async () => ({ error: null }));
+    render(<CierreMensual {...base} proponerEtapa={proponerEtapa} />);
+    fireEvent.click(screen.getByText("E2 Desendeudar"));
+    fireEvent.click(screen.getByRole("button", { name: "Proponer cambio de etapa" }));
+    await waitFor(() => expect(proponerEtapa).toHaveBeenCalledWith("E2"));
+  });
+
+  it("quien no es administrador no ve la propuesta de etapa", () => {
+    render(<CierreMensual {...base} />);
+    expect(screen.queryByText("Etapa del hogar")).toBeNull();
   });
 });
 

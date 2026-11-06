@@ -21,7 +21,7 @@ export function Cartolas({ importaciones, cuentas, cargar, revisar, volver }: Pr
   return (
     <Pantalla titulo="Cartolas cargadas" {...(volver ? { volver } : {})}>
       <Boton texto="Cargar una cartola" onPress={cargar} />
-      <Parrafo suave>Para el perfil inicial se usan julio a septiembre; desde el 1 de octubre, cada cartola alimenta los movimientos del piloto.</Parrafo>
+      <Parrafo suave>Cargar cartolas es opcional: trae los movimientos desde el inicio del piloto para confirmarlos y calzarlos con lo anotado a mano.</Parrafo>
       {importaciones.length === 0 ? (
         <Vacio texto="Aún no hay cartolas. Descarga las de tus bancos en Excel y cárgalas aquí." />
       ) : (
@@ -29,7 +29,7 @@ export function Cartolas({ importaciones, cuentas, cargar, revisar, volver }: Pr
           <Tarjeta key={i.id} onPress={() => revisar(i.id)} etiqueta={`Revisar ${i.archivo}`}>
             <Fila
               etiqueta={cuentas.find((c) => c.id === i.cuentaId)?.nombre ?? "Cuenta"}
-              detalle={`${i.archivo} · ${i.desde ? formatoFecha(i.desde) : ""} – ${i.hasta ? formatoFecha(i.hasta) : ""} · ${i.nHistoricos ?? 0} históricos, ${i.nMovimientos ?? 0} del piloto`}
+              detalle={`${i.archivo} · ${i.desde ? formatoFecha(i.desde) : ""} – ${i.hasta ? formatoFecha(i.hasta) : ""} · ${i.nMovimientos ?? 0} movimientos`}
               valor={<Etiqueta texto={ESTADO[i.estado]?.texto ?? i.estado} color={ESTADO[i.estado]?.color ?? colores.suave} />}
             />
           </Tarjeta>

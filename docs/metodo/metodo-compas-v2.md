@@ -1,6 +1,6 @@
 # Método Compás v2 — fuente única para el desarrollo
 
-Versión 2.1 · 12-10-2026
+Versión 2.2 · 06-11-2026
 
 Este documento consolida la Fase 1 (Método Compás) y la Fase 2 (Diseño del proceso ajustado v2, Modelo de base de datos v2, Estado de brechas y Decisiones del 12-10-2026). Es la referencia de negocio para todas las specs. Si una spec y este documento difieren, se corrige la spec o se registra una decisión nueva aquí.
 
@@ -34,8 +34,7 @@ Fuentes metodológicas: You Need a Budget (YNAB), The Total Money Makeover (Rams
 | Ingreso variable | Bonos, comisiones, horas extra; entra como extra y se reparte con su propia regla (R45). |
 | Línea base | Meses del piloto que se registran y clasifican sin presupuesto, para medir el punto de partida. |
 | Cartola | Extracto de cuenta bancaria o estado de cuenta de tarjeta, en PDF, CSV o XLSX. |
-| Perfil inicial | Diagnóstico generado desde cartolas: ingresos, gastos por bloque, fijos, uso de tarjeta, KPI y etapa sugerida. |
-| Histórico | Movimientos anteriores al inicio del piloto. Solo alimentan el perfil (R41). |
+| Histórico | Líneas de cartola anteriores al inicio del piloto. No se importan (R41, D35). |
 | UF | Unidad de Fomento, unidad reajustable chilena. Se convierte al valor del día (R24). |
 | RCI | Razón de carga financiera a ingreso (BCCh): > 25 % sin hipotecario o > 50 % con hipotecario = alta carga. |
 
@@ -76,16 +75,15 @@ Gobierno: todo rol A tiene suplente; si el A no responde en 48 h decide el suple
 | S5 | Privacidad y consentimiento | Soporte | Alta de integrante; solicitud de derechos | ORG | Consentimientos, exportación, borrado |
 | S6 | Educación | Capacidad | Hitos, primera vez de una función | — | Microcontenido |
 
-### P1 Incorporar (ampliado por EP16)
+### P1 Incorporar (ajustado por D35)
 
 1. ORG crea el hogar e invita a CAD e integrantes; S5 registra consentimientos (parental para MEN).
 2. ORG registra cuentas y tarjetas con saldo inicial.
-3. ORG sube cartolas y estados de cuenta (EP16). El sistema extrae, normaliza, separa transferencias internas y pagos de tarjeta, detecta duplicados y la IA clasifica. ORG confirma en lote.
-4. La IA genera el perfil inicial y la retroalimentación (3–5 hallazgos con regla y fuente) y propone etapa (R23).
-5. ORG declara o confirma ingresos típicos (base y variable), pagos fijos y deudas, partiendo de lo detectado.
-6. ORG y CAD confirman etapa y firman el Acuerdo v1.
+3. ORG declara ingresos típicos (base y variable), pagos fijos y deudas.
+4. El hogar parte en la etapa E1 (D35). ORG y CAD firman el Acuerdo v1.
+5. Opcional: ORG sube cartolas y estados de cuenta. El sistema extrae, normaliza, separa transferencias internas y pagos de tarjeta, detecta duplicados y clasifica las líneas desde el inicio del piloto. ORG confirma en lote.
 
-Término: etapa confirmada y Acuerdo v1 firmado. Eventos: HogarCreado, CartolaImportada, PerfilInicialGenerado, EtapaConfirmada.
+Término: Acuerdo v1 firmado. Eventos: HogarCreado y, si se cargan cartolas, CartolaImportada.
 
 ### P2 Planificar el mes
 
@@ -157,7 +155,7 @@ Ritmo por sobre variable (R09, umbral 1,1), pronóstico de fin de mes, balance p
 | D18 | Asesor | Solo lectura, vence a 90 días. |
 | D19 | Datos del hogar | Exportación y borrado a solicitud; datos crudos ≤ 30 días. |
 | D20 | Reapertura | Solo administradores, con motivo; recalcula KPI y deja versión anterior. |
-| D21 | Inicio del piloto | **Nueva 12-10:** el piloto parte el 1-10-2026. Octubre y noviembre son línea base (cargados desde cartolas). Primer presupuesto real: 1-12-2026. |
+| D21 | Inicio del piloto | **Nueva 12-10, ajustada 06-11 (D35):** el piloto parte el 1-10-2026. Octubre y noviembre son línea base (captura diaria y, si el hogar quiere, cartolas). Primer presupuesto real: 1-12-2026. |
 | D22 | Ingreso variable | **Nueva 12-10:** el plan se proyecta con el ingreso base; el variable entra como extra (R45). |
 | D23 | Fondo común | **Nueva 12-10:** pozo común total. Todas las cuentas registradas son del fondo común; cada adulto recibe su sin culpa. |
 | D24 | Tarjeta de crédito | **Nueva 12-10:** medio de pago principal. Cada gasto con tarjeta se reserva en su sobre de pago de tarjeta (R44). |
@@ -172,6 +170,7 @@ Ritmo por sobre variable (R09, umbral 1,1), pronóstico de fin de mes, balance p
 | D32 | Mes de cada cuota | **Nueva 25-10:** en una compra "por cuota", la cuota 1 se imputa en el mes de compra (D07) y la cuota k en el mes k − 1 siguiente. |
 | D33 | Avisos en la Beta | **Nueva 25-10:** las alertas se muestran dentro de la app (portada y "Avisos"); las notificaciones push quedan para la app nativa. El control diario corre a las 20:00 de Santiago con `pg_cron`. |
 | D34 | Transferencias de cartola | **Nueva 25-10:** las líneas de transferencia entre cuentas del hogar se guardan como movimiento tipo `transferencia`, que no toca el libro ni los KPI (R28). El pago de tarjeta crea `fin.transferencia` tipo `pago_tarjeta` (R27). |
+| D35 | Sin análisis de cartolas | **Nueva 06-11:** se elimina el perfil inicial (spec 004): analizar los gastos previos desgasta en la primera etapa y no da resultados prácticos, porque las glosas del banco son poco claras. La carga de cartolas sigue, es opcional y solo importa líneas desde el inicio del piloto. Todo hogar parte en E1. Con el mes cerrado, un administrador puede proponer otra etapa y ambos la confirman (R23). `fin.movimiento_historico` y `med.perfil_inicial` se conservan sin uso. |
 
 ## 5. Etapas y flujo del día de pago
 
@@ -202,16 +201,15 @@ Los porcentajes son valores por defecto que el hogar puede cambiar en el Acuerdo
 | Movimiento | por confirmar → descartado | Duplicado o rechazo | CAD | R35 |
 | Movimiento | confirmado → conciliado | Cierre semanal cuadrado | CAD | R34 |
 | Recuperación | abierto → en curso → cerrado / escalado | Acción aprobada / salida / plazo | A del nivel / sistema | R10, R12, R14 |
-| Etapa | vigente → propuesta → confirmada / rechazada | Cierre mensual / aprobación / 7 días | IA / ORG + CAD / sistema | R23, D15 |
+| Etapa | vigente → propuesta → confirmada / rechazada | Cierre mensual / aprobación / 7 días | ORG o CAD / ORG + CAD / sistema | R23, D15, D35 |
 | Importación | cargada → extraida → en revisión → importada (o fallida, anulada) | Carga, lector, revisión | ORG / sistema | R41–R43 |
-| Perfil inicial | borrador → presentado → aceptado / descartado | Generación, revisión | IA / ORG | R23 |
 
 ## 7. Eventos de dominio
 
 | Evento | Emite | Consume | Carga mínima |
 | --- | --- | --- | --- |
 | HogarCreado | P1 | E1, S5 | hogarId, integrantes |
-| EtapaConfirmada | P1, P7 | P2, P3 | etapa, criterios |
+| EtapaConfirmada | P7 | P2, P3 | etapa, criterios |
 | EtapaPropuesta | P7 | Administradores | etapa actual, propuesta, evidencia |
 | AcuerdoVersionado | E1 | Todos | versión, parámetros, vigencia |
 | PresupuestoAprobado | P2, P2-A | P3, P5 | presupuestoId, mes, versión |
@@ -233,8 +231,7 @@ Los porcentajes son valores por defecto que el hogar puede cambiar en el Acuerdo
 | MesCerrado | P7 | P2, E2 | KPI, arrastres |
 | ReinicioAprobado | P6 | P1 | fecha simbólica |
 | CartolaCargada | P1/P4 | Lector | importacionId, cuenta, formato |
-| CartolaImportada | P1/P4 | P4, perfil | importacionId, históricos, movimientos, duplicados |
-| PerfilInicialGenerado | P1 | Administradores | perfilId, etapa sugerida |
+| CartolaImportada | P1/P4 | P4 | importacionId, movimientos, duplicados |
 | PagoTarjetaRegistrado | S1 | P5 | tarjeta, monto, saldo de reserva |
 
 Persistencia: `sys.evento_dominio` (outbox particionado por año).
@@ -267,7 +264,7 @@ Nivel = precedencia (1 manda). Fuente entre paréntesis.
 | R20 | Saldo positivo se arrastra al mismo sobre; negativo descuenta Por asignar del mes siguiente (YNAB) | 5 | P7 |
 | R21 | Bola de nieve vs avalancha con costo comparado; elige el hogar (Ramsey) | 4 | S2 |
 | R22 | Parte de cada reajuste va a Futuro (sugerido 50 %) (SMarT) | 4 | P3 |
-| R23 | IA propone avance o retroceso de etapa; administradores confirman | 4 | P1, P7 |
+| R23 | Los administradores proponen avance o retroceso de etapa en el cierre mensual y ambos confirman; la IA no cambia la etapa | 4 | P7 |
 | R24 | UF al valor del día (corte 09:00); sin dato → último valor + alerta | 2 | S4 |
 | R25 | Datos de menores solo a administradores, con consentimiento parental | 1 | S5 |
 | R26 | Compra en N cuotas tratada "por cuota" = Deuda con cuotas preasignadas por mes de facturación | 2 | P4, S2 |
@@ -285,7 +282,7 @@ Nivel = precedencia (1 manda). Fuente entre paréntesis.
 | R38 | Reasignación N1 bajo umbral se autoaprueba y registra | 4 | P6 |
 | R39 | A sin respuesta en 48 h → decide el suplente | 4 | Todos |
 | R40 | Máximo 3 alertas por persona al día; resto en resumen | 6 | P5 |
-| R41 | Movimientos anteriores al inicio del piloto solo alimentan el perfil; no tocan sobres ni libro | 2 | P1, P4 |
+| R41 | Los movimientos anteriores al inicio del piloto no se importan; no tocan sobres ni libro | 2 | P1, P4 |
 | R42 | Desde el inicio del piloto, los movimientos de cartola entran por confirmar | 2 | P4 |
 | R43 | Documento de cartola se elimina ≤ 30 días tras la extracción; a la IA solo van datos minimizados | 1 | P1, S5 |
 | R44 | Gasto con tarjeta de crédito: sale del sobre de la categoría y se reserva en el sobre de pago de esa tarjeta; el pago consume la reserva (YNAB) | 2 | P4, S1 |
@@ -318,6 +315,6 @@ K5 y K10 bajo demanda; K7, K8, K9 y KP6 en V2.
 
 ## 10. Alcance del MVP para la marcha blanca
 
-Incluye: hogar, integrantes, roles y consentimientos; cuentas y tarjetas; importación de cartolas y perfil inicial; captura manual y por chat con IA; plan mensual base cero con aprobación; ingresos y distribución; ciclo de tarjeta de crédito; control, alertas y N1; cierres semanal y mensual con KPI.
+Incluye: hogar, integrantes, roles y consentimientos; cuentas y tarjetas; importación opcional de cartolas; captura manual y por chat con IA; plan mensual base cero con aprobación; ingresos y distribución; ciclo de tarjeta de crédito; control, alertas y N1; cierres semanal y mensual con KPI.
 
 Fuera del MVP: lectura de correos de compra, Finanzas Abiertas (desde julio de 2027), deudas con estrategia bola de nieve o avalancha (EP11), educación (EP15), asesor externo, N3 y N4 automáticos, foto de boletas, multi-hogar público (registro abierto, términos, cobro).

@@ -1,0 +1,22 @@
+== E1 un hogar nuevo nace en E1, sin propuesta abierta (D35)
+ etapa_hogar
+-------------
+ E1
+(1 row)
+
+ historial
+-----------
+         0
+(1 row)
+
+== I1 una importación con históricos sin revisar se cierra sin revisarlos y los conserva (D35)
+ importacion | historicos_conservados
+-------------+------------------------
+ importada   |                      1
+(1 row)
+
+== R41 enunciado vigente
+                                        enunciado                                         
+------------------------------------------------------------------------------------------
+ Los movimientos anteriores al inicio del piloto no se importan; no tocan sobres ni libro
+(1 row)

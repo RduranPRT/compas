@@ -5,7 +5,7 @@
 | [01](ADR-01-canal-chat.md) | Canal de chat | Chat dentro de la app; sin WhatsApp en el MVP | Aceptada |
 | [02](ADR-02-representacion-reglas.md) | Representación de reglas | Invariantes en PostgreSQL + paquete de dominio en TypeScript + parámetros en el Acuerdo | Aceptada |
 | [03](ADR-03-plataforma-movil.md) | Plataforma móvil y offline | Expo (React Native) con TypeScript; **MVP primero en web**, iOS y Android después; cola offline local | Aceptada |
-| [04](ADR-04-ia.md) | Dónde corre la IA | Claude API desde Edge Functions, con minimización y salidas estructuradas; Haiku para chat y clasificación, Sonnet para perfil y resúmenes | Aceptada |
+| [04](ADR-04-ia.md) | Dónde corre la IA | Claude API desde Edge Functions, con minimización y salidas estructuradas; Haiku para chat y clasificación, Sonnet para resúmenes | Aceptada |
 | [05](ADR-05-aporte-defecto.md) | Regla de aporte por defecto | Aporte lineal R03 | Aceptada |
 | [06](ADR-06-estrategia-deuda.md) | Estrategia de deuda por defecto | Avalancha, mostrando el costo de bola de nieve; fuera del MVP | Postergada a V2 |
 | [07](ADR-07-indicadores.md) | Fuente de indicadores | CMF con respaldo mindicador.cl; job diario 09:00 | Aceptada |

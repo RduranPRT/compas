@@ -1,6 +1,6 @@
 # Despliegue de Compás
 
-Última revisión: 25-10-2026 (spec 001, T017).
+Última revisión: 06-11-2026 (D35).
 
 | Pieza | Dónde | Identificador |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ corepack pnpm exec supabase migration list --linked
 
 `db push` pide la contraseña de la base (guardada en el gestor de contraseñas, nunca en el repositorio).
 
-Desde la Beta (migraciones 0006–0016), `db push` también programa con `pg_cron` el control diario (`compas-control-diario`, 23:00 UTC = 20:00 de Santiago en verano) y la retención (`compas-retencion`). Para revisarlos: SQL Editor → `select jobname, schedule from cron.job;`.
+Desde la Beta (migraciones 0006–0017), `db push` también programa con `pg_cron` el control diario (`compas-control-diario`, 23:00 UTC = 20:00 de Santiago en verano) y la retención (`compas-retencion`). Para revisarlos: SQL Editor → `select jobname, schedule from cron.job;`.
 
 ### Funciones de IA (ADR-04, D31)
 

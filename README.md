@@ -38,12 +38,12 @@ Requisitos locales: Node 22, pnpm, Docker (para `supabase start`), Supabase CLI 
 | Período | Specs | Resultado |
 | --- | --- | --- |
 | 13–18 oct | 001 Base de la plataforma · 002 Cuentas y categorías | Hogar, acceso, cuentas y sobres |
-| 19–30 oct | 003 Importación de cartolas · 004 Perfil inicial · 005 Captura | **Marcha blanca v0**: línea base de octubre y uso diario |
+| 19–30 oct | 003 Importación de cartolas · 004 Perfil inicial (retirada, D35) · 005 Captura | **Marcha blanca v0**: línea base de octubre y uso diario |
 | 2–20 nov | 006 Plan mensual · 007 Ingresos y distribución · 008 Tarjeta de crédito | Ciclo mensual completo |
 | 21–30 nov | 009 Control y alertas · 010 Cierres y KPI · 011 Privacidad | Listo para el primer plan |
 | 1 dic | — | Primer presupuesto real; entra en vigencia la Ley 21.719 |
 
-Octubre y noviembre de 2026 son **línea base**: se cargan desde cartolas y se clasifican sin presupuesto (D21).
+Octubre y noviembre de 2026 son **línea base**: se registran sin presupuesto (D21). Cargar cartolas es opcional y el análisis de gastos previos se eliminó (D35).
 
 ## Estructura
 

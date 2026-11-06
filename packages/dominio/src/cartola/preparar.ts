@@ -106,6 +106,11 @@ export interface ResumenLineas {
   abonos: number;
 }
 
+/** Solo entran las líneas desde el inicio del piloto; las anteriores no se importan (R41, D35). */
+export function soloDelPiloto<L extends { fecha: string }>(lineas: L[], inicioPiloto: string): L[] {
+  return lineas.filter((l) => l.fecha >= inicioPiloto);
+}
+
 export function resumirLineas(lineas: { fecha: string; monto: number }[], inicioPiloto: string): ResumenLineas {
   const fechas = lineas.map((l) => l.fecha).sort();
   return {

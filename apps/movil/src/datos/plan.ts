@@ -43,16 +43,12 @@ export async function planDelMes(db: Cliente, mes: string): Promise<PlanGuardado
   };
 }
 
-/** Promedio mensual de gasto por categoría en los 3 meses previos (movimientos e históricos). */
+/** Promedio mensual de gasto por categoría en los 3 meses previos, con movimientos confirmados (D35). */
 async function promediosPorCategoria(db: Cliente, mes: string): Promise<Map<string, number>> {
   const desde = sumarMeses(mesDe(mes), -3);
   const hasta = mesDe(mes);
-  const [{ data: movs }, { data: hist }] = await Promise.all([
-    db.schema("fin").from("v_movimiento").select("categoria_id, monto_clp, tipo, fecha_contable").in("estado", ["confirmado", "conciliado"])
-      .eq("tipo", "gasto").gte("fecha_contable", desde).lt("fecha_contable", hasta),
-    db.schema("fin").from("movimiento_historico").select("categoria_id, monto_clp, fecha").eq("sentido", "cargo")
-      .gte("fecha", desde).lt("fecha", hasta),
-  ]);
+  const { data: movs } = await db.schema("fin").from("v_movimiento").select("categoria_id, monto_clp, tipo, fecha_contable").in("estado", ["confirmado", "conciliado"])
+    .eq("tipo", "gasto").gte("fecha_contable", desde).lt("fecha_contable", hasta);
   const meses = new Map<string, Set<string>>();
   const total = new Map<string, number>();
   const sumar = (cat: string | null, monto: number, fecha: string) => {
@@ -61,7 +57,6 @@ async function promediosPorCategoria(db: Cliente, mes: string): Promise<Map<stri
     meses.set(cat, (meses.get(cat) ?? new Set()).add(mesDe(fecha)));
   };
   for (const m of movs ?? []) sumar(m.categoria_id, Number(m.monto_clp), m.fecha_contable!);
-  for (const h of hist ?? []) sumar(h.categoria_id, Number(h.monto_clp), h.fecha);
   const r = new Map<string, number>();
   const nMeses = 3;
   for (const [cat, t] of total) r.set(cat, Math.round(t / Math.max(1, Math.min(nMeses, meses.get(cat)?.size ?? 1))));

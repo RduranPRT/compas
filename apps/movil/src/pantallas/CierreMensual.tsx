@@ -1,10 +1,11 @@
-import { formatoPesos, NOMBRE_KPI, nombreMes, type Kpi } from "@compas/dominio";
+import { formatoPesos, NOMBRE_KPI, nombreMes, type Etapa, type Kpi } from "@compas/dominio";
 import { useState } from "react";
 import { View } from "react-native";
 import type { GastoCategoria, Periodo } from "../datos/cierres";
 import { Aviso, Boton, Campo, Cargando, Enlace, Fila, Opciones, Pantalla, Parrafo, Subtitulo, Tarjeta } from "../ui";
 
-// HU-010-2 y 3: valorar cada categoría (+/0/−), responder una pregunta Kakeibo y cerrar con KPI (R19, R34).
+// HU-010-2 a 4: valorar cada categoría (+/0/−), responder una pregunta Kakeibo, cerrar con KPI (R19, R34) y,
+// con el mes cerrado, proponer un cambio de etapa que firman ambos administradores (R23, D35).
 
 export interface ResumenMes {
   ingresos: number;
@@ -24,7 +25,52 @@ export interface PropsCierreMensual {
   valorar: (categoriaId: string, valoracion: "+" | "0" | "-") => Promise<{ error: string | null }>;
   cerrar: (respuestaKakeibo: string, justificacion: string) => Promise<{ error: string | null }>;
   reabrir: (motivo: string) => Promise<{ error: string | null }>;
+  etapaActual: string;
+  etapaPropuesta: string | null;
+  /** Solo para administradores. */
+  proponerEtapa?: (etapa: Etapa) => Promise<{ error: string | null }>;
   volver?: () => void;
+}
+
+const ETAPAS: { valor: Etapa; texto: string }[] = [
+  { valor: "E0", texto: "E0 Estabilizar" },
+  { valor: "E1", texto: "E1 Colchón inicial" },
+  { valor: "E2", texto: "E2 Desendeudar" },
+  { valor: "E3", texto: "E3 Proteger" },
+  { valor: "E4", texto: "E4 Construir" },
+  { valor: "E5", texto: "E5 Libertad" },
+];
+
+function CambioEtapa({ etapaActual, etapaPropuesta, proponer }: { etapaActual: string; etapaPropuesta: string | null; proponer: (etapa: Etapa) => Promise<{ error: string | null }> }) {
+  const [nueva, setNueva] = useState<Etapa | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+  return (
+    <Tarjeta>
+      <Subtitulo>Etapa del hogar</Subtitulo>
+      <Parrafo>{`Hoy están en ${ETAPAS.find((e) => e.valor === etapaActual)?.texto ?? etapaActual}. Con los indicadores del mes pueden proponer un cambio; lo confirman ambos administradores (R23).`}</Parrafo>
+      {etapaPropuesta ? (
+        <Parrafo suave>{`Ya hay una propuesta para pasar a ${etapaPropuesta}: se firma en Aprobaciones.`}</Parrafo>
+      ) : (
+        <>
+          <Opciones etiqueta="Etapa propuesta" opciones={ETAPAS.filter((e) => e.valor !== etapaActual)} valor={nueva} onCambio={(v) => setNueva(v as Etapa)} />
+          <Boton
+            texto="Proponer cambio de etapa"
+            secundario
+            ocupado={ocupado}
+            onPress={async () => {
+              if (!nueva) return setError("Elige la etapa que quieren proponer.");
+              setOcupado(true);
+              const r = await proponer(nueva);
+              setOcupado(false);
+              setError(r.error);
+            }}
+          />
+        </>
+      )}
+      {error && <Aviso texto={error} tipo="error" />}
+    </Tarjeta>
+  );
 }
 
 export const PREGUNTA_KAKEIBO = "¿Qué gasto de este mes valió la pena y cuál cambiarías?";
@@ -114,6 +160,7 @@ export function CierreMensual(p: PropsCierreMensual) {
               />
             </Tarjeta>
           )}
+          {cerrado && p.proponerEtapa && <CambioEtapa etapaActual={p.etapaActual} etapaPropuesta={p.etapaPropuesta} proponer={p.proponerEtapa} />}
         </>
       )}
       {aviso && <Aviso texto={aviso.texto} tipo={aviso.tipo} />}

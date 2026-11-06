@@ -5,7 +5,7 @@ Procesos: P2, P2-A, S3 · Reglas: R01, R03, R04, R05, R06, R07, R08, R20, R26, R
 
 ## Objetivo
 
-Que el día 25 los administradores reciban un borrador de presupuesto base cero para el mes siguiente, armado con el perfil y la historia, lo ajusten y lo aprueben antes del día 1. El primero es el de diciembre de 2026.
+Que el día 25 los administradores reciban un borrador de presupuesto base cero para el mes siguiente, armado con los movimientos confirmados del hogar, lo ajusten y lo aprueben antes del día 1. El primero es el de diciembre de 2026.
 
 ## Historias de usuario
 

@@ -1,11 +1,11 @@
 # Spec 003 · Importación de cartolas y estados de cuenta
 
-Estado: aprobada (delegada a Claude Code, D29, 25-10-2026) · Fecha: 2026-10-12 · Épica: EP16 (nueva)
+Estado: aprobada (delegada a Claude Code, D29, 25-10-2026; ajustada por D35, 06-11-2026) · Fecha: 2026-10-12 · Épica: EP16 (nueva)
 Procesos: P1 (paso 3), P4, S1 · Reglas: R27, R28, R35, R36, R41, R42, R43 · Decisiones: D07, D12, D21, ADR-04, ADR-08 · Depende de: 002
 
 ## Objetivo
 
-Cargar en minutos los movimientos reales del hogar desde los documentos del banco: los anteriores al 1 de octubre alimentan el perfil inicial y los posteriores quedan como movimientos del piloto, listos para confirmar. Es la base de la línea base de octubre y noviembre.
+Cargar en minutos, de forma opcional, los movimientos reales del hogar desde los documentos del banco: desde el 1 de octubre quedan como movimientos del piloto, listos para confirmar. Las líneas anteriores no se importan (D35).
 
 ## Historias de usuario
 
@@ -24,9 +24,9 @@ Característica: Importación de cartolas (R41, R42, R43, R35)
     Dado inicio_piloto = 2026-10-01
     Y una cartola de la cuenta corriente del 2026-07-01 al 2026-10-15 con 180 líneas
     Cuando el ORG la sube y el lector la extrae
-    Entonces las líneas anteriores al 2026-10-01 quedan en movimiento_historico (R41)
+    Entonces las líneas anteriores al 2026-10-01 se informan y no se importan (R41, D35)
     Y las líneas desde el 2026-10-01 quedan como movimientos con origen cartola en estado por_confirmar (R42)
-    Y la importación informa n_filas, n_historicos, n_movimientos y n_duplicados
+    Y la importación informa n_filas, n_movimientos y n_duplicados
 
   Escenario: Mismo archivo dos veces
     Dado una importación ya hecha de un archivo
@@ -119,7 +119,7 @@ Prompt base de `ia-extraer-cartola` (en `packages/contratos/ia/prompts/extraer-c
 
 ## Interfaz
 
-- "Cargar cartola": elegir cuenta → subir archivo → progreso → resumen (históricos, del piloto, duplicados, transferencias).
+- "Cargar cartola": elegir cuenta → subir archivo → progreso → resumen (anteriores que no se importan, del piloto, duplicados, transferencias).
 - "Revisar importación": grupos por comercio con categoría sugerida y confianza; confirmar grupo, cambiar categoría, separar un movimiento.
 
 ## IA
@@ -145,7 +145,14 @@ Conexión directa a bancos (Finanzas Abiertas, desde julio de 2027), OCR de imá
 - **Formatos:** Excel (xlsx, xls) y CSV. Un PDF recibe el mensaje "Por ahora Compás lee cartolas en Excel o CSV. Descárgala en ese formato desde tu banco." Esto reemplaza el escenario del PDF escaneado hasta que se soporte PDF.
 - **El archivo no se sube** (D30): se lee en el dispositivo, se minimiza y solo se guardan las líneas. `fin.importacion` queda con `storage_uri` nulo y `purgada_en` igual al momento de la extracción; R43 se cumple sin job de borrado. La huella del archivo (`sha256`) se calcula en el dispositivo y sigue impidiendo importarlo dos veces.
 - **Extracción:** con IA (`ia-extraer-cartola`) si hay clave de Claude y consentimiento `analitica_ia`; si no, **mapeo de columnas asistido**: la app detecta la fila de encabezados y propone qué columna es fecha, descripción, cargo, abono o monto; la persona confirma. No es un lector por banco (D27 se mantiene).
-- **Guardado:** la RPC `app.importar_cartola(...)` hace todo en una transacción: separa históricos (R41) de movimientos por confirmar (R42), salta huellas ya importadas, calza capturas manuales (R35) y registra transferencias (R27, R28).
+- **Guardado:** la RPC `app.importar_cartola(...)` hace todo en una transacción: crea movimientos por confirmar (R42), salta huellas ya importadas, calza capturas manuales (R35) y registra transferencias (R27, R28).
 - **Transferencias** (D34): una línea de pago de tarjeta desde una cuenta del hogar crea `fin.transferencia` tipo `pago_tarjeta` hecha hacia la tarjeta (la única activa o la que coincide por nombre o últimos 4 dígitos). El abono "PAGO" en el estado de cuenta de la tarjeta se calza con esa transferencia o la crea desde la cuenta corriente principal. Las transferencias internas quedan como movimiento tipo `transferencia`, que no toca el libro ni los KPI. Un abono en la tarjeta que no es pago queda como movimiento `transferencia` con la nota "Abono en la tarjeta: revisa si es una devolución".
 - **Clasificación:** primero reglas fijas (glosas conocidas) y reglas de comercio del hogar; después la IA si está disponible (D31). La sugerencia se guarda en `fin.movimiento.categoria_sugerida_id` y `confianza_ia`; confirmar siempre es humano.
-- **Revisión por comercio:** `app.clasificar_comercio(...)` clasifica históricos y movimientos del grupo, confirma e imputa los movimientos y guarda la regla de comercio.
+- **Revisión por comercio:** `app.clasificar_comercio(...)` confirma e imputa los movimientos del grupo y guarda la regla de comercio.
+
+## Ajuste D35 (06-11-2026)
+
+- La carga de cartolas es opcional y sale de la lista "Configura tu hogar"; sigue disponible en "Más".
+- La app envía a `app.importar_cartola` solo las líneas desde `inicio_piloto` y muestra cuántas anteriores quedaron fuera. Si no hay líneas del piloto, lo explica y no ofrece importar.
+- Los históricos ya guardados se conservan sin uso: no aparecen en "Revisar" ni frenan el cierre de una importación (migración 0017).
+- La clasificación, las reglas de comercio y el calce con captura manual (R35) no cambian.

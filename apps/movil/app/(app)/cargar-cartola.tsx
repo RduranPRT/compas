@@ -47,7 +47,6 @@ export default function RutaCargarCartola() {
           error: null,
           resultado: {
             importacionId: r.data.importacion_id,
-            historicos: r.data.n_historicos,
             movimientos: r.data.n_movimientos,
             duplicados: r.data.n_duplicados,
             transferencias: r.data.n_transferencias,

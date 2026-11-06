@@ -6,6 +6,5 @@ export * from "./frase";
 export * from "./kpi";
 export * from "./minimizar";
 export * from "./parametros";
-export * from "./perfil";
 export * from "./plan";
 export * from "./reglas";

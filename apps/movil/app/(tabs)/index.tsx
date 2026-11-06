@@ -22,7 +22,7 @@ export default function RutaPortada() {
   const mes = mesDe(hoy);
   const { datos } = useDatos(async () => {
     if (!yo) return null;
-    const [firma, sobres, pend, tarj, transf, avs, sols, nCuentas, nCategorias, nIngresos, nCartolas, nPerfil, nEtapa, nPlan] = await Promise.all([
+    const [firma, sobres, pend, tarj, transf, avs, sols, nCuentas, nCategorias, nIngresos, nPlan] = await Promise.all([
       firmaPendienteDelAcuerdo(supabase),
       sobresDelMes(supabase, hoy).catch(() => []),
       contarPendientes(supabase),
@@ -33,13 +33,10 @@ export default function RutaPortada() {
       contar("fin", "cuenta"),
       contar("plan", "categoria"),
       contar("plan", "ingreso_esperado"),
-      contar("fin", "importacion"),
-      contar("med", "perfil_inicial"),
-      contar("gob", "historial_etapa", ["estado", "confirmada"]),
       contar("plan", "presupuesto_mensual"),
     ]);
     const pronostico = await pronosticoMes(supabase, hoy).catch(() => null);
-    return { firma, sobres, pend, tarj, transf, avs, sols, nCuentas, nCategorias, nIngresos, nCartolas, nPerfil, nEtapa, nPlan, pronostico };
+    return { firma, sobres, pend, tarj, transf, avs, sols, nCuentas, nCategorias, nIngresos, nPlan, pronostico };
   }, [yo?.id]);
 
   if (!hogar || !datos) return <Cargando />;
@@ -49,9 +46,6 @@ export default function RutaPortada() {
         { clave: "cuentas", texto: "Cargar tus cuentas y tarjetas", hecho: datos.nCuentas > 0, ir: () => ir("/cuentas") },
         { clave: "categorias", texto: "Elegir categorías", hecho: datos.nCategorias > 0, ir: () => ir("/categorias") },
         { clave: "ingresos", texto: "Declarar ingresos y pagos fijos", hecho: datos.nIngresos > 0, ir: () => ir("/ingresos-fijos") },
-        { clave: "cartolas", texto: "Cargar cartolas de julio en adelante", hecho: datos.nCartolas > 0, ir: () => ir("/cargar-cartola") },
-        { clave: "perfil", texto: "Ver tu punto de partida", hecho: datos.nPerfil > 0, ir: () => ir("/perfil") },
-        { clave: "etapa", texto: "Confirmar la etapa del hogar", hecho: datos.nEtapa > 0, ir: () => ir("/perfil") },
         { clave: "plan", texto: "Aprobar el primer plan", hecho: datos.nPlan > 0, ir: () => ir("/plan") },
       ]
     : [];

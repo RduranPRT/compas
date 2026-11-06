@@ -12,6 +12,7 @@ import {
   proponerMapeo,
   reglaPara,
   resumirLineas,
+  soloDelPiloto,
   type Tabla,
 } from ".";
 
@@ -69,6 +70,13 @@ describe("Mapeo asistido de cartolas (D27, D30)", () => {
   it("resume las líneas separando lo anterior al inicio del piloto (R41)", () => {
     const r = resumirLineas([{ fecha: "2026-09-15", monto: -50000 }, { fecha: "2026-10-03", monto: 20000 }], "2026-10-01");
     expect(r).toMatchObject({ antesDelPiloto: 1, desdeElPiloto: 1, cargos: 50000, abonos: 20000, desde: "2026-09-15" });
+  });
+});
+
+describe("Corte del piloto (R41, D35)", () => {
+  it("R41: las líneas anteriores al inicio del piloto no se importan; el día de inicio sí", () => {
+    const lineas = [{ fecha: "2026-09-30", monto: -1 }, { fecha: "2026-10-01", monto: -2 }, { fecha: "2026-10-15", monto: 3 }];
+    expect(soloDelPiloto(lineas, "2026-10-01").map((l) => l.fecha)).toEqual(["2026-10-01", "2026-10-15"]);
   });
 });
 
