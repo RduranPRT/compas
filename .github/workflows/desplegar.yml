@@ -1,0 +1,171 @@
+name: Desplegar
+
+# Publica en producción lo que entra a main, en orden: base (Supabase) → funciones (Supabase) → web (Railway).
+# * Corre cuando el CI de un push a main termina en verde; nunca por un pull request.
+# * Si hay migraciones pendientes, espera la aprobación en el entorno `produccion` y, antes de aplicarlas,
+#   guarda un respaldo cifrado en el bucket privado `respaldos` de Railway (se borran a los 30 días).
+# * "Run workflow" (manual) vuelve a publicar funciones y web: sirve si un despliegue falló.
+# Los registros de este repositorio son públicos: ningún paso imprime datos del hogar.
+# Secretos y entorno: ver docs/despliegue.md, "Publicación automática".
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: desplegar
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PROYECTO_SUPABASE: opoeeyxpharopjftfdnt
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+jobs:
+  detectar:
+    name: Qué hay que publicar
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.valor }}
+      migraciones: ${{ steps.pendientes.outputs.hay }}
+      funciones: ${{ steps.cambios.outputs.funciones }}
+      web: ${{ steps.cambios.outputs.web }}
+    steps:
+      - id: sha
+        run: echo "valor=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.sha.outputs.valor }}
+          fetch-depth: 2
+      - id: cambios
+        name: Cambios del commit
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "funciones=true" >> "$GITHUB_OUTPUT"; echo "web=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          archivos=$(git diff --name-only HEAD^1 HEAD)
+          if grep -q '^supabase/functions/' <<<"$archivos"; then f=true; else f=false; fi
+          if grep -qE '^(apps/movil/|packages/|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|tsconfig\.base\.json)' <<<"$archivos"; then w=true; else w=false; fi
+          echo "funciones=$f" >> "$GITHUB_OUTPUT"; echo "web=$w" >> "$GITHUB_OUTPUT"
+          echo "Funciones: $f · Web: $w"
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+      - id: pendientes
+        name: Migraciones pendientes en producción
+        run: |
+          supabase link --project-ref "$PROYECTO_SUPABASE"
+          salida=$(supabase db push --dry-run 2>&1) || { echo "$salida"; exit 1; }
+          echo "$salida"
+          # Ante una salida desconocida se asume que hay pendientes: pasa por aprobación, nunca se salta.
+          if grep -q "Remote database is up to date" <<<"$salida"; then hay=false; else hay=true; fi
+          echo "hay=$hay" >> "$GITHUB_OUTPUT"
+      - name: El entorno produccion exige aprobación
+        if: steps.pendientes.outputs.hay == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          revisores=$(gh api "repos/${{ github.repository }}/environments/produccion" \
+            --jq '[.protection_rules[]? | select(.type == "required_reviewers")] | length' 2>/dev/null || echo 0)
+          if [ "$revisores" = "0" ]; then
+            echo "::error::Hay migraciones pendientes y el entorno 'produccion' no exige aprobación. No se aplican; ver docs/despliegue.md."
+            exit 1
+          fi
+
+  migrar:
+    name: Respaldo y migraciones (requiere aprobación)
+    needs: detectar
+    if: needs.detectar.outputs.migraciones == 'true'
+    runs-on: ubuntu-latest
+    environment: produccion
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.detectar.outputs.sha }}
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+      - run: supabase link --project-ref "$PROYECTO_SUPABASE"
+      - name: Respaldo cifrado al bucket privado
+        env:
+          RESPALDO_CLAVE: ${{ secrets.RESPALDO_CLAVE }}
+          RESPALDO_BUCKET: ${{ secrets.RESPALDO_BUCKET }}
+          RESPALDO_ENDPOINT: ${{ secrets.RESPALDO_ENDPOINT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.RESPALDO_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.RESPALDO_SECRET_ACCESS_KEY }}
+          AWS_REGION: auto
+          SHA: ${{ needs.detectar.outputs.sha }}
+        run: |
+          test -n "$RESPALDO_CLAVE" && test -n "$RESPALDO_BUCKET" && test -n "$RESPALDO_ENDPOINT" \
+            || { echo "::error::Faltan los secretos del respaldo; no se migra sin respaldo."; exit 1; }
+          umask 077
+          dir=$(mktemp -d)
+          supabase db dump --linked -f "$dir/esquema.sql" > /dev/null
+          supabase db dump --linked --data-only -f "$dir/datos.sql" > /dev/null
+          nombre="respaldo-$(date -u +%Y%m%d-%H%M)-${SHA::7}.tgz.gpg"
+          tar -C "$dir" -czf - esquema.sql datos.sql \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase-fd 3 -o "$dir/$nombre" 3<<<"$RESPALDO_CLAVE"
+          rm -f "$dir/esquema.sql" "$dir/datos.sql"
+          aws s3 cp "$dir/$nombre" "s3://$RESPALDO_BUCKET/$nombre" --endpoint-url "$RESPALDO_ENDPOINT" --only-show-errors
+          rm -rf "$dir"
+          echo "Respaldo guardado: $nombre"
+          # Retención: 30 días
+          limite=$(date -u -d '30 days ago' +%Y%m%d)
+          aws s3 ls "s3://$RESPALDO_BUCKET/" --endpoint-url "$RESPALDO_ENDPOINT" | awk '{print $4}' | while read -r archivo; do
+            fecha=$(sed -nE 's/^respaldo-([0-9]{8})-.*/\1/p' <<<"$archivo")
+            if [ -n "$fecha" ] && [ "$fecha" -lt "$limite" ]; then
+              aws s3 rm "s3://$RESPALDO_BUCKET/$archivo" --endpoint-url "$RESPALDO_ENDPOINT" --only-show-errors
+              echo "Borrado por antigüedad: $archivo"
+            fi
+          done
+      - name: Aplicar migraciones
+        run: |
+          supabase db push --yes
+          supabase migration list --linked
+
+  funciones:
+    name: Funciones de IA
+    needs: [detectar, migrar]
+    if: >-
+      always() && needs.detectar.result == 'success' &&
+      (needs.migrar.result == 'success' || needs.migrar.result == 'skipped') &&
+      needs.detectar.outputs.funciones == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.detectar.outputs.sha }}
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+      - run: supabase functions deploy --project-ref "$PROYECTO_SUPABASE"
+
+  web:
+    name: Web en Railway
+    needs: [detectar, migrar, funciones]
+    if: >-
+      always() && needs.detectar.result == 'success' &&
+      (needs.migrar.result == 'success' || needs.migrar.result == 'skipped') &&
+      (needs.funciones.result == 'success' || needs.funciones.result == 'skipped') &&
+      needs.detectar.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.detectar.outputs.sha }}
+      - run: npm install -g @railway/cli@5.44.0
+      - name: Publicar y esperar el resultado
+        run: railway up --service web --ci -m "main ${{ needs.detectar.outputs.sha }}"

@@ -1,6 +1,6 @@
 # Despliegue de Compás
 
-Última revisión: 06-11-2026 (D35).
+Última revisión: 07-11-2026 (publicación automática).
 
 | Pieza | Dónde | Identificador |
 | --- | --- | --- |
@@ -8,6 +8,45 @@
 | Versión web (ADR-03) | Railway, proyecto `compas`, servicio `web` | https://web-production-136d.up.railway.app |
 
 El hosting web quedó en Railway porque el hogar ya tiene plan pagado (decisión de Rodrigo, 25-10-2026). La web es un sitio estático: Railway compila `apps/movil/Dockerfile` (Expo → `dist`) y lo sirve con Caddy (`apps/movil/Caddyfile`).
+
+## Publicación automática (desde 07-11-2026)
+
+Todo lo que entra a `main` se publica solo con `.github/workflows/desplegar.yml`, cuando el CI termina en verde y en este orden:
+
+1. **Migraciones**: si hay pendientes, el workflow se detiene y pide aprobación en el entorno `produccion` (GitHub → Actions → la ejecución → *Review deployments*). Al aprobar, guarda un respaldo cifrado (esquema y datos) en el bucket privado `respaldos` de Railway y aplica `supabase db push`. Si el entorno no exige aprobación, no migra.
+2. **Funciones de IA**: solo si cambió `supabase/functions/`.
+3. **Web**: solo si cambió `apps/movil/`, `packages/` o las dependencias; `railway up --ci` espera a que quede en `SUCCESS`.
+
+Si una publicación falla, se corrige y se vuelve a fusionar, o se usa **Run workflow** en Actions → *Desplegar*, que vuelve a publicar funciones y web. El CI además falla si `supabase/migrations/` no está al día con `db/migrations/`.
+
+El repositorio es público: los registros de Actions los puede ver cualquiera. Por eso el respaldo nunca va a GitHub y ningún paso imprime datos del hogar.
+
+### Configuración (una sola vez)
+
+**Secretos** (GitHub → Settings → Secrets and variables → Actions):
+
+| Secreto | De dónde sale |
+| --- | --- |
+| `SUPABASE_ACCESS_TOKEN` | Supabase → Account → Access Tokens |
+| `SUPABASE_DB_PASSWORD` | contraseña de la base (gestor de contraseñas) |
+| `RAILWAY_TOKEN` | Railway → proyecto `compas` → Settings → Tokens, entorno `production` |
+| `RESPALDO_ENDPOINT`, `RESPALDO_BUCKET`, `RESPALDO_ACCESS_KEY_ID`, `RESPALDO_SECRET_ACCESS_KEY` | Railway → bucket `respaldos` → Credentials (endpoint, nombre del bucket, claves) |
+| `RESPALDO_CLAVE` | frase larga y aleatoria; guardarla también en el gestor de contraseñas: sin ella el respaldo no se puede abrir |
+| `CLAUDE_CODE_OAUTH_TOKEN` | `claude setup-token`; lo usan la revisión de PR (`revision.yml`) y `@claude` (`claude.yml`) |
+
+**Entorno**: Settings → Environments → New environment `produccion` → *Required reviewers*: Rodrigo.
+
+**Merge automático**: Settings → General → marcar *Allow auto-merge* y *Automatically delete head branches*. Settings → Branches → regla para `main` con *Require status checks to pass*: `Invariantes de la base de datos` y `Pruebas y tipos del monorepo`.
+
+### Abrir un respaldo
+
+Descargarlo desde Railway (bucket `respaldos`) y descifrarlo con la frase de `RESPALDO_CLAVE`:
+
+```bash
+gpg --decrypt respaldo-AAAAMMDD-HHMM-xxxxxxx.tgz.gpg | tar -xzf -
+```
+
+Quedan `esquema.sql` y `datos.sql`. Se borran solos a los 30 días.
 
 ## Base de datos (Supabase)
 
@@ -47,7 +86,7 @@ Las crea el organizador en **Authentication → Users → Add user → Create ne
 
 ### Respaldo (plan Free, ADR-09)
 
-Semanal, a un archivo privado fuera del repositorio:
+Antes de cada migración lo toma solo el workflow (ver "Publicación automática"). Además, semanal, a un archivo privado fuera del repositorio:
 
 ```bash
 corepack pnpm exec supabase db dump --linked -f respaldo-AAAA-MM-DD.sql
@@ -64,7 +103,7 @@ Variables del servicio `web` (se pasan al build como argumentos del Dockerfile):
 | `EXPO_PUBLIC_SUPABASE_URL` | `https://opoeeyxpharopjftfdnt.supabase.co` |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | clave `anon` del proyecto (pública; nunca `service_role`) |
 
-Publicar una versión nueva desde la raíz del repositorio:
+La publicación normal es automática (ver arriba). Para publicar a mano desde la raíz del repositorio:
 
 ```bash
 railway up --service web --detach -m "<qué cambia>"
